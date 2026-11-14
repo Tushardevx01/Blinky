@@ -6,6 +6,17 @@ Blinky is an intelligent, privacy-first AI desktop tutor and autonomous computer
 
 ---
 
+## Downloads & Releases (v1.1.0)
+
+| Platform              | Package                                                             | Architecture            | Size    | Status           |
+| :-------------------- | :------------------------------------------------------------------ | :---------------------- | :------ | :--------------- |
+| **Windows Desktop**   | [`Blinky_1.1.0_x64-setup.exe`](releases/Blinky_1.1.0_x64-setup.exe) | `x86_64`                | ~201 MB | Ready to install |
+| **Android Companion** | [`Blinky-1.1.0.apk`](releases/Blinky-1.1.0.apk)                     | `arm64-v8a` / universal | ~118 MB | Ready to install |
+
+👉 **Release Notes & Verification Guide:** See [releases/README.md](releases/README.md).
+
+---
+
 ## Key Capabilities
 
 - **System 1 Neural Decision Engine:** Sub-millisecond (<1ms) non-autoregressive ONNX Transformer classifier (`decision_engine/`) distinguishing instant OS reflexes from deliberative System 2 multi-step reasoning before LLM invocation.
@@ -199,6 +210,7 @@ cargo tauri build
 
 ## Documentation
 
+- [Binary Releases & Installation Guide (releases/README.md)](./releases/README.md)
 - [Project Summary & Architecture Map (BLINKY_SUMMARY.md)](./BLINKY_SUMMARY.md)
 - [Blinky Notebook Hub & OKF Specification (docs/OKF.md)](./docs/OKF.md)
 - [Linux Quick Start & Hyprland Setup (linux/quick_start.md)](./linux/quick_start.md)

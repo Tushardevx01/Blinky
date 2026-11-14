@@ -77,5 +77,8 @@ scratch/
 docs/history.md
  skills/
 enhancement/
-/releases/
+# Release artifacts (binaries stay untracked to keep repository lightweight and within GitHub limits)
+/releases/*.exe
+/releases/*.apk
+!/releases/*.md
 hackathon-cover-16x9.png
