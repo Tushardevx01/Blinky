@@ -37,7 +37,7 @@ export function BrandHeader({ status, isConnected, onPressConnection, onPressHis
             accessibilityLabel="Chat History"
             activeOpacity={0.7}
           >
-            <Ionicons name="time-outline" size={18} color="#FF5A36" />
+            <Ionicons name="time-outline" size={18} color={colors.accent} />
           </TouchableOpacity>
         )}
 
@@ -51,7 +51,7 @@ export function BrandHeader({ status, isConnected, onPressConnection, onPressHis
           accessibilityLabel="Scan PC Pairing QR"
           activeOpacity={0.7}
         >
-          <Ionicons name="qr-code-outline" size={18} color="#FF5A36" />
+          <Ionicons name="qr-code-outline" size={18} color={colors.accent} />
         </TouchableOpacity>
 
         {/* Connection Pill */}
@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255, 90, 54, 0.12)',
+    backgroundColor: colors.accentMuted,
     borderWidth: 1,
-    borderColor: 'rgba(255, 90, 54, 0.3)',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },

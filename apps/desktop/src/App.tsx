@@ -750,7 +750,7 @@ export function App() {
             <div className="dropdown-section">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                 <h4>Voice Provider</h4>
-                <span style={{ fontSize: '10px', background: voiceProvider === 'assemblyai' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 110, 95, 0.2)', color: voiceProvider === 'assemblyai' ? '#93c5fd' : '#ff8b6a', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                <span style={{ fontSize: '10px', background: voiceProvider === 'assemblyai' ? 'rgba(59, 130, 246, 0.2)' : '#EDE7FC', color: voiceProvider === 'assemblyai' ? '#93c5fd' : '#7653D6', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
                   {voiceProvider === 'assemblyai' ? 'Universal-3 Pro' : 'Indic Voice'}
                 </span>
               </div>

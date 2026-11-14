@@ -302,7 +302,7 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                 }
               }}
             >
-              <Upload size={24} color={uploading ? "#94a3b8" : "#FF5A00"} style={{opacity: uploading ? 0.5 : 0.8}} />
+              <Upload size={24} color={uploading ? "#94a3b8" : "#7653D6"} style={{opacity: uploading ? 0.5 : 0.8}} />
               <p>{uploading ? 'Parsing and vector-indexing files...' : 'Drag & drop PDFs, Markdown, or text documents here'}</p>
               {!uploading && <small>Supported: PDF, MD, TXT</small>}
             </div>
@@ -347,7 +347,7 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
               {messages.length === 1 && messages[0].sender === 'ai' ? (
                 <div className="welcome-card">
                   <div className="welcome-icon">
-                    <Sparkles size={24} color="#FF5A00" />
+                    <Sparkles size={24} color="#7653D6" />
                   </div>
                   <div className="welcome-content">
                     <div className="welcome-header">

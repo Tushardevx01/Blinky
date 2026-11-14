@@ -184,7 +184,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
           }
         >
           <LinearGradient
-            colors={['#FF5A36', '#FF9800']}
+            colors={['#7653D6', '#9B7BF7']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{ flex: 1 }}
@@ -202,7 +202,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
           activeOpacity={0.8}
           onPress={handleDismiss}
         >
-          <Ionicons name="arrow-forward" size={24} color="#000" />
+          <Ionicons name="arrow-forward" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </Animated.View>
 
@@ -228,12 +228,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#09090B',
+    backgroundColor: '#FFFFFF',
     zIndex: 9999,
     elevation: 9999,
   },
   loadingOverlay: {
-    backgroundColor: '#09090B',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
@@ -255,13 +255,13 @@ const styles = StyleSheet.create({
   card: {
     padding: 24,
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    borderWidth: 1,
+    borderColor: '#E9E6EF',
+    shadowColor: '#24212D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
     shadowRadius: 16,
-    elevation: 8,
+    elevation: 4,
     alignItems: 'center',
     justifyContent: 'center',
     width: 160,
@@ -269,26 +269,26 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   cardRed: {
-    backgroundColor: '#FF5A36', // sutra Orange
+    backgroundColor: '#7653D6', // sutra Violet
     top: 60,
     left: 20,
   },
   cardBlue: {
-    backgroundColor: '#3B82F6', // sutra Blue
+    backgroundColor: '#8B5CF6',
     top: 140,
     right: 20,
     width: 140,
     height: 140,
   },
   cardGreen: {
-    backgroundColor: '#27272A', // Dark Slate
+    backgroundColor: '#EDE7FC',
     top: 240,
     left: 30,
     width: 170,
     height: 120,
   },
   cardPurple: {
-    backgroundColor: '#8B5CF6', // sutra Purple
+    backgroundColor: '#5E3EB8',
     top: 320,
     right: 30,
     width: 150,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
     fontSize: 42,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#24212D',
     lineHeight: 48,
     letterSpacing: -1,
   },
@@ -341,13 +341,13 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#7653D6',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: '#7653D6',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 4,
   }
 });

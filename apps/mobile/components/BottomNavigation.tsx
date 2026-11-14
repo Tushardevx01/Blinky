@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -3,
     right: -8,
-    backgroundColor: '#181920',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: 6,
     paddingHorizontal: 2,
     paddingVertical: 1,
     borderWidth: 1,
-    borderColor: 'rgba(255, 90, 54, 0.45)',
+    borderColor: colors.border,
   },
 });

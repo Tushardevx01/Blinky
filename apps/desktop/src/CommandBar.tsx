@@ -2720,7 +2720,7 @@ export function CommandBar() {
           <div ref={historyDropdownRef} className="command-history-dropdown">
             <div className="history-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, fontSize: '13px', color: '#fff' }}>
-                <Clock size={15} style={{ color: 'var(--accent-color, #ff5a36)' }} />
+                <Clock size={15} style={{ color: 'var(--accent, #7653D6)' }} />
                 <span>Command & Chat History</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -3326,7 +3326,7 @@ export function CommandBar() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {pingTesting && (
-                  <span className="settings-ping-chip" style={{ background: 'rgba(255, 90, 54, 0.15)', color: '#ff8b6a' }}>
+                  <span className="settings-ping-chip" style={{ background: '#EDE7FC', color: '#7653D6' }}>
                     <Loader2 className="spin" size={12} /> Pinging...
                   </span>
                 )}
@@ -3405,7 +3405,7 @@ export function CommandBar() {
                     <div className="settings-section-card settings-agent-card agent1-active">
                       <div className="settings-section-title">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Bot size={16} style={{ color: '#ff5a36' }} />
+                          <Bot size={16} style={{ color: '#7653D6' }} />
                           <span>Agent 1: OS Actuator</span>
                         </div>
                         <span className="agent-badge-pill ember">Vision &amp; Computer Use</span>
@@ -3513,7 +3513,7 @@ export function CommandBar() {
                                         <div style={{ fontWeight: 600 }}>{m.name || m.id}</div>
                                         <div style={{ fontSize: '10px', color: '#94a3b8' }}>{m.id}</div>
                                       </div>
-                                      {agent1Model === m.id && <Check size={14} style={{ color: '#ff5a36' }} />}
+                                      {agent1Model === m.id && <Check size={14} style={{ color: '#7653D6' }} />}
                                     </div>
                                   ))}
                               </div>
@@ -3661,7 +3661,7 @@ export function CommandBar() {
                     <div className="settings-section-card settings-key-card">
                       <div className="settings-input-header">
                         <label className="settings-label">
-                          <Zap size={14} style={{ color: '#ff5a36' }} />
+                          <Zap size={14} style={{ color: '#7653D6' }} />
                           <span>Groq API Key (Agent 1 Actuator)</span>
                         </label>
                         <button
@@ -3817,7 +3817,7 @@ export function CommandBar() {
                   <div className="settings-section-card" style={{ padding: '16px' }}>
                     <div className="settings-section-title">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Smartphone size={16} style={{ color: '#ff5a36' }} />
+                        <Smartphone size={16} style={{ color: '#7653D6' }} />
                         <span>sutra Mobile Companion</span>
                       </div>
                       <span className="agent-badge-pill ember">Local Encrypted Link</span>
@@ -3912,7 +3912,7 @@ export function CommandBar() {
                     <div className="settings-section-card">
                       <div className="settings-section-title">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Command size={16} style={{ color: '#ff5a36' }} />
+                          <Command size={16} style={{ color: '#7653D6' }} />
                           <span>Global Summon Shortcut</span>
                         </div>
                         <span className="agent-badge-pill ember">System-Wide</span>

@@ -92,7 +92,7 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <View style={styles.boltBadge}>
-                <Ionicons name="flash" size={16} color="#FF5A36" />
+                <Ionicons name="flash" size={16} color="#7653D6" />
               </View>
               <View>
                 <Text style={styles.headerTitle}>SENTINEL</Text>
@@ -152,7 +152,7 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
             {/* Broadcast Power Alert Banner if triggered */}
             {latestPowerEvent && (
               <View style={styles.powerEventAlertBanner}>
-                <Ionicons name="notifications-outline" size={18} color="#FF5A36" style={{ marginRight: 8 }} />
+                <Ionicons name="notifications-outline" size={18} color="#7653D6" style={{ marginRight: 8 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.powerEventTitle}>
                     {latestPowerEvent.action.toUpperCase()} TRIGGERED
@@ -618,30 +618,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   platformBadge: {
-    backgroundColor: 'rgba(255, 90, 54, 0.15)',
+    backgroundColor: '#EDE7FC',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 90, 54, 0.3)',
+    borderColor: '#E9E6EF',
   },
   platformBadgeText: {
-    color: '#FF5A36',
+    color: '#7653D6',
     fontSize: 10,
     fontWeight: '800',
   },
   powerEventAlertBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 90, 54, 0.12)',
+    backgroundColor: '#EDE7FC',
     borderWidth: 1,
-    borderColor: 'rgba(255, 90, 54, 0.35)',
+    borderColor: '#7653D6',
     borderRadius: 16,
     padding: 14,
     marginBottom: 16,
   },
   powerEventTitle: {
-    color: '#FF5A36',
+    color: '#7653D6',
     fontSize: 13,
     fontWeight: '800',
     marginBottom: 2,

@@ -1031,7 +1031,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 46,
     borderRadius: 12,
-    backgroundColor: '#FF5A36',
+    backgroundColor: '#7653D6',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,

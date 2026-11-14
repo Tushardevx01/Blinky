@@ -657,7 +657,7 @@ const SLASH_COMMANDS: SlashCommandDef[] = [
     badge: 'COMPANION',
     description: 'Ask sutra companion a question or query',
     icon: 'sparkles',
-    color: '#FF5A36',
+    color: '#7653D6',
   },
 ];
 
@@ -2383,7 +2383,7 @@ export default function App() {
     <SafeAreaProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
         <View style={styles.safeArea}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -2600,7 +2600,7 @@ export default function App() {
                   <Ionicons
                     name="desktop-outline"
                     size={13}
-                    color={chatMode === 'autopilot' ? '#FF5A36' : '#8A86AA'}
+                    color={chatMode === 'autopilot' ? '#7653D6' : '#8A86AA'}
                   />
                   <Text
                     style={[
@@ -2800,39 +2800,39 @@ export default function App() {
                       marginRight: 14,
                     }}
                   >
-                    <Ionicons name="key" size={22} color="#FF5A36" />
+                    <Ionicons name="key" size={22} color="#7653D6" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF' }}>
+                    <Text style={{ fontSize: 17, fontWeight: '800', color: colors.textPrimary }}>
                       Unlock Workstation
                     </Text>
-                    <Text style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.5)' }}>
+                    <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                       Windows Password or PIN
                     </Text>
                   </View>
                 </View>
 
-                <Text style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 16, lineHeight: 18 }}>
+                <Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 16, lineHeight: 18 }}>
                   Enter your Windows lockscreen PIN or password to unlock your host workstation automatically.
                 </Text>
 
                 <View
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                    backgroundColor: colors.surfaceElevated,
                     borderRadius: 16,
                     borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: colors.border,
                     flexDirection: 'row',
                     alignItems: 'center',
                     paddingHorizontal: 16,
                     marginBottom: 16,
                   }}
                 >
-                  <Ionicons name="lock-closed" size={18} color="#FF5A36" style={{ marginRight: 10 }} />
+                  <Ionicons name="lock-closed" size={18} color="#7653D6" style={{ marginRight: 10 }} />
                   <TextInput
-                    style={{ height: 48, flex: 1, color: '#FFFFFF', fontSize: 15 }}
+                    style={{ height: 48, flex: 1, color: colors.textPrimary, fontSize: 15 }}
                     placeholder="Enter Windows PIN or password"
-                    placeholderTextColor="rgba(255, 255, 255, 0.35)"
+                    placeholderTextColor={colors.textMuted}
                     value={inputPin}
                     onChangeText={setInputPin}
                     secureTextEntry
@@ -2851,10 +2851,10 @@ export default function App() {
                   <Ionicons
                     name={rememberPin ? 'checkbox' : 'square-outline'}
                     size={20}
-                    color={rememberPin ? '#FF5A36' : 'rgba(255, 255, 255, 0.4)'}
+                    color={rememberPin ? '#7653D6' : colors.textMuted}
                     style={{ marginRight: 8 }}
                   />
-                  <Text style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.8)', fontWeight: '500' }}>
+                  <Text style={{ fontSize: 13, color: colors.textPrimary, fontWeight: '500' }}>
                     Remember for future Wake PC taps
                   </Text>
                 </TouchableOpacity>
@@ -2865,7 +2865,9 @@ export default function App() {
                       flex: 1,
                       height: 46,
                       borderRadius: 14,
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                      backgroundColor: colors.surfaceElevated,
+                      borderWidth: 1,
+                      borderColor: colors.border,
                       justifyContent: 'center',
                       alignItems: 'center',
                     }}
@@ -2875,7 +2877,7 @@ export default function App() {
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 14, fontWeight: '700' }}>
+                    <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '700' }}>
                       Cancel
                     </Text>
                   </TouchableOpacity>
@@ -2885,7 +2887,7 @@ export default function App() {
                       flex: 1,
                       height: 46,
                       borderRadius: 14,
-                      backgroundColor: '#FF5A36',
+                      backgroundColor: '#7653D6',
                       justifyContent: 'center',
                       alignItems: 'center',
                     }}
@@ -3289,11 +3291,11 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FF5A36',
+    backgroundColor: '#7653D6',
     borderRadius: 1.5,
   },
   progressPercent: {
-    color: '#8A86AA',
+    color: '#6B6678',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -3306,11 +3308,11 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF5A36',
+    backgroundColor: '#7653D6',
     marginRight: 8,
   },
   progressStatusText: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#24212D',
     fontSize: 13,
     fontWeight: '500',
     flex: 1,
@@ -3321,7 +3323,7 @@ const styles = StyleSheet.create({
   },
   progressTimerText: {
     fontSize: 12,
-    color: '#8A86AA',
+    color: '#6B6678',
     fontWeight: '600',
   },
   bubbleScreenshot: {
@@ -3329,7 +3331,7 @@ const styles = StyleSheet.create({
     height: 160,
     resizeMode: 'contain',
     borderRadius: 8,
-    backgroundColor: '#05020B',
+    backgroundColor: '#F7F6FA',
     marginTop: 10,
   },
   bubbleStepsContainer: {
@@ -3337,7 +3339,7 @@ const styles = StyleSheet.create({
   },
   bubbleStepItem: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: '#F7F6FA',
     padding: 8,
     borderRadius: 8,
     marginBottom: 6,
@@ -3346,7 +3348,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#FF5A36',
+    backgroundColor: '#7653D6',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
@@ -3360,19 +3362,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bubbleStepText: {
-    color: '#FFFFFF',
+    color: '#24212D',
     fontSize: 12.5,
   },
   bubbleStepTargetBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 90, 54, 0.1)',
+    backgroundColor: '#EDE7FC',
     paddingHorizontal: 6,
     paddingVertical: 1.5,
     borderRadius: 4,
     marginTop: 4,
   },
   bubbleStepTargetText: {
-    color: '#FF5A36',
+    color: '#7653D6',
     fontSize: 9,
     fontWeight: '700',
   },
@@ -3403,10 +3405,10 @@ const styles = StyleSheet.create({
   chatInputBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F0D15',
+    backgroundColor: '#FFFFFF',
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: 'rgba(255, 90, 54, 0.35)',
+    borderColor: '#E9E6EF',
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginHorizontal: 16,
@@ -3418,7 +3420,7 @@ const styles = StyleSheet.create({
   chatTextInput: {
     flex: 1,
     height: 40,
-    color: '#FFFFFF',
+    color: '#24212D',
     paddingHorizontal: 8,
     fontSize: 15,
   },
@@ -3434,7 +3436,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FF5A36',
+    backgroundColor: '#7653D6',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -3752,24 +3754,24 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   groundingPillActiveAutopilot: {
-    backgroundColor: 'rgba(255, 90, 54, 0.12)',
-    borderColor: 'rgba(255, 90, 54, 0.4)',
+    backgroundColor: '#EDE7FC',
+    borderColor: '#7653D6',
   },
   groundingPillActiveGrounded: {
-    backgroundColor: 'rgba(167, 139, 250, 0.15)',
-    borderColor: 'rgba(167, 139, 250, 0.45)',
+    backgroundColor: '#EDE7FC',
+    borderColor: '#7653D6',
   },
   groundingPillText: {
     fontSize: 11.5,
     fontWeight: '600',
-    color: '#8A86AA',
+    color: '#6B6678',
   },
   groundingPillTextActiveAutopilot: {
-    color: '#FF5A36',
+    color: '#7653D6',
     fontWeight: '700',
   },
   groundingPillTextActiveGrounded: {
-    color: '#C4B5FD',
+    color: '#7653D6',
     fontWeight: '700',
   },
 });

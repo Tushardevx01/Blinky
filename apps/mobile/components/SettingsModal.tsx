@@ -860,7 +860,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   autoDetectBadge: {
-    backgroundColor: 'rgba(255, 90, 54, 0.15)',
+    backgroundColor: '#EDE7FC',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: radius.sm,
@@ -868,6 +868,6 @@ const styles = StyleSheet.create({
   autoDetectText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#FF5A36',
+    color: '#7653D6',
   },
 });
