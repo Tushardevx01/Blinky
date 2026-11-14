@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "sutra",
+  "version": "0.1.0",
+  "identifier": "app.sutra.tutor",
+  "build": {
+    "beforeDevCommand": "npm run build:ui",
+    "beforeBuildCommand": "node ../../../scripts/build/prepare-whatsapp-backend.mjs && npm run build:ui",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "command",
+        "title": "Recording Toolbar",
+        "url": "/command",
+        "width": 760,
+        "height": 720,
+        "minWidth": 560,
+        "minHeight": 120,
+        "resizable": false,
+        "center": true,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "alwaysOnTop": true,
+        "shadow": false
+      },
+      {
+        "label": "overlay",
+        "title": "sutra Highlight Overlay",
+        "url": "/overlay",
+        "fullscreen": false,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "resizable": false,
+        "shadow": false
+      },
+      {
+        "label": "notebook",
+        "title": "sutra Knowledge Hub",
+        "url": "/notebook",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "visible": false,
+        "resizable": true,
+        "shadow": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob: data:; connect-src 'self' ipc: http://ipc.localhost ws://127.0.0.1:9001 wss://127.0.0.1:9001 wss://api.sarvam.ai wss://agents.assemblyai.com wss://streaming.assemblyai.com wss://api.assemblyai.com https://api.assemblyai.com ws://localhost:5173 http://localhost:5173"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "resources": {
+      "../../../services/agent/": "services/agent/",
+      "../../../services/whatsapp/": "services/whatsapp/",
+      "../../../services/search/": "services/search/",
+      "../../../packages/aicut/": "packages/aicut/",
+      "../../../packages/shared/": "packages/shared/",
+      "../../../.env": ".env"
+    },
+    "windows": {
+      "nsis": {
+        "installerHooks": "hooks.nsi"
+      }
+    }
+  }
+}

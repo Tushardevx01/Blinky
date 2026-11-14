@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "crates/sutra-daemon",
+    "crates/sutra-agent",
+    "apps/desktop/src-tauri",
+]
+resolver = "2"

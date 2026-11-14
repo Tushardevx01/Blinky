@@ -1,0 +1,65 @@
+# Environment files
+.env
+.env*
+*.env
+.env.local
+.env.*.local
+
+# Node modules / Dependencies
+node_modules/
+node_modules
+*/node_modules/
+**/node_modules/
+node_module/
+node_module
+**/node_module/
+
+# Rust / Cargo build artifacts
+target/
+**/target/
+Cargo.lock
+
+# Python virtual environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Build outputs
+dist/
+dist-ssr/
+out/
+build/
+*.egg-info/
+
+# Tauri build artifacts
+src-tauri/target/
+apps/desktop/src-tauri/target/
+
+# Mobile / Expo / Metro
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+tmp/

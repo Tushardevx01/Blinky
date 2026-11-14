@@ -1,0 +1,8 @@
+// AUTO-GENERATED FROM .env - DO NOT EDIT MANUALLY OR COMMIT TO GIT
+#ifndef SUTRA_CONFIG_H
+#define SUTRA_CONFIG_H
+
+#define WIFI_SSID "Tushar kanti Dey"
+#define WIFI_PASSWORD "000000000"
+
+#endif // SUTRA_CONFIG_H

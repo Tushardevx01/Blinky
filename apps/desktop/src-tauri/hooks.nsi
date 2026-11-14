@@ -1,0 +1,25 @@
+!macro NSIS_HOOK_PREINSTALL
+  ; Stop any running sutra processes to release file locks on update/overwrite
+  DetailPrint "Stopping existing sutra processes..."
+  nsExec::ExecToLog 'powershell -Command "Get-Process -Name sutra -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process | Where-Object { $_.Path -like ''*AppData\Local\sutra*'' } | Stop-Process -Force -ErrorAction SilentlyContinue"'
+
+  ; Purge old runtime and module directories to avoid stale/colliding files from previous installations
+  DetailPrint "Cleaning previous installation files..."
+  RMDir /r "$INSTDIR\python_runtime"
+  RMDir /r "$INSTDIR\common"
+  RMDir /r "$INSTDIR\python"
+  RMDir /r "$INSTDIR\windows"
+!macroend
+
+!macro NSIS_HOOK_POSTINSTALL
+  ; Allow LAN WebSocket control (9001), HTTPS file transfer (9002), and discovery (9004).
+  DetailPrint "Configuring Windows Firewall for mobile connectivity..."
+  nsExec::ExecToLog 'netsh advfirewall firewall add rule name="sutra WebSocket Port 9001" dir=in action=allow protocol=TCP localport=9001'
+  nsExec::ExecToLog 'netsh advfirewall firewall add rule name="sutra File Transfer Port 9002" dir=in action=allow program="$INSTDIR\sutra.exe" protocol=TCP localport=9002'
+  nsExec::ExecToLog 'netsh advfirewall firewall add rule name="sutra Discovery Port 9004" dir=in action=allow protocol=TCP localport=9004'
+  nsExec::ExecToLog 'netsh advfirewall firewall add rule name="sutra Application" dir=in action=allow program="$INSTDIR\sutra.exe" enable=yes'
+
+  ; Execute our python addon setup script and wait for it to complete.
+  ; $INSTDIR is the installation directory selected by the user.
+  ExecWait '"$INSTDIR\python_runtime\Python313\python.exe" "$INSTDIR\common\python\post_install.py"'
+!macroend

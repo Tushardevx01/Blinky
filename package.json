@@ -1,0 +1,71 @@
+{
+  "name": "sutra",
+  "version": "0.1.0",
+  "private": true,
+  "description": "sutra is an offline-first AI desktop tutor and agent platform.",
+  "scripts": {
+    "dev": "npm run tauri:dev",
+    "dev:clean": "cargo clean --manifest-path apps/desktop/src-tauri/Cargo.toml -p sutra && npm run tauri:dev",
+    "dev:app": "npm run tauri:dev",
+    "clean:app": "cargo clean --manifest-path apps/desktop/src-tauri/Cargo.toml -p sutra",
+    "mobile:dev": "npm --prefix apps/mobile run start",
+    "mobile:start": "npm --prefix apps/mobile run start -- --host lan",
+    "tauri:dev": "tauri dev",
+    "build": "npm run typecheck && vite build --config apps/desktop/vite.config.ts",
+    "build:release": "npm run typecheck && npm run tauri:build",
+    "tauri:build": "tauri build",
+    "preview": "vite preview --config apps/desktop/vite.config.ts",
+    "typecheck": "tsc -p apps/desktop/tsconfig.json --noEmit",
+    "setup:win": "powershell -ExecutionPolicy Bypass -File setup.ps1",
+    "setup:win:run": "powershell -ExecutionPolicy Bypass -File setup.ps1 -Run",
+    "setup:linux": "chmod +x setup.sh && ./setup.sh",
+    "setup:linux:run": "chmod +x setup.sh && ./setup.sh --run",
+    "run:win": "powershell -ExecutionPolicy Bypass -File run.ps1",
+    "run:linux": "chmod +x run.sh && ./run.sh",
+    "setup:mobile:win": "powershell -ExecutionPolicy Bypass -File setup-mobile.ps1",
+    "setup:mobile:linux": "chmod +x setup-mobile.sh && ./setup-mobile.sh",
+    "setup:python": "powershell -ExecutionPolicy Bypass -File scripts/platform/setup-python.ps1",
+    "check:ollama": "powershell -ExecutionPolicy Bypass -File scripts/platform/check-ollama.ps1",
+    "linux:setup:python": "chmod +x ./scripts/platform/setup-python.sh && ./scripts/platform/setup-python.sh",
+    "linux:check:ollama": "chmod +x ./scripts/platform/check-ollama.sh && ./scripts/platform/check-ollama.sh",
+    "linux:check:groq": "chmod +x ./scripts/platform/groq-check.sh && ./scripts/platform/groq-check.sh",
+    "linux:check:computer-use": "computer-use-linux doctor"
+  },
+  "dependencies": {
+    "@agent-sh/computer-use-linux": "^0.2.9",
+    "@tauri-apps/api": "^2.12.1",
+    "@tauri-apps/plugin-global-shortcut": "^2.4.0",
+    "assemblyai": "^4.41.5",
+    "axios": "^1.7.9",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "groq-sdk": "^0.37.0",
+    "lucide-react": "^1.17.0",
+    "ollama": "^0.5.12",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "socket.io": "^4.8.3",
+    "whatsapp-web.js": "^1.26.0"
+  },
+  "overrides": {
+    "yauzl": "3.2.1",
+    "bare-fs": "4.8.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.14"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-linux-x64-gnu": "^1.2.16"
+  }
+}
