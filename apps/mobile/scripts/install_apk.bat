@@ -62,7 +62,7 @@ if %ERRORLEVEL% equ 0 (
     echo [SUCCESS] APK successfully installed on your phone!
     echo.
     echo Next steps:
-    echo 1. For debug testing, start the PC app with 'bun run dev' from the repository root.
+    echo 1. For debug testing, start the PC app with 'npm run dev' from the repository root.
     echo    This starts Metro and the desktop development transport required by the debug APK.
     echo 2. Keep your phone connected via USB. 'connect_usb.bat' forwards ports 9001, 9002, 9004, and 8081.
     echo 3. Connect using 'localhost' in the mobile app.

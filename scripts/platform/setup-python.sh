@@ -7,7 +7,7 @@ fi
 
 # Upgrade pip and install requirements using the direct path
 ./.venv/bin/python -m pip install --upgrade pip
-./.venv/bin/python -m pip install -r linux/requirements.txt
+./.venv/bin/python -m pip install -r services/agent/requirements/requirements-linux.txt
 
 # Activate the virtual environment so it stays active in your current terminal
 if [ -f ".venv/bin/activate" ]; then

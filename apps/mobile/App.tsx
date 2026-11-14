@@ -42,11 +42,11 @@ import {
   requestRecordingPermissionsAsync,
   setAudioModeAsync,
 } from 'expo-audio';
-import { usePCWebSocket, ConnectionStatus } from './usePCWebSocket';
+import { usePCWebSocket, ConnectionStatus } from './hooks/usePCWebSocket';
 import { sendWakeOnLan, MAC_STORAGE_KEY, WOL_BROADCAST_STORAGE_KEY } from './lib/wol';
 import { triggerHaptic } from './lib/haptics';
-import { MarkdownRenderer } from './MarkdownRenderer';
-import SplashScreen from './SplashScreen';
+import { MarkdownRenderer } from './components/MarkdownRenderer';
+import SplashScreen from './components/SplashScreen';
 import { BrandHeader } from './components/BrandHeader';
 import { MessageBubble } from './components/MessageBubble';
 import { ChatHome } from './components/ChatHome';
@@ -56,6 +56,7 @@ import { ActionsScreen } from './components/ActionsScreen';
 import { SystemScreen } from './components/SystemScreen';
 import { SettingsModal } from './components/SettingsModal';
 import { FilesScreen } from './components/FilesScreen';
+import { NotebookScreen } from './components/NotebookScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import { SessionHistoryModal } from './components/SessionHistoryModal';
 import {
@@ -82,7 +83,7 @@ import {
   presentPcPaywall,
   restorePurchases,
 } from './lib/purchases';
-import { FileTransferPanel, FileTransferPanelRef, SelectedFile } from './FileTransferPanel';
+import { FileTransferPanel, FileTransferPanelRef, SelectedFile } from './components/FileTransferPanel';
 import type { AttachmentRoute } from './lib/attachmentRouting';
 import { extractTransferEdit } from './lib/fileTransferOffer';
 import { TabScreen, AttachedFile } from './types';
@@ -633,31 +634,58 @@ interface SlashCommand {
 
 const SLASH_COMMANDS: SlashCommandDef[] = [
   {
-    id: 'antigravity',
-    prefix: '/agy ',
-    title: '/antigravity',
-    badge: '/agy',
-    description: 'Dispatch prompt directly to Antigravity IDE on PC',
-    icon: 'flash',
-    color: '#3B82F6',
+    id: 'screen',
+    prefix: '/screen ',
+    title: '/screen',
+    badge: 'TUTOR',
+    description: 'Analyze active PC desktop screen & highlight next steps',
+    icon: 'scan-circle',
+    color: '#FF6E5F',
+  },
+  {
+    id: 'aicut',
+    prefix: '/aicut ',
+    title: '/aicut',
+    badge: 'VIDEO',
+    description: 'AI Video Editor: remove silence, auto jump-cut, or burn subtitles',
+    icon: 'cut',
+    color: '#EC4899',
+  },
+  {
+    id: 'notebook',
+    prefix: '/notebook ',
+    title: '/notebook',
+    badge: 'RAG HUB',
+    description: 'Query offline knowledge hub documents & citations',
+    icon: 'book',
+    color: '#FBBF24',
   },
   {
     id: 'agent',
     prefix: '/agent ',
     title: '/agent',
     badge: 'AUTONOMOUS',
-    description: 'Execute PC desktop agent with computer use',
+    description: 'Execute PC desktop agent with computer use & autopilot',
     icon: 'hardware-chip',
     color: '#8B5CF6',
+  },
+  {
+    id: 'wa',
+    prefix: '/wa ',
+    title: '/wa',
+    badge: 'WHATSAPP',
+    description: 'Summarize group discussions or send a message',
+    icon: 'chatbubbles',
+    color: '#22C55E',
   },
   {
     id: 'ask',
     prefix: '/ask ',
     title: '/ask',
     badge: 'COMPANION',
-    description: 'Ask sutra companion a question or query',
+    description: 'Ask sutra AI assistant anything about your workflow',
     icon: 'sparkles',
-    color: '#FF5A36',
+    color: '#38BDF8',
   },
 ];
 
@@ -753,7 +781,7 @@ export default function App() {
   const activeSutraSessionIdRef = useRef<string | null>(null);
   const currentSessionIdRef = useRef<string | null>(null);
   const activeAntigravityMsgIdRef = useRef<string | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<any>(null);
 
   const [showSettings, setShowSettings] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -2730,6 +2758,10 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'Notebook' && (
+            <NotebookScreen />
+          )}
+
           <SettingsModal 
             visible={showSettings && !showSplash}
             onClose={() => setShowSettings(false)}
@@ -2926,7 +2958,7 @@ export default function App() {
             sendMessage={sendFileTransferMessage}
             getNativeModule={getFileTransferModule}
             onClose={() => {}}
-            onTransferStatusChange={(status) => {
+            onTransferStatusChange={(status: string | null) => {
               const msgId = transferStatusMsgIdRef.current;
               if (!msgId) return;
               setMessages(prev => prev.map(m => {
@@ -2940,7 +2972,7 @@ export default function App() {
                 };
               }));
             }}
-            onTransferDone={(success, message) => {
+            onTransferDone={(success: boolean, message: string) => {
               const msgId = transferStatusMsgIdRef.current;
               transferStatusMsgIdRef.current = null;
               if (!msgId) return;

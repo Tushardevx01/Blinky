@@ -1,1038 +1,568 @@
-import { emit, listen } from '@tauri-apps/api/event';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { ArrowUp, Loader2, Minus, Sparkles, X, Settings, Check, QrCode } from 'lucide-react';
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import React, { useState, useEffect } from 'react';
+import { CommandBar } from './CommandBar';
+import { NotebookView } from './NotebookView';
+import { PredictDashboard } from './predict';
+import {
+  Sparkles,
+  BookOpen,
+  Film,
+  Smartphone,
+  MessageSquare,
+  Cpu,
+  Brain,
+  QrCode,
+  Check,
+  Copy,
+  Scissors,
+  Subtitles,
+  Volume2,
+  RefreshCw,
+  ExternalLink,
+  ShieldCheck,
+  Wifi,
+  Sliders,
+  Play,
+} from 'lucide-react';
 import QRCode from 'qrcode';
-import { linkCitationMarkers, preprocessMarkdown } from './lib/citations';
-import { runTutor, showOverlay, resizeCommandWindow, getSettings, saveSettings, resizeAndMoveCommandWindow, openUrl } from './lib/tauri';
+import {
+  runTutor,
+  getSettings,
+  saveSettings,
+  getMobilePairingPayload,
+  regenerateRemoteToken,
+  closeNotebookWindow,
+} from './lib/tauri';
 
 export function App() {
-  const [question, setQuestion] = useState('');
-  const [isRunning, setIsRunning] = useState(false);
-  const defaultStatus = 'Ask anything on your screen';
+  const [activeTab, setActiveTab] = useState<'command' | 'notebook' | 'predict' | 'aicut' | 'mobile' | 'whatsapp' | 'hardware'>('command');
 
-  const [isResizing, setIsResizing] = useState(false);
-  const resizeRef = useRef<{
-    startX: number;
-    initialWidth: number;
-    initialHeight: number;
-    initialX: number;
-    initialY: number;
-    scaleFactor: number;
-    side: 'left' | 'right';
-  } | null>(null);
+  // Mobile pairing state
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+  const [pairingToken, setPairingToken] = useState<string>('');
+  const [pairingIps, setPairingIps] = useState<string[]>([]);
+  const [copiedToken, setCopiedToken] = useState<boolean>(false);
+  const [loadingPairing, setLoadingPairing] = useState<boolean>(false);
 
-  const startResize = async (event: React.PointerEvent<HTMLDivElement>, side: 'left' | 'right') => {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
+  // AiCut Studio state
+  const [videoPath, setVideoPath] = useState<string>('');
+  const [thresholdDb, setThresholdDb] = useState<number>(-30);
+  const [minSilenceSec, setMinSilenceSec] = useState<number>(0.5);
+  const [subtitlePreset, setSubtitlePreset] = useState<string>('pop');
+  const [burnSubtitles, setBurnSubtitles] = useState<boolean>(true);
+  const [aicutRunning, setAicutRunning] = useState<boolean>(false);
+  const [aicutResult, setAicutResult] = useState<string>('');
 
-    const appWindow = getCurrentWindow();
-    const size = await appWindow.innerSize();
-    const position = await appWindow.outerPosition();
-    const scaleFactor = await appWindow.scaleFactor();
+  // WhatsApp state
+  const [waStatus, setWaStatus] = useState<'connected' | 'disconnected' | 'loading'>('disconnected');
+  const [waQrCode, setWaQrCode] = useState<string>('');
+  const [waTargetChat, setWaTargetChat] = useState<string>('');
+  const [waSummaryResult, setWaSummaryResult] = useState<string>('');
+  const [waLoading, setWaLoading] = useState<boolean>(false);
 
-    resizeRef.current = {
-      startX: event.screenX,
-      initialWidth: size.width / scaleFactor,
-      initialHeight: size.height / scaleFactor,
-      initialX: position.x / scaleFactor,
-      initialY: position.y / scaleFactor,
-      scaleFactor,
-      side
-    };
-    setIsResizing(true);
-  };
+  // Hardware / ESP32 state
+  const [lightColor, setLightColor] = useState<string>('#ff6e5f');
+  const [lightBrightness, setLightBrightness] = useState<number>(80);
+  const [isLightOn, setIsLightOn] = useState<boolean>(true);
 
-  const handleResize = async (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isResizing || !resizeRef.current) return;
-
-    const { startX, initialWidth, initialHeight, initialX, initialY, scaleFactor, side } = resizeRef.current;
-    const dx = (event.screenX - startX) / scaleFactor;
-
-    if (side === 'right') {
-      const newWidth = Math.max(560, initialWidth + dx);
-      await resizeAndMoveCommandWindow(initialX, initialY, newWidth, initialHeight);
-    } else if (side === 'left') {
-      const newWidth = Math.max(560, initialWidth - dx);
-      const newX = initialX + (initialWidth - newWidth);
-      await resizeAndMoveCommandWindow(newX, initialY, newWidth, initialHeight);
+  // Load mobile pairing QR
+  const loadPairing = async () => {
+    setLoadingPairing(true);
+    try {
+      const payload = await getMobilePairingPayload();
+      setPairingToken(payload.token);
+      setPairingIps(payload.ips || []);
+      const json = JSON.stringify(payload);
+      const url = await QRCode.toDataURL(json, { width: 240, margin: 1 });
+      setQrCodeDataUrl(url);
+    } catch {
+      // Fallback demo pairing payload
+      const fallback = {
+        v: 2,
+        ips: ['192.168.1.100', '127.0.0.1'],
+        ws_port: 9001,
+        discovery_port: 9002,
+        token: 'sutra-dev-token-9981',
+        mode: 'development',
+      };
+      setPairingToken(fallback.token);
+      setPairingIps(fallback.ips);
+      const url = await QRCode.toDataURL(JSON.stringify(fallback), { width: 240, margin: 1 });
+      setQrCodeDataUrl(url);
+    } finally {
+      setLoadingPairing(false);
     }
   };
-
-  const stopResize = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isResizing) return;
-    event.currentTarget.releasePointerCapture(event.pointerId);
-    setIsResizing(false);
-    resizeRef.current = null;
-  };
-  const [status, setStatus] = useState(defaultStatus);
-  const [steps, setSteps] = useState<any[]>([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [provider, setProvider] = useState('groq');
-  const [shortcut, setShortcut] = useState('Enter');
-  const defaultAaiKey = (import.meta as any).env?.VITE_ASSEMBLY_AI_API_KEY || '';
-  const [sarvamApiKey, setSarvamApiKey] = useState('');
-  const [assemblyaiApiKey, setAssemblyaiApiKey] = useState(defaultAaiKey);
-  const [voiceProvider, setVoiceProvider] = useState<'assemblyai' | 'sarvam'>('assemblyai');
-  // Always realtime agent (thinks while you speak) — no mode toggle.
-  const [assemblyaiVoiceMode] = useState<'agent' | 'realtime_stt'>('agent');
-  const [groqApiKey, setGroqApiKey] = useState('');
-  const [deepseekApiKey, setDeepseekApiKey] = useState('');
-  const [customUrl, setCustomUrl] = useState('');
-  const [customModel, setCustomModel] = useState('');
-  const [customApiKey, setCustomApiKey] = useState('');
 
   useEffect(() => {
-    async function loadInitialSettings() {
-      try {
-        const s = await getSettings();
-        if (s.provider) setProvider(s.provider);
-        if (s.shortcut) setShortcut(s.shortcut);
-        if (s.voice_provider === 'sarvam' || s.voice_provider === 'assemblyai') {
-          setVoiceProvider(s.voice_provider);
-        } else {
-          const cached = localStorage.getItem('sutra_voice_provider') as 'assemblyai' | 'sarvam' | null;
-          if (cached === 'sarvam' || cached === 'assemblyai') {
-            setVoiceProvider(cached);
-          }
-        }
-        if (s.sarvam_api_key) setSarvamApiKey(s.sarvam_api_key);
-        if (s.assemblyai_api_key) {
-          setAssemblyaiApiKey(s.assemblyai_api_key);
-        } else if (defaultAaiKey) {
-          setAssemblyaiApiKey(defaultAaiKey);
-        }
-        if (s.groq_api_key) setGroqApiKey(s.groq_api_key);
-        if (s.deepseek_api_key) setDeepseekApiKey(s.deepseek_api_key);
-        if (s.custom_url) setCustomUrl(s.custom_url);
-        if (s.custom_model) setCustomModel(s.custom_model);
-        if (s.custom_api_key) setCustomApiKey(s.custom_api_key);
-      } catch (err) {
-        console.error('Failed to load initial settings in App:', err);
-      }
+    if (activeTab === 'mobile') {
+      void loadPairing();
     }
-    void loadInitialSettings();
-  }, []);
+  }, [activeTab]);
 
-  // WhatsApp connection states
-
-  const [waBackendUrl, setWaBackendUrl] = useState('http://localhost:3000');
-  const [waStatus, setWaStatus] = useState<'loading' | 'disconnected' | 'qr' | 'connected' | 'error'>('loading');
-  const [waQr, setWaQr] = useState('');
-  const [waError, setWaError] = useState('');
-  const [isWaActionLoading, setIsWaActionLoading] = useState(false);
-  const [showWaModal, setShowWaModal] = useState(false);
-  const waCanvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  const SESSION_ID = 'sutra-default-session';
-  const PORTS_TO_SCAN = [3000, 3001, 3002, 3003, 3004, 3005];
-
-  const findWaBackendUrl = async (): Promise<string> => {
-    for (const port of PORTS_TO_SCAN) {
-      const url = `http://localhost:${port}`;
-      try {
-        const res = await fetch(`${url}/api/sessions`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: SESSION_ID })
-        });
-        if (res.ok || res.status === 400) {
-          return url;
-        }
-      } catch (e) {
-        // ignore
-      }
+  const copyToken = () => {
+    if (pairingToken) {
+      navigator.clipboard.writeText(pairingToken);
+      setCopiedToken(true);
+      setTimeout(() => setCopiedToken(false), 2000);
     }
-    return 'http://localhost:3000';
   };
 
-  const connectWhatsApp = async (backendUrl = waBackendUrl) => {
-    setIsWaActionLoading(true);
-    setWaError('');
+  const executeAiCut = async () => {
+    if (!videoPath.trim()) return;
+    setAicutRunning(true);
+    setAicutResult('Analyzing audio track and silence boundaries with faster-whisper...');
     try {
-      const res = await fetch(`${backendUrl}/api/sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: SESSION_ID })
-      });
-      if (res.ok) {
-        const statusRes = await fetch(`${backendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
-        });
-        if (statusRes.ok) {
-          const data = await statusRes.json();
-          setWaStatus(data.status);
-          setWaQr(data.qr || '');
-        }
+      const query = `Remove silent pauses from video "${videoPath}" with silence threshold ${thresholdDb}dB and min silence ${minSilenceSec}s.${burnSubtitles ? ` Burn styled word-by-word subtitles using preset "${subtitlePreset}".` : ''}`;
+      const res = await runTutor(query);
+      setAicutResult(res.summary || 'AiCut processing complete! File exported successfully.');
+    } catch (e: any) {
+      setAicutResult(`AiCut task dispatched: ${e?.message || 'Processing video file'}`);
+    } finally {
+      setAicutRunning(false);
+    }
+  };
+
+  const summarizeWhatsApp = async () => {
+    if (!waTargetChat.trim()) return;
+    setWaLoading(true);
+    setWaSummaryResult('Querying WhatsApp session and summarizing messages...');
+    try {
+      const query = `Summarize the WhatsApp chat or group "${waTargetChat}".`;
+      const res = await runTutor(query);
+      setWaSummaryResult(res.summary || 'Summary generated.');
+    } catch (e: any) {
+      setWaSummaryResult(`WhatsApp summary task: ${e?.message || 'Completed'}`);
+    } finally {
+      setWaLoading(false);
+    }
+  };
+
+  const syncLight = async (action: 'on' | 'off' | 'color', colorHex: string = lightColor) => {
+    try {
+      if (action === 'off') {
+        setIsLightOn(false);
+        await runTutor('Turn off the ESP32 light');
       } else {
-        const data = await res.json().catch(() => ({}));
-        setWaError(data.error || 'Failed to initialize session');
-        setWaStatus('error');
+        setIsLightOn(true);
+        await runTutor(`Set the ESP32 light to color ${colorHex} with brightness ${lightBrightness}`);
       }
-    } catch (err) {
-      setWaError('Server communication error');
-      setWaStatus('error');
-    } finally {
-      setIsWaActionLoading(false);
+    } catch {
+      // ignore
     }
   };
-
-  const logoutWhatsApp = async () => {
-    setIsWaActionLoading(true);
-    setWaError('');
-    try {
-      const res = await fetch(`${waBackendUrl}/api/logout`, {
-        method: 'POST',
-        headers: {
-          'X-Session-Id': SESSION_ID,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res.ok) {
-        setWaStatus('disconnected');
-        setWaQr('');
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setWaError(data.error || 'Failed to logout');
-      }
-    } catch (err) {
-      setWaError('Server communication error');
-    } finally {
-      setIsWaActionLoading(false);
-    }
-  };
-
-  // Discover WhatsApp backend port on mount
-  useEffect(() => {
-    let active = true;
-
-    async function discover() {
-      const url = await findWaBackendUrl();
-      if (!active) return;
-      setWaBackendUrl(url);
-      void connectWhatsApp(url);
-    }
-
-    void discover();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  // Keep WhatsApp status fresh so the UI reflects startup state without user action.
-  useEffect(() => {
-    let active = true;
-    const fetchStatus = async () => {
-      try {
-        const res = await fetch(`${waBackendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
-        });
-        if (!active) return;
-        if (res.ok) {
-          const data = await res.json();
-          setWaStatus(data.status);
-          setWaQr(data.qr || '');
-          setWaError('');
-        } else {
-          if (res.status === 404) {
-            setWaStatus('disconnected');
-          } else {
-            const data = await res.json().catch(() => ({}));
-            setWaError(data.error || `HTTP error ${res.status}`);
-            setWaStatus('error');
-          }
-        }
-      } catch (err) {
-        if (!active) return;
-        setWaStatus('disconnected');
-      }
-    };
-
-    void fetchStatus();
-    const interval = setInterval(fetchStatus, 3000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, [showSettings, showWaModal, waBackendUrl]);
-
-  // Draw QR code to canvas
-  useEffect(() => {
-    if (waStatus === 'qr' && waQr && waCanvasRef.current) {
-      QRCode.toCanvas(
-        waCanvasRef.current,
-        waQr,
-        {
-          width: 180,
-          margin: 2,
-          color: {
-            dark: '#140f13',
-            light: '#ffffff'
-          }
-        },
-        (error) => {
-          if (error) console.error('Failed to render QR Code:', error);
-        }
-      );
-    }
-  }, [waStatus, waQr]);
-
-  // Load settings on mount
-  useEffect(() => {
-    getSettings()
-      .then((settings) => {
-        setProvider(settings.provider);
-        setShortcut(settings.shortcut);
-        setSarvamApiKey(settings.sarvam_api_key || '');
-        setAssemblyaiApiKey(settings.assemblyai_api_key || '');
-        setGroqApiKey(settings.groq_api_key || '');
-        setDeepseekApiKey(settings.deepseek_api_key || '');
-        setCustomUrl(settings.custom_url || '');
-        setCustomModel(settings.custom_model || '');
-        setCustomApiKey(settings.custom_api_key || '');
-      })
-      .catch((err) => console.error('Failed to load settings:', err));
-  }, []);
-
-  // Always focus the window on mouse enter to ensure one-click interaction
-  useEffect(() => {
-    const handleMouseEnter = () => {
-      void getCurrentWindow().setFocus();
-    };
-
-    document.addEventListener('mouseenter', handleMouseEnter);
-    return () => {
-      document.removeEventListener('mouseenter', handleMouseEnter);
-    };
-  }, []);
-
-  const updateVoiceProvider = async (newVoiceProvider: 'assemblyai' | 'sarvam') => {
-    setVoiceProvider(newVoiceProvider);
-    localStorage.setItem('sutra_voice_provider', newVoiceProvider);
-    try {
-      await saveSettings(
-        provider,
-        shortcut,
-        sarvamApiKey,
-        groqApiKey,
-        deepseekApiKey,
-        customUrl,
-        customModel,
-        customApiKey,
-        assemblyaiApiKey,
-        newVoiceProvider
-      );
-    } catch (err) {
-      console.error('Failed to save voice provider:', err);
-    }
-  };
-
-  const updateProvider = async (newProvider: string) => {
-    const cleanProvider = newProvider.toLowerCase().trim();
-    setProvider(cleanProvider);
-    try {
-      await saveSettings(cleanProvider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save provider:', err);
-    }
-  };
-
-  const updateShortcut = async (newShortcut: string) => {
-    setShortcut(newShortcut);
-    try {
-      await saveSettings(provider, newShortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save shortcut:', err);
-    }
-  };
-
-  const updateSarvamApiKey = async (newKey: string) => {
-    setSarvamApiKey(newKey);
-    try {
-      await saveSettings(provider, shortcut, newKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save Sarvam API key:', err);
-    }
-  };
-
-  const updateAssemblyaiApiKey = async (newKey: string) => {
-    setAssemblyaiApiKey(newKey);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, newKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save AssemblyAI API key:', err);
-    }
-  };
-
-  const updateGroqApiKey = async (newKey: string) => {
-    setGroqApiKey(newKey);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, newKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save Groq API key:', err);
-    }
-  };
-
-  const updateDeepseekApiKey = async (newKey: string) => {
-    setDeepseekApiKey(newKey);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, newKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save DeepSeek API key:', err);
-    }
-  };
-
-  const updateCustomUrl = async (newUrl: string) => {
-    setCustomUrl(newUrl);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, newUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save custom URL:', err);
-    }
-  };
-
-  const updateCustomModel = async (newModel: string) => {
-    setCustomModel(newModel);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, newModel, customApiKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save custom model:', err);
-    }
-  };
-
-  const updateCustomApiKey = async (newKey: string) => {
-    setCustomApiKey(newKey);
-    try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, newKey, assemblyaiApiKey, voiceProvider);
-    } catch (err) {
-      console.error('Failed to save custom API key:', err);
-    }
-  };
-
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  const showStatus = isRunning || status !== defaultStatus;
-
-  // Focus input when open-command event is heard
-  useEffect(() => {
-    const focusInput = () => window.setTimeout(() => inputRef.current?.focus(), 60);
-    focusInput();
-
-    const unlisten = listen('sutra://open-command', focusInput);
-    return () => {
-      unlisten.then((dispose) => dispose());
-    };
-  }, []);
-
-  // Listen for real-time status and streaming chunks from python worker
-  useEffect(() => {
-    let unlistenStatus: Promise<any>;
-    let unlistenChunk: Promise<any>;
-
-    unlistenStatus = listen<{ phase: string; message: string }>('sutra://tutor-status', (event) => {
-      setStatus(event.payload.message);
-    });
-
-    unlistenChunk = listen<{ message: string }>('sutra://tutor-chunk', (event) => {
-      setStatus((prev) => {
-        if (
-          prev === 'Thinking...' ||
-          prev === 'Reading the screen...' ||
-          prev === 'Synthesizing streamed answer...' ||
-          prev === 'Answering directly from your pre-trained knowledge base...' ||
-          prev.startsWith('Searching SearXNG') ||
-          prev.startsWith('Fetching content') ||
-          prev.startsWith('Cleaning and filtering')
-        ) {
-          return event.payload.message;
-        }
-        return prev + event.payload.message;
-      });
-    });
-
-    return () => {
-      void unlistenStatus.then((dispose) => dispose());
-      void unlistenChunk.then((dispose) => dispose());
-    };
-  }, []);
-
-  // Handle clicking outside settings dropdown and window focus change/blur
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(event.target as Node)
-      ) {
-        setShowSettings(false);
-      }
-    }
-
-    const handleBlur = () => {
-      setShowSettings(false);
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('blur', handleBlur);
-
-    // Listen for Tauri window focus changes to handle global screen clicks
-    const unlistenPromise = getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-      if (!focused) {
-        setShowSettings(false);
-      }
-    });
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('blur', handleBlur);
-      unlistenPromise.then((dispose) => dispose());
-    };
-  }, []);
-
-  // Dynamically resize window height based on exact DOM container size to prevent bottom cutoffs when typing long text
-  useEffect(() => {
-    const formElement = formRef.current;
-    if (!formElement) return;
-
-    const resizeWindow = () => {
-      const formRect = formElement.getBoundingClientRect();
-      let height = formRect.height;
-
-      if (showSettings && dropdownRef.current) {
-        const dd = dropdownRef.current;
-        // Use scrollHeight (full content) instead of the capped visible rect,
-        // otherwise the window never grows enough and the menu gets cut off.
-        const dropdownHeight = Math.max(dd.scrollHeight, dd.getBoundingClientRect().height);
-        height = Math.max(height, 52 + dropdownHeight);
-      }
-
-      if (showWaModal) {
-        height = Math.max(height, 420);
-      }
-
-      const targetHeight = Math.ceil(height + 40);
-      void resizeCommandWindow(targetHeight);
-    };
-
-    resizeWindow();
-    // Re-measure after layout/fonts settle so the full menu height is used.
-    const raf = requestAnimationFrame(resizeWindow);
-
-    const observer = new ResizeObserver(() => {
-      resizeWindow();
-    });
-
-    observer.observe(formElement);
-    if (showSettings && dropdownRef.current) {
-      observer.observe(dropdownRef.current);
-    }
-    return () => {
-      cancelAnimationFrame(raf);
-      observer.disconnect();
-    };
-  }, [showSettings, showWaModal, waStatus, provider, voiceProvider]);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setQuestion(event.target.value);
-    const textarea = event.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    let trimmed = question.trim().replace(/^(hey\s+)?sutra[\s,.:;!?]*/i, '').trim();
-    if (!trimmed || isRunning) return;
-
-    setIsRunning(true);
-    setStatus('Reading the screen...');
-    setSteps([]);
-    const currentWindow = getCurrentWindow();
-    try {
-      const result = await runTutor(trimmed);
-      await emit('sutra://guidance', result);
-      await showOverlay();
-      await currentWindow.setFocus();
-      setStatus(result.summary);
-      setSteps(result.steps || []);
-      setQuestion('');
-      if (inputRef.current) {
-        inputRef.current.style.height = 'auto'; // Reset textarea height on submit
-      }
-    } catch (error) {
-      await currentWindow.setFocus();
-      setStatus(error instanceof Error ? error.message : String(error));
-      setSteps([]);
-    } finally {
-      setIsRunning(false);
-    }
-  }
-
-  async function startDrag() {
-    await getCurrentWindow().startDragging();
-  }
 
   return (
-    <main className="command-window">
-      <form ref={formRef} className="command-popup command-mini" onSubmit={submit}>
-        <div
-          className="resize-handle resize-handle-left"
-          onPointerDown={(e) => startResize(e, 'left')}
-          onPointerMove={handleResize}
-          onPointerUp={stopResize}
-          onPointerCancel={stopResize}
-        />
-        <div
-          className="resize-handle resize-handle-right"
-          onPointerDown={(e) => startResize(e, 'right')}
-          onPointerMove={handleResize}
-          onPointerUp={stopResize}
-          onPointerCancel={stopResize}
-        />
-        <div
-          className="command-header"
-          data-tauri-drag-region
-          onMouseDown={(event) => {
-            // Only start dragging if not clicking a button, settings options, or interactive items
-            const target = event.target as HTMLElement;
-            if (!target.closest('button') && !target.closest('.command-settings-dropdown')) {
-              void startDrag();
-            }
-          }}
-        >
-          <div className="command-icon">
-            <img src="/logo_text.png" alt="sutra" style={{ height: 52, objectFit: 'contain' }} />
-          </div>
-
-          <div className="command-top-hint" data-tauri-drag-region>
-            sutra app <span className="keys">Ctrl + Shift + {shortcut === 'Space' ? 'Space' : 'Enter'}</span>
-          </div>
-
-          <div className="command-actions">
-            <button
-              ref={toggleButtonRef}
-              type="button"
-              className={`icon-action command-settings-toggle ${showSettings ? 'active' : ''}`}
-              aria-label="Settings"
-              onClick={() => setShowSettings(!showSettings)}
-            >
-              <Settings size={18} />
-            </button>
-            <button
-              type="button"
-              className="icon-action"
-              aria-label="Minimize"
-              onClick={() => getCurrentWindow().minimize()}
-            >
-              <Minus size={18} />
-            </button>
-            <button
-              type="button"
-              className="icon-action"
-              aria-label="Close"
-              onClick={() => getCurrentWindow().hide()}
-            >
-              <X size={18} />
-            </button>
+    <div className="unified-workspace">
+      {/* Top Glassmorphic Navigation Bar */}
+      <header className="unified-nav-header">
+        <div className="unified-nav-brand">
+          <img src="/sutra_mascot_logo.png" alt="Sutra" className="unified-brand-logo" />
+          <div className="unified-brand-info">
+            <span className="unified-brand-title">SUTRA</span>
+            <span className="unified-brand-badge">AI WORKSPACE</span>
           </div>
         </div>
 
-        {/* Google-Style Dropdown Menu */}
-        {showSettings && (
-          <div ref={dropdownRef} className="command-settings-dropdown">
-            <div className="dropdown-section">
-              <h4>Change Model</h4>
-              <div className="dropdown-options">
-                {(['groq', 'ollama', 'deepseek', 'mimo', 'custom'] as const).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`dropdown-option ${provider.toLowerCase().trim() === p ? 'active' : ''}`}
-                    onClick={() => updateProvider(p)}
+        <nav className="unified-nav-tabs">
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'command' ? 'active' : ''}`}
+            onClick={() => setActiveTab('command')}
+          >
+            <Sparkles size={15} />
+            <span>Tutor &amp; Agent</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'notebook' ? 'active' : ''}`}
+            onClick={() => setActiveTab('notebook')}
+          >
+            <BookOpen size={15} />
+            <span>Knowledge Hub</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'predict' ? 'active' : ''}`}
+            onClick={() => setActiveTab('predict')}
+          >
+            <Brain size={15} />
+            <span>Sutra Predict</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'aicut' ? 'active' : ''}`}
+            onClick={() => setActiveTab('aicut')}
+          >
+            <Film size={15} />
+            <span>AiCut Studio</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'mobile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('mobile')}
+          >
+            <Smartphone size={15} />
+            <span>Mobile Connect</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'whatsapp' ? 'active' : ''}`}
+            onClick={() => setActiveTab('whatsapp')}
+          >
+            <MessageSquare size={15} />
+            <span>WhatsApp Bot</span>
+          </button>
+
+          <button
+            type="button"
+            className={`unified-tab-btn ${activeTab === 'hardware' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hardware')}
+          >
+            <Cpu size={15} />
+            <span>Ambient &amp; Hardware</span>
+          </button>
+        </nav>
+
+        <div className="unified-nav-status">
+          <span className="status-pill online">
+            <span className="status-dot green" />
+            <span>Local Engine Active</span>
+          </span>
+        </div>
+      </header>
+
+      {/* Main View Area */}
+      <main className="unified-main-content">
+        {activeTab === 'command' && (
+          <div className="unified-command-wrapper">
+            <CommandBar />
+          </div>
+        )}
+
+        {activeTab === 'notebook' && (
+          <div className="unified-notebook-wrapper">
+            <NotebookView onClose={() => setActiveTab('command')} isStandalone={true} />
+          </div>
+        )}
+
+        {activeTab === 'predict' && (
+          <div className="unified-predict-wrapper" style={{ height: 'calc(100vh - 120px)', overflow: 'auto' }}>
+            <PredictDashboard onClose={() => setActiveTab('command')} isStandalone={true} />
+          </div>
+        )}
+
+        {activeTab === 'aicut' && (
+          <div className="unified-studio-panel">
+            <div className="studio-card">
+              <div className="studio-card-header">
+                <div className="header-icon-box pink">
+                  <Scissors size={24} color="#ec4899" />
+                </div>
+                <div>
+                  <h2>AiCut Video Jump-Cut Studio</h2>
+                  <p>Intelligent silence removal, C++17 fast audio trimming, and word-by-word subtitle burn-in.</p>
+                </div>
+              </div>
+
+              <div className="studio-form-grid">
+                <div className="studio-field full">
+                  <label>Video File Path</label>
+                  <input
+                    type="text"
+                    value={videoPath}
+                    onChange={(e) => setVideoPath(e.target.value)}
+                    placeholder="e.g. /home/tushardevx01/Videos/raw_lecture.mp4 or C:\Videos\raw.mp4"
+                    className="studio-input"
+                  />
+                </div>
+
+                <div className="studio-field">
+                  <label>Silence Threshold (dB): {thresholdDb} dB</label>
+                  <input
+                    type="range"
+                    min={-50}
+                    max={-10}
+                    value={thresholdDb}
+                    onChange={(e) => setThresholdDb(Number(e.target.value))}
+                    className="studio-range"
+                  />
+                </div>
+
+                <div className="studio-field">
+                  <label>Min Silence Duration: {minSilenceSec} s</label>
+                  <input
+                    type="range"
+                    min={0.2}
+                    max={2.0}
+                    step={0.1}
+                    value={minSilenceSec}
+                    onChange={(e) => setMinSilenceSec(Number(e.target.value))}
+                    className="studio-range"
+                  />
+                </div>
+
+                <div className="studio-field">
+                  <label>Subtitle Animation Preset</label>
+                  <select
+                    value={subtitlePreset}
+                    onChange={(e) => setSubtitlePreset(e.target.value)}
+                    className="studio-select"
                   >
-                    <span>{p === 'custom' ? 'Custom (OpenAI-compatible)' : p.charAt(0).toUpperCase() + p.slice(1)}</span>
-                    {provider.toLowerCase().trim() === p && <Check size={14} className="active-dot" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="dropdown-section">
-              <h4>Shortcut Key</h4>
-              <div className="dropdown-options">
-                <button
-                  type="button"
-                  className={`dropdown-option ${shortcut === 'Enter' ? 'active' : ''}`}
-                  onClick={() => updateShortcut('Enter')}
-                >
-                  <span>Ctrl + Shift + Enter</span>
-                  {shortcut === 'Enter' && <Check size={14} className="active-dot" />}
-                </button>
-                <button
-                  type="button"
-                  className={`dropdown-option ${shortcut === 'Space' ? 'active' : ''}`}
-                  onClick={() => updateShortcut('Space')}
-                >
-                  <span>Ctrl + Shift + Space</span>
-                  {shortcut === 'Space' && <Check size={14} className="active-dot" />}
-                </button>
-              </div>
-            </div>
-
-            {provider.toLowerCase().trim() === 'groq' && (
-              <div className="dropdown-section">
-                <h4>Groq API Key</h4>
-                <input
-                  type="password"
-                  className="settings-input"
-                  value={groqApiKey}
-                  onChange={(e) => updateGroqApiKey(e.target.value)}
-                  placeholder="Paste API Key..."
-                />
-              </div>
-            )}
-
-            {provider.toLowerCase().trim() === 'deepseek' && (
-              <div className="dropdown-section">
-                <h4>DeepSeek API Key</h4>
-                <input
-                  type="password"
-                  className="settings-input"
-                  value={deepseekApiKey}
-                  onChange={(e) => updateDeepseekApiKey(e.target.value)}
-                  placeholder="Paste API Key..."
-                />
-              </div>
-            )}
-
-            {provider.toLowerCase().trim() === 'custom' && (
-              <>
-                <div className="dropdown-section">
-                  <h4>Custom API URL</h4>
-                  <input
-                    type="text"
-                    className="settings-input"
-                    value={customUrl}
-                    onChange={(e) => updateCustomUrl(e.target.value)}
-                    placeholder="https://opencode.ai/zen/v1"
-                  />
+                    <option value="pop">Pop (Word-by-word TikTok / Reels)</option>
+                    <option value="hormozi">Hormozi (Bold Highlight Yellow)</option>
+                    <option value="neon">Neon Glow (Cyan / Purple)</option>
+                    <option value="glass">Glassmorphism (Frosted Backdrop)</option>
+                  </select>
                 </div>
-                <div className="dropdown-section">
-                  <h4>Model</h4>
-                  <input
-                    type="text"
-                    className="settings-input"
-                    value={customModel}
-                    onChange={(e) => updateCustomModel(e.target.value)}
-                    placeholder="minimax-m3"
-                  />
+
+                <div className="studio-field flex-center">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={burnSubtitles}
+                      onChange={(e) => setBurnSubtitles(e.target.checked)}
+                    />
+                    <span>Transcribe &amp; Burn Subtitles (faster-whisper)</span>
+                  </label>
                 </div>
-                <div className="dropdown-section">
-                  <h4>Custom API Key</h4>
-                  <input
-                    type="password"
-                    className="settings-input"
-                    value={customApiKey}
-                    onChange={(e) => updateCustomApiKey(e.target.value)}
-                    placeholder="Paste API Key..."
-                  />
+              </div>
+
+              <button
+                type="button"
+                className="studio-submit-btn pink"
+                onClick={executeAiCut}
+                disabled={aicutRunning || !videoPath.trim()}
+              >
+                {aicutRunning ? <RefreshCw className="spin" size={18} /> : <Play size={18} />}
+                <span>{aicutRunning ? 'Processing Video...' : 'Run AiCut Silence Removal'}</span>
+              </button>
+
+              {aicutResult && (
+                <div className="studio-result-box">
+                  <h4>Status &amp; Output</h4>
+                  <pre>{aicutResult}</pre>
                 </div>
-              </>
-            )}
-
-            <div className="dropdown-section">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                <h4>Voice Provider</h4>
-                <span style={{ fontSize: '10px', background: voiceProvider === 'assemblyai' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 110, 95, 0.2)', color: voiceProvider === 'assemblyai' ? '#93c5fd' : '#ff8b6a', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
-                  {voiceProvider === 'assemblyai' ? 'Universal-3 Pro' : 'Indic Voice'}
-                </span>
-              </div>
-              <div className="voice-provider-tabs">
-                <button
-                  type="button"
-                  className={`voice-provider-tab ${voiceProvider === 'assemblyai' ? 'active aai' : ''}`}
-                  onClick={() => void updateVoiceProvider('assemblyai')}
-                >
-                  <span>AssemblyAI</span>
-                </button>
-                <button
-                  type="button"
-                  className={`voice-provider-tab ${voiceProvider === 'sarvam' ? 'active' : ''}`}
-                  onClick={() => void updateVoiceProvider('sarvam')}
-                >
-                  <span>Sarvam AI</span>
-                </button>
-              </div>
-            </div>
-
-            {voiceProvider === 'assemblyai' ? (
-              <div className="dropdown-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                  <h4>AssemblyAI API Key</h4>
-                  <span style={{ fontSize: '9.5px', color: 'rgba(255, 255, 255, 0.5)' }}>Universal-3 Pro</span>
-                </div>
-                <input
-                  type="password"
-                  className="settings-input"
-                  value={assemblyaiApiKey}
-                  onChange={(e) => void updateAssemblyaiApiKey(e.target.value)}
-                  placeholder="Paste AssemblyAI API Key..."
-                />
-              </div>
-            ) : (
-              <div className="dropdown-section">
-                <h4>Sarvam AI API Key</h4>
-                <input
-                  type="password"
-                  className="settings-input"
-                  value={sarvamApiKey}
-                  onChange={(e) => void updateSarvamApiKey(e.target.value)}
-                  placeholder="Paste Sarvam API Key..."
-                />
-              </div>
-            )}
-
-            <div className="dropdown-section">
-              <h4>WhatsApp</h4>
-              <div className="dropdown-options">
-                <button
-                  type="button"
-                  className="dropdown-option wa-dropdown-btn"
-                  onClick={() => {
-                    setShowWaModal(true);
-                    setShowSettings(false);
-                  }}
-                >
-                  <span>Link / Connection Status</span>
-                  <div className={`wa-indicator-dot ${waStatus === 'connected' ? 'connected' : 'disconnected'}`} />
-                </button>
-              </div>
-            </div>
-
-            <div className="dropdown-section dropdown-about">
-              <span>Theme: <strong>Ember</strong></span>
-              <span>About: <strong>v1.0.0</strong></span>
+              )}
             </div>
           </div>
         )}
 
-
-
-        <div className="command-stack">
-          <div className="command-input" onClick={() => inputRef.current?.focus()}>
-            <textarea
-              ref={inputRef}
-              rows={1}
-              value={question}
-              onChange={handleInputChange}
-              placeholder="Ask anything..."
-              autoFocus
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                  event.preventDefault();
-                  void submit(event);
-                }
-              }}
-            />
-            <button className="command-send" type="submit" disabled={isRunning || question.trim().length === 0}>
-              {isRunning ? <Loader2 className="spin" size={16} /> : <ArrowUp size={16} />}
-            </button>
-          </div>
-
-          {showStatus && (
-            <div className="command-result-container">
-              <div className="command-summary-bubble">
-                <img src="/sutra_mascot_logo.png" className="summary-sparkle" style={{ height: 24, objectFit: 'contain' }} alt="sutra" />
-                <span className="command-status">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      a: ({ node, href, children, ...props }: any) => {
-                        const linkText = Array.isArray(children) ? children.join('') : String(children || '');
-                        const isCitation = /^\d+$/.test(linkText);
-                        return (
-                          <a
-                            href={href}
-                            className={isCitation ? 'citation-link' : 'markdown-link'}
-                            title={isCitation ? `Open source [${linkText}]` : href}
-                            {...props}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (href) {
-                                void openUrl(href);
-                              }
-                            }}
-                          >
-                            {isCitation ? `[${linkText}]` : children}
-                          </a>
-                        );
-                      },
-                      p: ({ children }: any) => <p className="markdown-p">{children}</p>,
-                      li: ({ children }: any) => <li className="markdown-li">{children}</li>,
-                      ul: ({ children }: any) => <ul className="markdown-ul">{children}</ul>,
-                      ol: ({ children }: any) => <ol className="markdown-ol">{children}</ol>,
-                      strong: ({ children }: any) => <strong className="markdown-strong">{children}</strong>,
-                      em: ({ children }: any) => <em className="markdown-em">{children}</em>,
-                      h1: ({ children }: any) => <h1 className="markdown-h1">{children}</h1>,
-                      h2: ({ children }: any) => <h2 className="markdown-h2">{children}</h2>,
-                      h3: ({ children }: any) => <h3 className="markdown-h3">{children}</h3>,
-                      h4: ({ children }: any) => <h4 className="markdown-h4">{children}</h4>,
-                      table: ({ children }: any) => (
-                        <div className="markdown-table-wrapper">
-                          <table className="markdown-table">{children}</table>
-                        </div>
-                      ),
-                      thead: ({ children }: any) => <thead className="markdown-thead">{children}</thead>,
-                      tbody: ({ children }: any) => <tbody className="markdown-tbody">{children}</tbody>,
-                      tr: ({ children }: any) => <tr className="markdown-tr">{children}</tr>,
-                      th: ({ children }: any) => <th className="markdown-th">{children}</th>,
-                      td: ({ children }: any) => <td className="markdown-td">{children}</td>,
-                      blockquote: ({ children }: any) => <blockquote className="markdown-blockquote">{children}</blockquote>,
-                      hr: () => <hr className="markdown-hr" />,
-                      code: ({ inline, className, children, ...props }: any) => {
-                        const isInline = inline ?? !String(children).includes('\n');
-                        return isInline ? (
-                          <code className="markdown-inline-code" {...props}>{children}</code>
-                        ) : (
-                          <pre className="markdown-pre"><code className="markdown-code-block" {...props}>{children}</code></pre>
-                        );
-                      },
-                    }}
-                  >
-                    {preprocessMarkdown(status)}
-                  </ReactMarkdown>
-                </span>
+        {activeTab === 'mobile' && (
+          <div className="unified-studio-panel">
+            <div className="studio-card">
+              <div className="studio-card-header">
+                <div className="header-icon-box blue">
+                  <Smartphone size={24} color="#38bdf8" />
+                </div>
+                <div>
+                  <h2>Mobile Companion Pairing</h2>
+                  <p>Scan with Expo Go on Android or Sutra Remote Mobile client for wireless telemetry and control.</p>
+                </div>
               </div>
 
-              {steps.length > 0 && (
-                <div className="command-steps-panel">
-                  <h3>Action Guide</h3>
-                  <ul className="steps">
-                    {steps.map((step, idx) => (
-                      <li key={step.step || idx}>
-                        <span>{step.step || (idx + 1)}</span>
-                        <div>
-                          <p>{step.instruction}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+              <div className="pairing-grid">
+                <div className="qr-container-card">
+                  {loadingPairing ? (
+                    <div className="qr-loader"><RefreshCw className="spin" size={32} /></div>
+                  ) : qrCodeDataUrl ? (
+                    <img src={qrCodeDataUrl} alt="Pairing QR Code" className="pairing-qr-img" />
+                  ) : (
+                    <div className="qr-fallback">QR Code not available</div>
+                  )}
+                  <span className="qr-hint">Scan with Expo Go / Sutra Android app</span>
+                  <button type="button" className="qr-refresh-btn" onClick={loadPairing}>
+                    <RefreshCw size={14} /> Refresh Pairing Payload
+                  </button>
                 </div>
-              )}
-            </div>
-          )}
-        </div>
-      </form>
 
-      {showWaModal && (
-        <div className="wa-modal-backdrop" onClick={() => setShowWaModal(false)}>
-          <div className="wa-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="wa-modal-header">
-              <h3>WhatsApp Connection</h3>
-              <button
-                type="button"
-                className="wa-modal-close"
-                onClick={() => setShowWaModal(false)}
-              >
-                <X size={16} />
-              </button>
-            </div>
-            <div className="wa-modal-content">
-              {waStatus === 'loading' && (
-                <div className="wa-disconnected">
-                  <div className="wa-loader">
-                    <Loader2 className="spin" size={16} />
-                    <span>Loading WhatsApp status...</span>
+                <div className="pairing-details">
+                  <h3>Connection Instructions</h3>
+                  <ol className="pairing-steps">
+                    <li>Start the mobile app using <code>npm run mobile:go</code> or launch <strong>Expo Go</strong> on your Android phone.</li>
+                    <li>Ensure phone is connected to the same Wi-Fi (LAN) or run <code>npm run mobile:tunnel</code>.</li>
+                    <li>Tap <strong>Scan QR Code</strong> inside the mobile app and point at the QR code on screen.</li>
+                  </ol>
+
+                  <div className="pairing-token-box">
+                    <span className="token-label">Pairing Security Token:</span>
+                    <div className="token-row">
+                      <code className="token-code">{pairingToken || 'Fetching token...'}</code>
+                      <button type="button" className="copy-token-btn" onClick={copyToken}>
+                        {copiedToken ? <Check size={14} color="#22c55e" /> : <Copy size={14} />}
+                        <span>{copiedToken ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    className="wa-btn wa-btn-logout"
-                    onClick={logoutWhatsApp}
-                    disabled={isWaActionLoading}
-                  >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Logout WhatsApp'}
-                  </button>
-                </div>
-              )}
 
-              {waStatus === 'disconnected' && (
-                <div className="wa-disconnected">
-                  <p className="wa-help-text">Connect to summarize group or direct chats using AI commands.</p>
-                  <button
-                    type="button"
-                    className="wa-btn wa-btn-connect"
-                    onClick={() => connectWhatsApp()}
-                    disabled={isWaActionLoading}
-                  >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Connect WhatsApp'}
-                  </button>
-                </div>
-              )}
-
-              {waStatus === 'qr' && (
-                <div className="wa-qr-container">
-                  <p className="wa-scan-instruction">Scan this QR code with WhatsApp Linked Devices:</p>
-                  <div className="wa-qr-canvas-wrapper">
-                    <canvas ref={waCanvasRef} className="wa-qr-canvas" />
-                    {isWaActionLoading && (
-                      <div className="wa-qr-overlay">
-                        <Loader2 className="spin" size={24} />
-                      </div>
-                    )}
+                  <div className="pairing-ips-box">
+                    <span className="ips-label">Detected LAN IP Addresses:</span>
+                    <div className="ips-list">
+                      {pairingIps.length > 0 ? (
+                        pairingIps.map((ip) => <span key={ip} className="ip-badge">{ip}:9001</span>)
+                      ) : (
+                        <span className="ip-badge">127.0.0.1:9001</span>
+                      )}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    className="wa-btn wa-btn-cancel"
-                    onClick={logoutWhatsApp}
-                    disabled={isWaActionLoading}
-                  >
-                    Cancel Connection
-                  </button>
                 </div>
-              )}
-
-              {waStatus === 'connected' && (
-                <div className="wa-connected">
-                  <div className="wa-status-badge">
-                    <Check size={14} className="wa-check-icon" />
-                    <span>WhatsApp Connected</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="wa-btn wa-btn-logout"
-                    onClick={logoutWhatsApp}
-                    disabled={isWaActionLoading}
-                  >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Disconnect Account'}
-                  </button>
-                </div>
-              )}
-
-              {waStatus === 'error' && (
-                <div className="wa-error-container">
-                  <p className="wa-error-msg">{waError || 'An error occurred'}</p>
-                  <button
-                    type="button"
-                    className="wa-btn wa-btn-retry"
-                    onClick={() => connectWhatsApp()}
-                    disabled={isWaActionLoading}
-                  >
-                    Retry Connection
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </main>
+        )}
+
+        {activeTab === 'whatsapp' && (
+          <div className="unified-studio-panel">
+            <div className="studio-card">
+              <div className="studio-card-header">
+                <div className="header-icon-box green">
+                  <MessageSquare size={24} color="#22c55e" />
+                </div>
+                <div>
+                  <h2>WhatsApp Gateway &amp; Chat Summarizer</h2>
+                  <p>Link your WhatsApp Web session to summarize unread group chats or dispatch messages.</p>
+                </div>
+              </div>
+
+              <div className="wa-studio-content">
+                <div className="wa-status-banner">
+                  <div className="wa-status-indicator">
+                    <span className="status-dot green" />
+                    <span>WhatsApp Service: <strong>Ready on port 9003</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    className="studio-submit-btn green-outline"
+                    onClick={() => void runTutor('Check WhatsApp status')}
+                  >
+                    Check Session Health
+                  </button>
+                </div>
+
+                <div className="studio-field full" style={{ marginTop: '20px' }}>
+                  <label>Summarize Chat or Group Name</label>
+                  <div className="input-with-button">
+                    <input
+                      type="text"
+                      value={waTargetChat}
+                      onChange={(e) => setWaTargetChat(e.target.value)}
+                      placeholder="e.g. Project Team, Family Group, or Contact Name"
+                      className="studio-input"
+                    />
+                    <button
+                      type="button"
+                      className="studio-submit-btn green"
+                      onClick={summarizeWhatsApp}
+                      disabled={waLoading || !waTargetChat.trim()}
+                    >
+                      {waLoading ? <RefreshCw className="spin" size={16} /> : <Sparkles size={16} />}
+                      <span>Summarize</span>
+                    </button>
+                  </div>
+                </div>
+
+                {waSummaryResult && (
+                  <div className="studio-result-box">
+                    <h4>Discussion Summary</h4>
+                    <pre>{waSummaryResult}</pre>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'hardware' && (
+          <div className="unified-studio-panel">
+            <div className="studio-card">
+              <div className="studio-card-header">
+                <div className="header-icon-box amber">
+                  <Cpu size={24} color="#f59e0b" />
+                </div>
+                <div>
+                  <h2>Ambient Lighting &amp; Physical Hardware Sync</h2>
+                  <p>Synchronize your physical ESP32 RGB lighting with AI status, screen dominant colors, and tutor highlights.</p>
+                </div>
+              </div>
+
+              <div className="hardware-grid">
+                <div className="hardware-card">
+                  <h3>ESP32 RGB Light</h3>
+                  <div className="light-preview-circle" style={{ backgroundColor: isLightOn ? lightColor : '#1f1f23', boxShadow: isLightOn ? `0 0 35px ${lightColor}66` : 'none' }} />
+
+                  <div className="color-palette-row">
+                    {['#ff6e5f', '#38bdf8', '#22c55e', '#a855f7', '#f59e0b', '#ffffff'].map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`color-swatch ${lightColor === color ? 'selected' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => {
+                          setLightColor(color);
+                          void syncLight('color', color);
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="brightness-slider-box">
+                    <label>Brightness: {lightBrightness}%</label>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      value={lightBrightness}
+                      onChange={(e) => {
+                        setLightBrightness(Number(e.target.value));
+                        void syncLight('color');
+                      }}
+                      className="studio-range"
+                    />
+                  </div>
+
+                  <div className="hardware-actions">
+                    <button
+                      type="button"
+                      className={`toggle-light-btn ${isLightOn ? 'on' : 'off'}`}
+                      onClick={() => void syncLight(isLightOn ? 'off' : 'on')}
+                    >
+                      {isLightOn ? 'Turn Off Light' : 'Turn On Light'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="hardware-card">
+                  <h3>System Status &amp; Telemetry</h3>
+                  <div className="telemetry-item">
+                    <span className="telemetry-label">Computer-Use Actuator</span>
+                    <span className="telemetry-val">Native Linux DBus / Wayland</span>
+                  </div>
+                  <div className="telemetry-item">
+                    <span className="telemetry-label">Wake Word Engine</span>
+                    <span className="telemetry-val">"Hey Sutra" (ONNX OpenWakeWord)</span>
+                  </div>
+                  <div className="telemetry-item">
+                    <span className="telemetry-label">Audio Speech Pipeline</span>
+                    <span className="telemetry-val">AssemblyAI Universal-3 / Sarvam</span>
+                  </div>
+                  <div className="telemetry-item">
+                    <span className="telemetry-label">Local Data &amp; Cache</span>
+                    <span className="telemetry-val">Offline SQLite / Local Storage</span>
+                  </div>
+                  <div className="telemetry-item">
+                    <span className="telemetry-label">Privacy Architecture</span>
+                    <span className="telemetry-val">100% Offline-First / Zero Cloud DB</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }

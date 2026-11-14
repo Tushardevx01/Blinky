@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "app.sutra.tutor",
   "build": {
-    "beforeDevCommand": "npm run build:ui",
+    "beforeDevCommand": "npm run dev:ui",
     "beforeBuildCommand": "node ../../../scripts/build/prepare-whatsapp-backend.mjs && npm run build:ui",
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"

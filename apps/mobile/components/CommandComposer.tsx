@@ -73,7 +73,7 @@ export function CommandComposer({
   }, [showAttachMenu]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: any;
     if (isVoiceRecording) {
       setRecordingDuration(0);
       interval = setInterval(() => {

@@ -14,10 +14,10 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { Ionicons } from '@expo/vector-icons';
-import type { FileTransferMessage } from './usePCWebSocket';
-import { buildFileOffer, findTransferItem, transferIntent } from './lib/fileTransferOffer';
+import type { FileTransferMessage } from '../hooks/usePCWebSocket';
+import { buildFileOffer, findTransferItem, transferIntent } from '../lib/fileTransferOffer';
 
-type TransferModule = typeof import('./modules/sutra-secure-socket');
+type TransferModule = typeof import('../modules/sutra-secure-socket');
 
 export type SelectedFile = {
   uri: string;
@@ -226,7 +226,7 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
     if (!visible && !sessionRef.current) return;
     const native = getNativeModule();
     if (!native) return;
-    const subscription = native.addListener('onTransferProgress', event => {
+    const subscription = native.addListener('onTransferProgress', (event: any) => {
       if (typeof event.bytes !== 'number') return;
       updateSession(curr => {
         if (!curr) return curr;

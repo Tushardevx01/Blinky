@@ -5,13 +5,18 @@
   "description": "sutra is an offline-first AI desktop tutor and agent platform.",
   "scripts": {
     "dev": "npm run tauri:dev",
+    "dev:no-docker": "npm run dev",
+    "dev:ui": "vite --config apps/desktop/vite.config.ts",
     "dev:clean": "cargo clean --manifest-path apps/desktop/src-tauri/Cargo.toml -p sutra && npm run tauri:dev",
     "dev:app": "npm run tauri:dev",
     "clean:app": "cargo clean --manifest-path apps/desktop/src-tauri/Cargo.toml -p sutra",
     "mobile:dev": "npm --prefix apps/mobile run start",
+    "mobile:go": "npm --prefix apps/mobile run start:go",
+    "mobile:tunnel": "npm --prefix apps/mobile run start:tunnel",
     "mobile:start": "npm --prefix apps/mobile run start -- --host lan",
     "tauri:dev": "tauri dev",
     "build": "npm run typecheck && vite build --config apps/desktop/vite.config.ts",
+    "build:ui": "vite build --config apps/desktop/vite.config.ts",
     "build:release": "npm run typecheck && npm run tauri:build",
     "tauri:build": "tauri build",
     "preview": "vite preview --config apps/desktop/vite.config.ts",
@@ -62,7 +67,7 @@
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^6.0.2",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14"
+    "vite": "^8.3.8"
   },
   "optionalDependencies": {
     "@agent-sh/computer-use-linux": "^0.2.9",

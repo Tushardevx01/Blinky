@@ -32,7 +32,7 @@ export function PromoCodeModal({ visible, onClose, onSuccess }: PromoCodeModalPr
   const [result, setResult] = useState<PromoRedemptionResult | null>(null);
 
   const panY = useRef(new Animated.Value(0)).current;
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<any>(null);
   const focusedInput = useRef<number | null>(null);
 
   const panResponder = useRef(

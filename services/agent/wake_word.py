@@ -2,6 +2,13 @@ import argparse
 import time
 import sys
 import os
+
+# Auto-switch to repository virtual environment (.venv) if running with system python
+_repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_venv_py = os.path.join(_repo_root, ".venv", "Scripts", "python.exe") if sys.platform == "win32" else os.path.join(_repo_root, ".venv", "bin", "python")
+if os.path.isfile(_venv_py) and os.path.realpath(sys.executable) != os.path.realpath(_venv_py):
+    os.execv(_venv_py, [_venv_py] + sys.argv)
+
 import threading
 import logging
 import ctypes
@@ -176,7 +183,7 @@ def start_wake_word_detector(model_name="hey_sutra.onnx", threshold=0.25, verbos
 
     print(f"[WakeWord] Loading model: {resolved_model}", file=sys.stderr, flush=True)
     try:
-        owwModel = Model(wakeword_models=[resolved_model])
+        owwModel = Model(wakeword_model_paths=[resolved_model])
     except Exception as exc:
         print(f"[WakeWord] Failed to instantiate OpenWakeWord model: {exc}", file=sys.stderr, flush=True)
         return

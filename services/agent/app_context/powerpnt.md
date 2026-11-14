@@ -19,5 +19,4 @@
 - **Settings**: `File` > `Options` for application preferences.
 
 ## Contextual Notes
-- The file name suggests content related to **hackathons**. If editing, ensure slide content aligns with this theme.
-- For submission guidelines (e.g., SIH 2024), check specific PDF or platform requirements if this is a competition entry.
+- If editing, ensure presentation formatting and slide layouts match the requested template.

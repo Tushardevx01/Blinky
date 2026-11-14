@@ -46,7 +46,7 @@ c:\projects\Jarvis
 ## Common Commands
 
 ```powershell
-bun install
+npm install
 npm run setup:python
 npm run check:ollama
 npm run dev

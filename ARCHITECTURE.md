@@ -42,8 +42,7 @@ graph TD
     end
 
     subgraph Persistence ["Persistence & Storage"]
-        MongoDB[("MongoDB (Exclusive Database)")]
-        CloudflareR2[("Cloudflare R2 (Object Storage)")]
+        LocalStorage[("Offline Local Storage & SQLite")]
     end
 
     UI_Mobile --> SecureSocket
@@ -56,8 +55,7 @@ graph TD
     TauriHost --> PythonAgent
     TauriHost --> AiCut
     TauriHost --> ESP32
-    TauriHost --> MongoDB
-    FileStreamer --> CloudflareR2
+    TauriHost --> LocalStorage
     PythonAgent --> SearXNG
 ```
 
@@ -121,15 +119,10 @@ sutra/
 
 ## 3. Storage & Data Persistence
 
-### Database: MongoDB Exclusively
-In adherence to core project requirements:
-- **MongoDB is the sole database engine.**
-- All persistent user chat threads, notebook metadata, document citations, and configuration states connect via `MONGODB_URI` specified in the root `.env`.
-- No secondary databases (e.g. Postgres, MySQL, DynamoDB) are introduced.
-
-### Object Storage: Cloudflare R2
-- Any large-file artifacts, media uploads from mobile transfers, and video export assets destined for cloud storage utilize **Cloudflare R2** via standard S3-compatible APIs.
-- Configured through `CLOUDFLARE_R2_ACCOUNT_ID`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, and `CLOUDFLARE_R2_BUCKET_NAME`.
+### Offline-First Architecture
+In adherence to offline-first design:
+- All persistent user chat threads, notebook metadata, document citations, and configuration states are managed locally via embedded SQLite and local filesystem storage.
+- Zero mandatory external database or cloud storage configurations required.
 
 ---
 

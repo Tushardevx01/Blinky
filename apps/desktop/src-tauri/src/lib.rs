@@ -898,7 +898,7 @@ fn ensure_env_file(root: &Path) {
     if !env_path.exists() {
         let _ = std::fs::write(
             &env_path,
-            b"SUTRA_AI_PROVIDER=groq\nSUTRA_SHORTCUT=Space\nMONGODB_URI=mongodb://localhost:27017/sutra\n",
+            b"SUTRA_AI_PROVIDER=groq\nSUTRA_SHORTCUT=Space\n",
         );
     }
 }

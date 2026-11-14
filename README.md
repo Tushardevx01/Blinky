@@ -19,8 +19,6 @@ Screen-aware tutoring · Voice interaction · Desktop automation · Mobile contr
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-24+-339933?logo=nodedotjs&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-11+-CB3837?logo=npm&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-Exclusively-47A248?logo=mongodb&logoColor=white)
-![Cloudflare R2](https://img.shields.io/badge/Cloudflare_R2-Object_Storage-F38020?logo=cloudflare&logoColor=white)
 ![Platform](https://img.shields.io/badge/Windows%20%7C%20Linux%20%7C%20Android-supported-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -35,8 +33,7 @@ Learning complex desktop software often means switching between tutorials, docum
 | **Target Audience** | Students, developers, and power users navigating complex desktop software |
 | **Core Problem** | Tutorials and documentation are disconnected from the application interface |
 | **Solution** | Screen intelligence, multimodal guidance, visual highlights, voice agents, and optional automation |
-| **Database** | **MongoDB exclusively** for persistent application state, session indexing, and user metadata |
-| **Object Storage** | **Cloudflare R2** for durable artifact and media asset storage |
+| **Architecture** | **Offline-first local storage** for persistent state, session indexing, and notes |
 | **Package Management** | **npm exclusively** across all monorepo applications and tooling |
 
 ---
@@ -69,8 +66,7 @@ Learning complex desktop software often means switching between tutorials, docum
 - **Backend Services**: Python 3.11+ agent service (`services/agent/`), SearXNG (`services/search/`).
 - **Machine Learning**: ONNX Runtime, Gemini 2.5 Flash / Groq / Ollama models, faster-whisper.
 - **Mobile Companion**: React Native, Expo, Kotlin/Swift native socket module (`apps/mobile/modules/sutra-secure-socket`).
-- **Database**: **MongoDB exclusively** (`MONGODB_URI`).
-- **Object Storage**: **Cloudflare R2** (`CLOUDFLARE_R2_*`).
+- **Data & Storage**: Offline-First Local SQLite and filesystem storage.
 - **Package Manager**: **npm** only.
 
 ---
@@ -84,8 +80,6 @@ Learning complex desktop software often means switching between tutorials, docum
 | **Node.js & npm** | Node v20+ / npm v10+ | Frontend, tooling, and script execution |
 | **Rust Toolchain** | `cargo` stable (1.80+) | Desktop Tauri application and Rust crates |
 | **Python** | 3.11+ | Agent services, ONNX inference, decision engine |
-| **MongoDB** | 6.0+ (Local or Atlas) | Primary database |
-| **Cloudflare R2** | Bucket credentials | Object storage (when configured) |
 | **Git** | Standard | Version control |
 
 ### 1. Clone & Setup Workspace
@@ -102,13 +96,6 @@ The application maintains **exactly one `.env` file** at the project root.
 ```bash
 # Verify or create the single root .env
 cat << 'EOF' > .env
-# Database & Storage
-MONGODB_URI=mongodb://localhost:27017/sutra
-CLOUDFLARE_R2_ACCOUNT_ID=
-CLOUDFLARE_R2_ACCESS_KEY_ID=
-CLOUDFLARE_R2_SECRET_ACCESS_KEY=
-CLOUDFLARE_R2_BUCKET_NAME=sutra-storage
-
 # AI & Voice Providers
 SUTRA_AI_PROVIDER=groq
 SUTRA_GROQ_MODEL=qwen/qwen3.8-27b

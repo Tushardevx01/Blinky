@@ -88,7 +88,10 @@ fn move_cursor(x: i32, y: i32) -> Result<(), String> {
 }
 
 pub fn configure_overlay_passthrough(window: &WebviewWindow) {
-    let _ = window.set_ignore_cursor_events(true);
+    // Do NOT call window.set_ignore_cursor_events(true) on Linux.
+    // In Tao's Linux event loop (tao-0.37.1/src/platform_impl/linux/event_loop.rs:457:18),
+    // handling CursorIgnoreEvents unconditionally calls window.window().unwrap(), which
+    // causes a fatal thread panic when the window is hidden, unmapped, or under Wayland.
     let _ = window.set_fullscreen(true);
 
     let monitor = window

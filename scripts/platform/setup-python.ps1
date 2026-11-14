@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $VenvPath = Join-Path $RepoRoot ".venv"
 $PythonPath = Join-Path $VenvPath "Scripts\python.exe"
-$RequirementsPath = Join-Path $PSScriptRoot "..\requirements.txt"
+$RequirementsPath = Join-Path $RepoRoot "services\agent\requirements\requirements-windows.txt"
 
 if (-not (Test-Path $VenvPath)) {
   py -3.11 -m venv $VenvPath

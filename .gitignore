@@ -63,3 +63,7 @@ Thumbs.db
 .vscode/
 .idea/
 tmp/
+apps/mobile/scripts/install_apk.bat
+apps/mobile/scripts/install_apk.bat
+services/agent/app_context/foot.md
+docs/specifications/legacy_ai_docs/00_repo_summary.md

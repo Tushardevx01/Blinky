@@ -36,6 +36,10 @@
       "expo-audio",
       "expo-status-bar",
       "expo-asset",
+      "expo-font",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-sqlite",
       [
         "expo-camera",
         {

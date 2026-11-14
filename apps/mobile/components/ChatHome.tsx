@@ -25,19 +25,34 @@ export function ChatHome({ onQuickAction }: ChatHomeProps) {
       </Text>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Open app')} activeOpacity={0.7}>
-          <Ionicons name="play-circle-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
-          <Text style={styles.actionText}>Open app</Text>
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('What is currently visible on my PC screen?')} activeOpacity={0.7}>
+          <Ionicons name="scan-circle-outline" size={18} color="#FF6E5F" style={styles.actionIcon} />
+          <Text style={styles.actionText}>Tutor Screen</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Run command')} activeOpacity={0.7}>
-          <Ionicons name="terminal-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
-          <Text style={styles.actionText}>Run command</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Screenshot')} activeOpacity={0.7}>
-          <Ionicons name="scan-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Take a screenshot of my PC')} activeOpacity={0.7}>
+          <Ionicons name="camera-outline" size={18} color="#38BDF8" style={styles.actionIcon} />
           <Text style={styles.actionText}>Screenshot</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Trim silence in my latest video with AiCut')} activeOpacity={0.7}>
+          <Ionicons name="cut-outline" size={18} color="#EC4899" style={styles.actionIcon} />
+          <Text style={styles.actionText}>AiCut Video</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Summarize recent discussions on WhatsApp')} activeOpacity={0.7}>
+          <Ionicons name="chatbubbles-outline" size={18} color="#22C55E" style={styles.actionIcon} />
+          <Text style={styles.actionText}>WhatsApp</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Search knowledge hub notebooks for ')} activeOpacity={0.7}>
+          <Ionicons name="book-outline" size={18} color="#FBBF24" style={styles.actionIcon} />
+          <Text style={styles.actionText}>Notebook RAG</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Open Chrome browser on my PC')} activeOpacity={0.7}>
+          <Ionicons name="globe-outline" size={18} color="#818CF8" style={styles.actionIcon} />
+          <Text style={styles.actionText}>Open Browser</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

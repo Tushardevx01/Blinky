@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { triggerHaptic } from './lib/haptics';
-import type { SystemInfo, PowerEvent } from './usePCWebSocket';
+import { triggerHaptic } from '../lib/haptics';
+import type { SystemInfo, PowerEvent } from '../hooks/usePCWebSocket';
 
 interface SentinelModalProps {
   visible: boolean;

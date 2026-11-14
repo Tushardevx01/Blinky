@@ -20,7 +20,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { colors, typography, radius, spacing } from '../theme/theme';
-import { QuickAccessFolder, FsEntry, FsDirContents, FsFileData } from '../usePCWebSocket';
+import { QuickAccessFolder, FsEntry, FsDirContents, FsFileData } from '../hooks/usePCWebSocket';
 
 interface FilesScreenProps {
   isConnected: boolean;
@@ -718,7 +718,7 @@ export function FilesScreen({
                 </View>
               ) : (
                 <View style={styles.list}>
-                  {currentDirectory?.entries.map((item, idx) => {
+                  {currentDirectory?.entries.map((item: any, idx: number) => {
                     const iconInfo = getFileIcon(item.ext, item.is_dir);
                     return (
                       <TouchableOpacity

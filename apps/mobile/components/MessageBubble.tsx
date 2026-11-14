@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { colors, typography, radius, spacing } from '../theme/theme';
 import { Message } from '../types';
 import * as Haptics from 'expo-haptics';

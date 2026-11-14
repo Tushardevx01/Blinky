@@ -170,11 +170,6 @@ SUTRA_AI_PROVIDER=groq
 GROQ_API_KEY=
 SARVAM_API_KEY=
 SUTRA_SHORTCUT=Space
-MONGODB_URI=mongodb://localhost:27017/sutra
-R2_ACCOUNT_ID=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME=sutra-storage
 EOF
   ok ".env created (minimal) -- EDIT IT"
 else

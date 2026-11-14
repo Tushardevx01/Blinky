@@ -1,4 +1,4 @@
-# port=5174 bun run dev
+# port=5174 npm run dev
 
 Known behavior:
 - This is a Windows application: foot.

@@ -58,7 +58,7 @@ export interface SettingsModalProps {
 
 export function SettingsModal(props: SettingsModalProps) {
   const panY = useRef(new Animated.Value(0)).current;
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<any>(null);
   const focusedInput = useRef<number | null>(null);
   const [linkTab, setLinkTab] = useState<LinkTab>('qr');
   const [qrError, setQrError] = useState<string | null>(null);

@@ -1,6 +1,8 @@
 import { toExactArrayBuffer, acceptReadBuffer } from './fileBytes';
 import { StreamingSha256 } from './streamingSha256';
 
+declare const Buffer: any;
+
 export const DEFAULT_STREAM_CHUNK_SIZE = 2 * 1024 * 1024; // 2 MB
 
 /**
@@ -16,8 +18,9 @@ export function base64ToUint8Array(base64: string): Uint8Array {
     }
     return bytes;
   }
-  if (typeof Buffer !== 'undefined') {
-    const buf = Buffer.from(base64, 'base64');
+  const gBuffer = (globalThis as any).Buffer;
+  if (typeof gBuffer !== 'undefined') {
+    const buf = gBuffer.from(base64, 'base64');
     return new Uint8Array(buf.buffer, buf.byteOffset, buf.length);
   }
   throw new Error('No base64 decoder available in environment');

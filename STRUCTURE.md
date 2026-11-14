@@ -191,6 +191,5 @@ sutra/
 
 1. **Frontend / Backend Boundary:** `apps/desktop/src` communicates with `apps/desktop/src-tauri` strictly via typed Tauri IPC commands. No direct OS system calls are made from the frontend.
 2. **Desktop / Mobile Boundary:** `apps/mobile` connects to desktop strictly over WebSocket port 9001 (control) and HTTP port 9002 (file transfer). In release builds, WSS is enforced with SHA-256 certificate pinning.
-3. **Database Boundary:** Persistent application data exclusively interfaces with MongoDB via `MONGODB_URI`.
-4. **Storage Boundary:** Object storage for large assets and user media utilizes Cloudflare R2 exclusively.
-5. **Environment Boundary:** Exactly one `.env` file exists at the repository root. It is ignored by Git and never committed.
+3. **Data Boundary:** Persistent application data interfaces with offline-first local SQLite and filesystem storage.
+4. **Environment Boundary:** Exactly one `.env` file exists at the repository root. It is ignored by Git and never committed.

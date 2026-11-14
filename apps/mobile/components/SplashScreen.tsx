@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import MaskedView from '@react-native-masked-view/masked-view';
+const MaskedViewComponent = MaskedView as any;
 import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -168,7 +169,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
       <Animated.View style={[styles.brandingContainer, { opacity: fade3 }]}>
         <View style={styles.logoRow}>
           <Image
-            source={require('./assets/logo_text.png')}
+            source={require('../assets/logo_text.png')}
             style={styles.brandImage}
             resizeMode="contain"
           />
@@ -177,7 +178,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
         <Text style={styles.headlineTitle}>Delightful</Text>
         <Text style={styles.headlineTitle}>automation</Text>
         
-        <MaskedView
+        <MaskedViewComponent
           style={{ height: 48 }}
           maskElement={
             <Text style={styles.headlineTitle}>starts here</Text>
@@ -192,7 +193,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
             {/* The mask needs a child to fill it, we just render an invisible copy of the text to give it size */}
             <Text style={[styles.headlineTitle, { opacity: 0 }]}>starts here</Text>
           </LinearGradient>
-        </MaskedView>
+        </MaskedViewComponent>
       </Animated.View>
 
       {/* CTA Button */}
@@ -210,7 +211,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
       <Animated.View style={[StyleSheet.absoluteFill, styles.loadingOverlay, { opacity: overlayOpacity }]} pointerEvents={phase === 'loading' ? 'auto' : 'none'}>
         <Animated.View style={{ opacity: blinkAnim, alignItems: 'center' }}>
           <Image
-            source={require('./assets/sutra-mascot-logo.png')}
+            source={require('../assets/sutra-mascot-logo.png')}
             style={styles.splashLogo}
             resizeMode="contain"
           />

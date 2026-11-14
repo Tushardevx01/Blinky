@@ -43,7 +43,7 @@ export GROQ_API_KEY=your_api_key_here
 # Clone the repository if you haven't already
 git clone git@github.com:KingSahil/sutra.git && cd sutra
 # Install Node dependencies
-bun install
+npm install
 # Install Python requirements (creates a .venv folder in root)
 npm run linux:setup:python   # runs ./linux/scripts/setup-python.sh
 ```

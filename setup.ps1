@@ -161,7 +161,7 @@ $Global:CurrentStep = ".env"
 Write-Step "Validating root .env"
 $EnvPath = Join-Path $RepoRoot ".env"
 if (-not (Test-Path $EnvPath)) {
-  Set-Content -Path $EnvPath -Value "SUTRA_AI_PROVIDER=groq`nGROQ_API_KEY=`nSARVAM_API_KEY=`nSUTRA_SHORTCUT=Space`nMONGODB_URI=mongodb://localhost:27017/sutra`nR2_ACCOUNT_ID=`nR2_ACCESS_KEY_ID=`nR2_SECRET_ACCESS_KEY=`nR2_BUCKET_NAME=sutra-storage`n"
+  Set-Content -Path $EnvPath -Value "SUTRA_AI_PROVIDER=groq`nGROQ_API_KEY=`nSARVAM_API_KEY=`nSUTRA_SHORTCUT=Space`n"
   Write-Ok ".env created (minimal) -- EDIT IT"
 } else { Write-Ok ".env already exists (not overwritten)" }
 
@@ -202,7 +202,7 @@ $rows += [pscustomobject]@{ Component = "Node"; Status = if (Test-Cmd "node") { 
 $rows += [pscustomobject]@{ Component = "npm"; Status = if (Test-Cmd "npm") { "READY" } else { "MISSING" } }
 $rows += [pscustomobject]@{ Component = "Rust/Cargo"; Status = if (Test-Cmd "cargo") { "READY" } else { "MISSING (npm run dev will fail)" } }
 $rows += [pscustomobject]@{ Component = "Python venv"; Status = if (Test-Path $VenvPython) { "READY" } else { "MISSING" } }
-$rows += [pscustomobject]@{ Component = ".env keys"; Status = "CHECK .env (GROQ/AssemblyAI/MongoDB)" }
+$rows += [pscustomobject]@{ Component = ".env keys"; Status = "CHECK .env (GROQ/AssemblyAI)" }
 $rows += [pscustomobject]@{ Component = "Mobile deps"; Status = if ($SkipMobile) { "SKIPPED" } elseif (Test-Path "$RepoRoot\apps\mobile\node_modules") { "READY" } else { "run .\setup-mobile.ps1" } }
 $rows | Format-Table -AutoSize | Out-String | Write-Host
 

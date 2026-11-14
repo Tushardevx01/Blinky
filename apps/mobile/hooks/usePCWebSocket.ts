@@ -2,14 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   disconnectedConnectionState,
   type ConnectionStatus,
-} from './connectionState';
-import { saveSyncedApiKeys } from './lib/secure_keys';
-import { syncPcNotebooks } from './lib/mobile_rag_db';
-import { AttachmentPlanner } from './lib/attachmentRouting';
+} from '../lib/connectionState';
+import { saveSyncedApiKeys } from '../lib/secure_keys';
+import { syncPcNotebooks } from '../lib/mobile_rag_db';
+import { AttachmentPlanner } from '../lib/attachmentRouting';
 
-export type { ConnectionStatus } from './connectionState';
+export type { ConnectionStatus } from '../lib/connectionState';
 
-type NativeSecureSocketModule = typeof import('./modules/sutra-secure-socket');
+type NativeSecureSocketModule = typeof import('../modules/sutra-secure-socket');
 type NativeSecureSocket = {
   id: string;
   module: NativeSecureSocketModule;

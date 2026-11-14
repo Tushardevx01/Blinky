@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+import os
+import sys
+
+# Auto-switch to repository virtual environment (.venv) if running with system python
+_repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_venv_py = os.path.join(_repo_root, ".venv", "Scripts", "python.exe") if sys.platform == "win32" else os.path.join(_repo_root, ".venv", "bin", "python")
+if os.path.isfile(_venv_py) and os.path.realpath(sys.executable) != os.path.realpath(_venv_py):
+    os.execv(_venv_py, [_venv_py] + sys.argv)
+
 from runtime_limits import configure_worker_threads
 configure_worker_threads()
 
