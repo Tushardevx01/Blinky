@@ -109,10 +109,12 @@ Blinky configures its environment variables through the root `.env` file (copied
 Root `/.env`:
 
 ```bash
-# AI Assistant & Model Providers
-BLINKY_AI_PROVIDER=ollama
-OLLAMA_BASE_URL=http://localhost:11434
+# AI Assistant & Model Providers (gemini, groq, ollama, deepseek)
+BLINKY_AI_PROVIDER=gemini
+GEMINI_API_KEY=
+BLINKY_GEMINI_MODEL=gemini-1.5-pro
 GROQ_API_KEY=
+OLLAMA_BASE_URL=http://localhost:11434
 OPENAI_API_KEY=
 
 # Voice & Speech Services

@@ -19,7 +19,7 @@ impl GeminiProvider {
             .build()
             .unwrap_or_default();
 
-        let model_name = model.unwrap_or_else(|| "gemini-2.5-flash".to_string());
+        let model_name = model.unwrap_or_else(|| "gemini-1.5-pro".to_string());
 
         Self {
             client,

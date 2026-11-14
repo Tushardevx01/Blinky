@@ -21,6 +21,8 @@ pub fn create_provider_from_env() -> Result<Arc<dyn AiProvider>> {
     let model_override = std::env::var("FLICKY_AI_MODEL")
         .or_else(|_| std::env::var("BLINKY_AI_MODEL"))
         .or_else(|_| std::env::var("BLINKY_GROQ_MODEL"))
+        .or_else(|_| std::env::var("BLINKY_GEMINI_MODEL"))
+        .or_else(|_| std::env::var("GEMINI_MODEL"))
         .ok();
 
     match provider_key.as_str() {
@@ -36,11 +38,15 @@ pub fn create_provider_from_env() -> Result<Arc<dyn AiProvider>> {
             let api_key = std::env::var("GEMINI_API_KEY")
                 .or_else(|_| std::env::var("GOOGLE_API_KEY"))
                 .unwrap_or_default();
+            let gemini_model = model_override
+                .or_else(|| std::env::var("BLINKY_GEMINI_MODEL").ok())
+                .or_else(|| std::env::var("GEMINI_MODEL").ok())
+                .unwrap_or_else(|| "gemini-1.5-pro".to_string());
             info!(
                 "Instantiating Gemini AI Provider (model: {:?})",
-                model_override
+                gemini_model
             );
-            Ok(Arc::new(GeminiProvider::new(api_key, model_override)))
+            Ok(Arc::new(GeminiProvider::new(api_key, Some(gemini_model))))
         }
         "ollama" => {
             let base_url = std::env::var("OLLAMA_BASE_URL").ok();

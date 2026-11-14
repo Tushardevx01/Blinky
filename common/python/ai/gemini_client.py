@@ -12,20 +12,19 @@ from utils.logging import get_logger
 
 LOGGER = get_logger("blinky.gemini")
 
-# Priority model list: active modern 3.5/3.8/lite family
+# Priority model list: Gemini 1.5 Pro prioritized by default
 PREFERRED_GEMINI_MODELS = [
-    "gemini-3.5-flash",
-    "gemini-3.8-flash",
-    "gemini-3.1-flash-lite",
-    "gemini-flash-lite-latest",
-    "gemini-flash-latest",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-2.0-flash",
     "gemini-2.5-flash",
+    "gemini-flash-latest",
 ]
 
 
 def _get_candidate_models() -> list[str]:
-    """Returns prioritized candidate models honoring GEMINI_MODEL env var if present."""
-    pref = os.getenv("GEMINI_MODEL", "").strip()
+    """Returns prioritized candidate models honoring BLINKY_GEMINI_MODEL or GEMINI_MODEL env var if present."""
+    pref = (os.getenv("BLINKY_GEMINI_MODEL") or os.getenv("GEMINI_MODEL") or "").strip()
     if pref:
         return [pref] + [m for m in PREFERRED_GEMINI_MODELS if m != pref]
     return PREFERRED_GEMINI_MODELS
@@ -162,25 +161,33 @@ def ask_gemini_vision(
 ) -> dict[str, Any]:
     """
     Analyzes an image with the best available vision model.
-    Priority order:
-      1. Groq Vision (fast, reliable, works without Google API access)
-      2. Gemini Vision (fallback if Groq is unavailable or fails)
+    If BLINKY_AI_PROVIDER is set to gemini, Gemini Vision is queried first.
     """
     img_bytes, mime_type = _load_image(image_input)
+    provider = os.getenv("BLINKY_AI_PROVIDER", "").strip().lower()
 
-    # 1. Try Groq Vision first (fast, reliable, no Google API needed)
-    result = _try_groq_vision(prompt, img_bytes)
-    if result:
-        return result
+    if provider == "gemini":
+        result = _try_gemini_vision(prompt, img_bytes, mime_type)
+        if result:
+            return result
+        # Fallback to Groq Vision
+        result = _try_groq_vision(prompt, img_bytes)
+        if result:
+            return result
+    else:
+        # 1. Try Groq Vision first (fast, reliable, no Google API needed)
+        result = _try_groq_vision(prompt, img_bytes)
+        if result:
+            return result
 
-    # 2. Try Gemini Vision
-    result = _try_gemini_vision(prompt, img_bytes, mime_type)
-    if result:
-        return result
+        # 2. Try Gemini Vision
+        result = _try_gemini_vision(prompt, img_bytes, mime_type)
+        if result:
+            return result
 
     raise RuntimeError(
-        "Vision analysis failed: neither Groq Vision nor Gemini Vision could process the image. "
-        "Check that GROQ_API_KEY or GEMINI_API_KEY is set in your .env file."
+        "Vision analysis failed: neither Gemini Vision nor Groq Vision could process the image. "
+        "Check that GEMINI_API_KEY or GROQ_API_KEY is set in your .env file."
     )
 
 
