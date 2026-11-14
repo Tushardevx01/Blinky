@@ -678,7 +678,7 @@ def run(
 
             # Observe screen state (extracts UI elements via OmniParser / UIA / OCR)
             screenshot = capture_screen()
-            print("__BLINKY_CAPTURED__", flush=True)
+            print("__SUTRA_CAPTURED__", flush=True)
             observation = observe_app_state(screenshot)
             visible_items = observation["visible_items"]
 
@@ -826,7 +826,7 @@ def run(
     screenshot = capture_screen()
     log_stage_timing("capture", capture_started)
     # Print the capture marker to stdout and flush immediately so Rust can restore windows
-    print("__BLINKY_CAPTURED__", flush=True)
+    print("__SUTRA_CAPTURED__", flush=True)
 
     # Locator fast-path: screenshot-only, no LLM. NEVER runs for app-opening
     # queries ("open X", "open X and Y") â€” those belong to the app launcher /
@@ -1967,7 +1967,7 @@ def handle_notebook_rpc(action: str, params: dict) -> dict:
 
 
 def _icons_enabled() -> bool:
-    return os.environ.get("BLINKY_ICON_DETECT", "1").strip() not in {"0", "false", "no", "off"}
+    return os.environ.get("SUTRA_ICON_DETECT", "1").strip() not in {"0", "false", "no", "off"}
 
 
 def _active_window_rect() -> tuple[int, int, int, int] | None:

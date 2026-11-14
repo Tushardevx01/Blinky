@@ -71,7 +71,7 @@ def requested_app(question: str) -> str | None:
 
 
 def desktop_enabled() -> bool:
-    return os.getenv("BLINKY_DESKTOP_ENGINE", "agent-desktop").strip().lower() == "agent-desktop"
+    return os.getenv("SUTRA_DESKTOP_ENGINE", "agent-desktop").strip().lower() == "agent-desktop"
 
 
 def remembered_window(windows: list[dict]) -> dict | None:
@@ -213,7 +213,7 @@ class CommandError(RuntimeError):
 
 
 def executable(engine: str) -> list[str]:
-    override = os.getenv(f"BLINKY_{engine.upper().replace('-', '_')}_BIN", "").strip()
+    override = os.getenv(f"SUTRA_{engine.upper().replace('-', '_')}_BIN", "").strip()
     if override:
         return [override]
     os_name = {"Windows": "win32", "Darwin": "darwin", "Linux": "linux"}[platform.system()]
@@ -279,7 +279,7 @@ def invoke(engine: str, args: list[str], artifact: Path | None = None) -> dict:
 
 
 def browser_flags(cdp_url: str | None = None) -> list[str]:
-    endpoint = cdp_url or os.getenv("BLINKY_BROWSER_CDP_URL", "").strip()
+    endpoint = cdp_url or os.getenv("SUTRA_BROWSER_CDP_URL", "").strip()
     flags = ["--session", "sutra", "--json"]
     # Always attach; never start a fresh profile when attachment fails.
     if endpoint:

@@ -22,10 +22,10 @@ DEFAULT_MIMO_MODEL = "mimo-v2.5-free"
 def ask_mimo_vision(prompt: str, screenshot_path: Path) -> dict[str, Any]:
     api_key = os.getenv("MIMO_API_KEY", "").strip() or os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
-        raise RuntimeError("MIMO_API_KEY or DEEPSEEK_API_KEY is required when BLINKY_AI_PROVIDER=mimo.")
+        raise RuntimeError("MIMO_API_KEY or DEEPSEEK_API_KEY is required when SUTRA_AI_PROVIDER=mimo.")
 
-    url = os.getenv("BLINKY_MIMO_URL", DEFAULT_BASE_URL).strip().rstrip("/")
-    model = os.getenv("BLINKY_MIMO_MODEL", DEFAULT_MIMO_MODEL).strip() or DEFAULT_MIMO_MODEL
+    url = os.getenv("SUTRA_MIMO_URL", DEFAULT_BASE_URL).strip().rstrip("/")
+    model = os.getenv("SUTRA_MIMO_MODEL", DEFAULT_MIMO_MODEL).strip() or DEFAULT_MIMO_MODEL
 
     image_payload = _image_to_data_url(screenshot_path)
 
@@ -74,10 +74,10 @@ def ask_mimo_vision(prompt: str, screenshot_path: Path) -> dict[str, Any]:
 def ask_mimo_text(prompt: str, max_tokens: int = 300) -> dict[str, Any]:
     api_key = os.getenv("MIMO_API_KEY", "").strip() or os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
-        raise RuntimeError("MIMO_API_KEY or DEEPSEEK_API_KEY is required when BLINKY_AI_PROVIDER=mimo.")
+        raise RuntimeError("MIMO_API_KEY or DEEPSEEK_API_KEY is required when SUTRA_AI_PROVIDER=mimo.")
 
-    url = os.getenv("BLINKY_MIMO_URL", DEFAULT_BASE_URL).strip().rstrip("/")
-    model = os.getenv("BLINKY_MIMO_MODEL", DEFAULT_MIMO_MODEL).strip() or DEFAULT_MIMO_MODEL
+    url = os.getenv("SUTRA_MIMO_URL", DEFAULT_BASE_URL).strip().rstrip("/")
+    model = os.getenv("SUTRA_MIMO_MODEL", DEFAULT_MIMO_MODEL).strip() or DEFAULT_MIMO_MODEL
 
     try:
         response = requests.post(

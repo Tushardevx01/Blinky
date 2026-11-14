@@ -32,7 +32,7 @@ def get_prompts() -> dict[str, str]:
     Returns a dict with keys: system, app_inventory, vision_note,
     premature_answer, inspection_loop, repeated_tool.
     """
-    config_path = Path(os.getenv("BLINKY_PROMPTS_CONFIG", str(_DEFAULT_CONFIG)))
+    config_path = Path(os.getenv("SUTRA_PROMPTS_CONFIG", str(_DEFAULT_CONFIG)))
     prompts = _load_yaml(config_path)
 
     if not prompts:

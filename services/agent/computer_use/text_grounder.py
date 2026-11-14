@@ -95,7 +95,7 @@ def ground_step_to_screen(
         }
 
     # Ignore items that belong to sutra's own floating UI
-    blinky_ignored_terms = {
+    sutra_ignored_terms = {
         "sutra app", "sutra command", "ctrl + shift", "space", "enter", "ask anything",
         "groq", "ollama", "shortcut key", "theme: ember", "about: v1.0.0", "action guide",
         "sutra"
@@ -110,7 +110,7 @@ def ground_step_to_screen(
         if item_ref and item_ref in failed_refs_set:
             continue
         text_val = str(it.get("text", "")).lower().strip()
-        if any(term in text_val for term in blinky_ignored_terms):
+        if any(term in text_val for term in sutra_ignored_terms):
             continue
         if text_val and text_val in failed_targets_set:
             continue

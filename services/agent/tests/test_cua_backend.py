@@ -444,8 +444,8 @@ def test_is_dead_session_ignores_other_errors() -> None:
     assert _is_dead_session(_CuaDriverError("click", "pid has no on-screen window")) is False
 
 
-def test_backend_uses_shared_blinky_session_by_default(monkeypatch) -> None:
-    monkeypatch.delenv("BLINKY_CUA_SESSION", raising=False)
+def test_backend_uses_shared_sutra_session_by_default(monkeypatch) -> None:
+    monkeypatch.delenv("SUTRA_CUA_SESSION", raising=False)
 
     backend = CuaDriverBackend(binary="fake")
 
@@ -454,7 +454,7 @@ def test_backend_uses_shared_blinky_session_by_default(monkeypatch) -> None:
 
 
 def test_backend_session_from_env(monkeypatch) -> None:
-    monkeypatch.setenv("BLINKY_CUA_SESSION", "custom-session")
+    monkeypatch.setenv("SUTRA_CUA_SESSION", "custom-session")
 
     backend = CuaDriverBackend(binary="fake")
 
@@ -528,7 +528,7 @@ def test_transport_raises_when_revival_fails() -> None:
 def test_registry_honours_native_override(monkeypatch) -> None:
     import computer_use.backends as backends
 
-    monkeypatch.setenv("BLINKY_COMPUTER_USE_BACKEND", "native")
+    monkeypatch.setenv("SUTRA_COMPUTER_USE_BACKEND", "native")
     backends.reset_backend()
     try:
         assert backends.get_backend() is None
@@ -536,14 +536,14 @@ def test_registry_honours_native_override(monkeypatch) -> None:
         assert backends.has_backend() is False
     finally:
         backends.reset_backend()
-        monkeypatch.delenv("BLINKY_COMPUTER_USE_BACKEND", raising=False)
+        monkeypatch.delenv("SUTRA_COMPUTER_USE_BACKEND", raising=False)
 
 
 def test_tools_gate_returns_failure_when_native(monkeypatch) -> None:
     import computer_use.backends as backends
     from computer_use.tools import list_windows_tool
 
-    monkeypatch.setenv("BLINKY_COMPUTER_USE_BACKEND", "native")
+    monkeypatch.setenv("SUTRA_COMPUTER_USE_BACKEND", "native")
     backends.reset_backend()
     try:
         result = list_windows_tool()
@@ -557,7 +557,7 @@ def test_tools_gate_returns_failure_when_native(monkeypatch) -> None:
             assert "native path" in result.message
     finally:
         backends.reset_backend()
-        monkeypatch.delenv("BLINKY_COMPUTER_USE_BACKEND", raising=False)
+        monkeypatch.delenv("SUTRA_COMPUTER_USE_BACKEND", raising=False)
 
 
 def test_actuator_result_helpers() -> None:

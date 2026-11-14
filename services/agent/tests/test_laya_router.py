@@ -68,7 +68,7 @@ class TestLayaRouter(unittest.TestCase):
     def test_url_with_video_never_routes_to_video_edit(self):
         """Web URLs mentioning 'video' or 'instagram' must route to BROWSER_USE, NEVER VIDEO_EDIT."""
         queries = [
-            "go to https://instagram.com/blinky_ai and tell me the first comment of latest video",
+            "go to https://instagram.com/sutra_ai and tell me the first comment of latest video",
             "https://youtube.com/watch?v=123 cut out the intro",
             "visit https://tiktok.com/@creator/video/456",
             "go to www.reddit.com and check video posts",
@@ -146,7 +146,7 @@ class TestLayaRouter(unittest.TestCase):
         """Ensure classify_request in main.py routes through Laya successfully."""
         # Query that formerly failed into AiCut
         res = classify_request(
-            "go to https://instagram.com/blinky_ai and tell me the first comment of latest video",
+            "go to https://instagram.com/sutra_ai and tell me the first comment of latest video",
             None,
             [],
         )

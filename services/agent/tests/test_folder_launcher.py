@@ -25,7 +25,7 @@ def test_is_folder_or_explorer_request() -> None:
     assert is_folder_or_explorer_request("play spotify") is False
 
 
-def test_resolve_folder_path_blinky_in_projects() -> None:
+def test_resolve_folder_path_sutra_in_projects() -> None:
     resolved = resolve_folder_path("open the sutra folder in projects folder in file explorer")
     assert resolved is not None
     assert "sutra" in str(resolved).lower()

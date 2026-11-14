@@ -17,7 +17,7 @@ from utils.logging import get_logger
 
 LOGGER = get_logger("sutra.computer_use.loop")
 
-MAX_TOOL_CALLS = int(os.getenv("BLINKY_MAX_TOOL_CALLS", "50"))
+MAX_TOOL_CALLS = int(os.getenv("SUTRA_MAX_TOOL_CALLS", "50"))
 
 _SCREENSHOT_MODE: str | None = None
 
@@ -25,7 +25,7 @@ _SCREENSHOT_MODE: str | None = None
 def _get_screenshot_mode() -> str:
     global _SCREENSHOT_MODE
     if _SCREENSHOT_MODE is None:
-        _SCREENSHOT_MODE = os.getenv("BLINKY_SCREENSHOT_MODE", "ocr").strip().lower()
+        _SCREENSHOT_MODE = os.getenv("SUTRA_SCREENSHOT_MODE", "ocr").strip().lower()
     return _SCREENSHOT_MODE
 
 

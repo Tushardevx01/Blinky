@@ -166,7 +166,7 @@ class GnomeScreenshotCaptureStrategy(CaptureStrategy):
     def capture(self) -> Image.Image:
         import tempfile
 
-        fd, tmp = tempfile.mkstemp(suffix=".png", prefix="blinky_gs_")
+        fd, tmp = tempfile.mkstemp(suffix=".png", prefix="sutra_gs_")
         os.close(fd)
         try:
             result = subprocess.run(
@@ -196,7 +196,7 @@ class _SpectacleCaptureStrategy(CaptureStrategy):
     def capture(self) -> Image.Image:
         import tempfile
 
-        fd, tmp = tempfile.mkstemp(suffix=".png", prefix="blinky_sp_")
+        fd, tmp = tempfile.mkstemp(suffix=".png", prefix="sutra_sp_")
         os.close(fd)
         try:
             result = subprocess.run(

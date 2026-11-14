@@ -980,7 +980,7 @@ class GuidanceFlowTests(unittest.TestCase):
         self.assertEqual(result["steps"][0]["match"]["text"], "Extensions (Ctrl+Shift+X)")
         self.assertEqual(result["ocr"]["count"], 1)
 
-    def test_locator_question_ignores_blinky_controls_unless_requested(self) -> None:
+    def test_locator_question_ignores_sutra_controls_unless_requested(self) -> None:
         screenshot = SimpleNamespace(
             path="screenshots/test.jpg",
             width=1728,

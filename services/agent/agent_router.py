@@ -176,7 +176,7 @@ async def execute_script(filepath, args_json, timeout=30):
         return False, "SPAWN_ERROR", str(e)
 
 def stream_synthesis_llm(query, tool_output, callback):
-    provider = (os.getenv("BLINKY_AI_PROVIDER", "ollama").strip() or "ollama").lower()
+    provider = (os.getenv("SUTRA_AI_PROVIDER", "ollama").strip() or "ollama").lower()
     
     prompt = f"""
 You are sutra, a helpful AI assistant.
@@ -190,10 +190,10 @@ Synthesize a professional, user-friendly final response answering the user's req
 
     if provider == "groq":
         api_key = os.getenv("GROQ_API_KEY", "").strip()
-        model = os.getenv("BLINKY_GROQ_MODEL", "qwen/qwen3.8-27b").strip() or "qwen/qwen3.8-27b"
+        model = os.getenv("SUTRA_GROQ_MODEL", "qwen/qwen3.8-27b").strip() or "qwen/qwen3.8-27b"
         if model in ("llama-3.3-70b-versatile", "llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview", "meta-llama/llama-4-scout-17b-16e-instruct"):
             model = "qwen/qwen3.8-27b"
-        groq_url = os.getenv("BLINKY_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
+        groq_url = os.getenv("SUTRA_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
 
         
         try:
@@ -231,8 +231,8 @@ Synthesize a professional, user-friendly final response answering the user's req
             callback(f"\n[Synthesis Error: {str(e)}]")
     else:
         # Ollama
-        ollama_url = os.getenv("BLINKY_OLLAMA_URL", "http://localhost:11434/api/generate").strip()
-        model = os.getenv("BLINKY_OLLAMA_MODEL", "gemma4:e4b").strip()
+        ollama_url = os.getenv("SUTRA_OLLAMA_URL", "http://localhost:11434/api/generate").strip()
+        model = os.getenv("SUTRA_OLLAMA_MODEL", "gemma4:e4b").strip()
         
         try:
             response = requests.post(
@@ -618,7 +618,7 @@ async def run_main_py_subprocess(payload: dict, request_id: str) -> dict:
             line = line_bytes.decode().strip()
             if not line:
                 continue
-            if line == "__BLINKY_CAPTURED__":
+            if line == "__SUTRA_CAPTURED__":
                 continue
             try:
                 parsed = json.loads(line)
@@ -1244,7 +1244,7 @@ async def handle_request(line):
             "percent": 35,
         })
         try:
-            if os.getenv("BLINKY_BROWSER_ENGINE", "agent-browser") == "agent-browser":
+            if os.getenv("SUTRA_BROWSER_ENGINE", "agent-browser") == "agent-browser":
                 from tools.browser_use_tool import run_browser_task
                 result = await run_browser_task(query)
                 send_response(request_id, "success" if result.get("success") else "error", data={"response": result.get("result"), **result})

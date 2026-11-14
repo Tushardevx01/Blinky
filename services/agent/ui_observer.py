@@ -56,8 +56,8 @@ def run_observer(interval_seconds: float, once: bool = False, parent_pid: int | 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Continuously warm sutra's UI map cache.")
-    parser.add_argument("--interval", type=float, default=float(os.environ.get("BLINKY_UI_OBSERVER_INTERVAL", "1.5")))
-    parser.add_argument("--parent-pid", type=int, default=int(os.environ.get("BLINKY_UI_OBSERVER_PARENT_PID", "0") or "0"))
+    parser.add_argument("--interval", type=float, default=float(os.environ.get("SUTRA_UI_OBSERVER_INTERVAL", "1.5")))
+    parser.add_argument("--parent-pid", type=int, default=int(os.environ.get("SUTRA_UI_OBSERVER_PARENT_PID", "0") or "0"))
     parser.add_argument("--once", action="store_true")
     return parser.parse_args()
 

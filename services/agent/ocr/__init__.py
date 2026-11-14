@@ -108,7 +108,7 @@ def get_ocr_provider() -> OcrProvider:
     if _provider is not None:
         return _provider
 
-    mode = os.environ.get("BLINKY_SCREENSHOT_MODE", "ocr").strip().lower()
+    mode = os.environ.get("SUTRA_SCREENSHOT_MODE", "ocr").strip().lower()
     if mode == "omniparser":
         try:
             from ocr.omniparser import OmniParserProvider

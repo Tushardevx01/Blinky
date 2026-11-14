@@ -17,7 +17,7 @@ from ocr.omniparser import OmniParserProvider
 
 def test_get_ocr_provider_omniparser(monkeypatch):
     """Test that get_ocr_provider resolves to OmniParserProvider when configured."""
-    monkeypatch.setenv("BLINKY_SCREENSHOT_MODE", "omniparser")
+    monkeypatch.setenv("SUTRA_SCREENSHOT_MODE", "omniparser")
     # Reset cached provider
     import ocr
     ocr._provider = None
@@ -28,8 +28,8 @@ def test_get_ocr_provider_omniparser(monkeypatch):
 
 def test_omniparser_api_extraction(monkeypatch):
     """Test standard API response parsing and mapping."""
-    monkeypatch.setenv("BLINKY_SCREENSHOT_MODE", "omniparser")
-    monkeypatch.setenv("BLINKY_OMNIPARSER_API_URL", "https://mock.omniparser.api/predict")
+    monkeypatch.setenv("SUTRA_SCREENSHOT_MODE", "omniparser")
+    monkeypatch.setenv("SUTRA_OMNIPARSER_API_URL", "https://mock.omniparser.api/predict")
 
     provider = OmniParserProvider()
     assert provider.api_url == "https://mock.omniparser.api/predict"
@@ -73,8 +73,8 @@ def test_omniparser_api_extraction(monkeypatch):
 
 def test_omniparser_api_failure_fallback(monkeypatch):
     """Test API failure maps to fallback behavior."""
-    monkeypatch.setenv("BLINKY_SCREENSHOT_MODE", "omniparser")
-    monkeypatch.setenv("BLINKY_OMNIPARSER_API_URL", "https://mock.omniparser.api/predict")
+    monkeypatch.setenv("SUTRA_SCREENSHOT_MODE", "omniparser")
+    monkeypatch.setenv("SUTRA_OMNIPARSER_API_URL", "https://mock.omniparser.api/predict")
 
     provider = OmniParserProvider()
     
@@ -91,9 +91,9 @@ def test_omniparser_api_failure_fallback(monkeypatch):
 
 def test_omniparser_hf_space_extraction(monkeypatch):
     """Test parsing logic specifically for the Hugging Face Space Gradio client output."""
-    monkeypatch.setenv("BLINKY_SCREENSHOT_MODE", "omniparser")
+    monkeypatch.setenv("SUTRA_SCREENSHOT_MODE", "omniparser")
     # Set to a space-like ID
-    monkeypatch.setenv("BLINKY_OMNIPARSER_API_URL", "microsoft/OmniParser-v2")
+    monkeypatch.setenv("SUTRA_OMNIPARSER_API_URL", "microsoft/OmniParser-v2")
 
     provider = OmniParserProvider()
     
@@ -134,9 +134,9 @@ def test_omniparser_hf_space_extraction(monkeypatch):
 
 def test_omniparser_local_extraction(monkeypatch):
     """Test local inference extraction and overlaying default OCR text items."""
-    monkeypatch.setenv("BLINKY_SCREENSHOT_MODE", "omniparser")
+    monkeypatch.setenv("SUTRA_SCREENSHOT_MODE", "omniparser")
     # Empty URL triggers local processing mode
-    monkeypatch.setenv("BLINKY_OMNIPARSER_API_URL", "")
+    monkeypatch.setenv("SUTRA_OMNIPARSER_API_URL", "")
 
     # Mock YOLO model boxes
     mock_box = MagicMock()

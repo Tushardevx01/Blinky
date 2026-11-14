@@ -150,7 +150,7 @@ def build_prompt(
 ) -> str | tuple[str, list[dict]]:
     # Filter out any OCR items that belong to sutra itself (the host tutor app)
     # to prevent sutra from referencing or recommending clicks inside its own UI.
-    blinky_ignored_terms = {
+    sutra_ignored_terms = {
         "sutra app", "sutra command", "ctrl + shift", "space", "enter", "ask anything", 
         "groq", "ollama", "shortcut key", "theme: ember", "about: v1.0.0", "action guide",
         "sutra", "sutra"
@@ -162,7 +162,7 @@ def build_prompt(
     for item in ocr_items:
         text = str(item.get("text", "")).lower().strip()
         # Skip if the item matches any sutra UI text
-        if any(term in text for term in blinky_ignored_terms):
+        if any(term in text for term in sutra_ignored_terms):
             continue
         filtered_items.append(item)
 

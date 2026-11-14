@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 sutra ESP32 Universal Client.
-Communicates with the Zero-Flash BlinkyUniversalDaemon running on the ESP32.
+Communicates with the Zero-Flash SutraUniversalDaemon running on the ESP32.
 """
 
 import os

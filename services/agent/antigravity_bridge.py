@@ -15,7 +15,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-BLINKY_HOOK_URL = "http://127.0.0.1:9003/hook"
+SUTRA_HOOK_URL = "http://127.0.0.1:9003/hook"
 QUEUE_FILE = Path(__file__).resolve().parent.parent.parent / ".agents" / "prompt_queue.json"
 DEBUG_LOG = Path(__file__).resolve().parent / "bridge_debug.log"
 
@@ -29,12 +29,12 @@ def log_debug(msg: str):
         pass
 
 
-def post_to_blinky(payload: dict, timeout: float = 0.5) -> dict | None:
+def post_to_sutra(payload: dict, timeout: float = 0.5) -> dict | None:
     """Send hook payload to sutra desktop server on loopback port 9003 (fast, non-blocking)."""
     try:
         data_bytes = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
-            BLINKY_HOOK_URL,
+            SUTRA_HOOK_URL,
             data=data_bytes,
             headers={"Content-Type": "application/json"},
             method="POST",
@@ -82,7 +82,7 @@ def handle_pre_tool_use(data: dict) -> dict:
     detail = format_tool_detail(tool_name, tool_args)
 
     # Stream real-time progress to sutra mobile chatbar
-    post_to_blinky({
+    post_to_sutra({
         "event": "Progress",
         "tool": tool_name,
         "detail": detail,
@@ -100,7 +100,7 @@ def handle_post_tool_use(data: dict) -> dict:
     """Handle PostToolUse event: stream step finish to sutra mobile."""
     err = data.get("error", "")
     conv_id = data.get("conversationId", "")
-    post_to_blinky({
+    post_to_sutra({
         "event": "Progress",
         "tool": "step_done",
         "detail": f"Step error: {err[:50]}" if err else "Step completed",
@@ -164,7 +164,7 @@ def handle_stop(data: dict) -> dict:
         "output": output_text,
         "timestamp": int(time.time()),
     }
-    post_to_blinky(payload, timeout=3.0)
+    post_to_sutra(payload, timeout=3.0)
     return {}
 
 

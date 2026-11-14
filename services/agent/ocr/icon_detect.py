@@ -40,7 +40,7 @@ _INPUT_SIZE = 640
 
 
 def model_path() -> Path:
-    override = os.environ.get("BLINKY_ICON_MODEL_PATH", "").strip()
+    override = os.environ.get("SUTRA_ICON_MODEL_PATH", "").strip()
     if override:
         return Path(override)
     here = Path(__file__).resolve()
@@ -130,12 +130,12 @@ def detect_icons(
 
     if conf_thresh is None:
         try:
-            conf_thresh = float(os.environ.get("BLINKY_ICON_CONF", str(_DEFAULT_CONF)))
+            conf_thresh = float(os.environ.get("SUTRA_ICON_CONF", str(_DEFAULT_CONF)))
         except ValueError:
             conf_thresh = _DEFAULT_CONF
     if iou_thresh is None:
         try:
-            iou_thresh = float(os.environ.get("BLINKY_ICON_IOU", str(_DEFAULT_IOU)))
+            iou_thresh = float(os.environ.get("SUTRA_ICON_IOU", str(_DEFAULT_IOU)))
         except ValueError:
             iou_thresh = _DEFAULT_IOU
 

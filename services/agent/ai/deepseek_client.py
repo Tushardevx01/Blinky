@@ -20,10 +20,10 @@ DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash-free"
 def ask_deepseek_text(prompt: str, max_tokens: int = 0) -> dict[str, Any]:
     api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
-        raise RuntimeError("DEEPSEEK_API_KEY is required when BLINKY_AI_PROVIDER=deepseek.")
+        raise RuntimeError("DEEPSEEK_API_KEY is required when SUTRA_AI_PROVIDER=deepseek.")
 
-    url = os.getenv("BLINKY_DEEPSEEK_URL", DEFAULT_BASE_URL).strip().rstrip("/")
-    model = os.getenv("BLINKY_DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL).strip() or DEFAULT_DEEPSEEK_MODEL
+    url = os.getenv("SUTRA_DEEPSEEK_URL", DEFAULT_BASE_URL).strip().rstrip("/")
+    model = os.getenv("SUTRA_DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL).strip() or DEFAULT_DEEPSEEK_MODEL
 
     try:
         response = requests.post(

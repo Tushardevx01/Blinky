@@ -87,7 +87,7 @@ def test_model_loading():
     from openwakeword.model import Model
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, "hey_blinky.onnx")
+    model_path = os.path.join(script_dir, "hey_sutra.onnx")
 
     print(f"Checking model file at: {model_path}")
     if not os.path.exists(model_path):
@@ -122,7 +122,7 @@ def test_live_detection(duration=10, threshold=0.25):
     from openwakeword.model import Model
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, "hey_blinky.onnx")
+    model_path = os.path.join(script_dir, "hey_sutra.onnx")
     oww_model = Model(wakeword_models=[model_path])
 
     selected_idx = get_best_microphone_index(sd)

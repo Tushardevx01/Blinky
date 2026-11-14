@@ -1431,7 +1431,7 @@ def _check_grim_available() -> bool:
 
         # grim may be installed but unusable on non-wlroots compositors like KDE/KWin.
         # Verify it can actually capture before selecting the grim screenshot path.
-        test_path = Path(tempfile.gettempdir()) / f"blinky_grim_probe_{os.getpid()}.png"
+        test_path = Path(tempfile.gettempdir()) / f"sutra_grim_probe_{os.getpid()}.png"
         result = subprocess.run(
             ["grim", str(test_path)], capture_output=True, timeout=5
         )
@@ -1480,7 +1480,7 @@ def _backend_error(action: str) -> ToolResult | None:
     to turn a working Linux path into a hard failure.
 
     On Windows/macOS the gate matters: when no backend is active (cua-driver
-    missing, unhealthy, or `BLINKY_COMPUTER_USE_BACKEND=native`) we return a
+    missing, unhealthy, or `SUTRA_COMPUTER_USE_BACKEND=native`) we return a
     clear failure so callers fall back to the legacy Rust SendInput path.
     """
     if IS_LINUX:
@@ -1918,7 +1918,7 @@ def _screenshot_temp_dir() -> Path:
     except Exception:
         import tempfile
 
-        temp_dir = Path(tempfile.gettempdir()) / "blinky_grim"
+        temp_dir = Path(tempfile.gettempdir()) / "sutra_grim"
         temp_dir.mkdir(parents=True, exist_ok=True)
         LOGGER.warning(
             "Falling back to tempfile.gettempdir for grim captures: %s", temp_dir
@@ -1983,7 +1983,7 @@ def screenshot_tool() -> ToolResult:
 
     global _SCREENSHOT_COUNTER
     _SCREENSHOT_COUNTER += 1
-    mode = os.environ.get("BLINKY_SCREENSHOT_MODE", "ocr").strip().lower()
+    mode = os.environ.get("SUTRA_SCREENSHOT_MODE", "ocr").strip().lower()
 
     ocr_items: list[dict[str, Any]] = []
     window_bounds: dict[str, Any] | None = None

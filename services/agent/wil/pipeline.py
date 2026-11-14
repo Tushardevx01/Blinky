@@ -31,7 +31,7 @@ class WILPipeline:
         # Priority: explicit arg → env var → local Docker → None (auto-discover)
         self.searxng_url = (
             base_url
-            or os.environ.get("BLINKY_SEARXNG_URL")
+            or os.environ.get("SUTRA_SEARXNG_URL")
             or "http://127.0.0.1:8888"
         )
         self._active_url: Optional[str] = None  # resolved after first health-check

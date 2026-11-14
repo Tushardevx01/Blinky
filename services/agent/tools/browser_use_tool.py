@@ -81,7 +81,7 @@ def get_existing_browser_endpoint() -> str | None:
 
     # 1. Environment variable override
     configured = (
-        os.getenv("BLINKY_BROWSER_CDP_URL")
+        os.getenv("SUTRA_BROWSER_CDP_URL")
         or os.getenv("DIGITALSOUL_BROWSER_CDP_URL")
         or os.getenv("DIGITALSOUL_EDGE_CDP_URL")
     )
@@ -128,7 +128,7 @@ async def run_browser_task(
     cursor_sink=None,
 ) -> dict[str, Any]:
     """Execute an autonomous web browsing task using browser-use and Microsoft Edge/Chrome."""
-    engine = os.getenv("BLINKY_BROWSER_ENGINE", "agent-browser").strip().lower()
+    engine = os.getenv("SUTRA_BROWSER_ENGINE", "agent-browser").strip().lower()
     if engine == "agent-browser":
         from computer_use.vercel_engine import run_task
         from computer_use.browser_context import browser_continuation
@@ -140,16 +140,16 @@ async def run_browser_task(
         return await asyncio.to_thread(run_task, task, "agent-browser", max_steps, endpoint, cursor_sink=cursor_sink,
                                        previous_actions=history)
     if engine != "browser_use":
-        raise ValueError("BLINKY_BROWSER_ENGINE must be agent-browser or browser_use.")
+        raise ValueError("SUTRA_BROWSER_ENGINE must be agent-browser or browser_use.")
 
     from browser_use import Agent, Browser
 
     if headless is None:
-        headless_val = os.getenv("BLINKY_BROWSER_HEADLESS", "false").strip().lower()
+        headless_val = os.getenv("SUTRA_BROWSER_HEADLESS", "false").strip().lower()
         headless = headless_val in {"1", "true", "yes", "on"}
 
     if channel is None:
-        channel = os.getenv("BLINKY_BROWSER_CHANNEL", "msedge").strip() or "msedge"
+        channel = os.getenv("SUTRA_BROWSER_CHANNEL", "msedge").strip() or "msedge"
 
     if cdp_url is None:
         cdp_url = get_existing_browser_endpoint()

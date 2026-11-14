@@ -16,12 +16,12 @@ class OmniParserProvider(OcrProvider):
     """Screen parser provider that uses Microsoft OmniParser.
 
     Supports:
-    1. Remote API (via BLINKY_OMNIPARSER_API_URL environment variable) - Recommended.
+    1. Remote API (via SUTRA_OMNIPARSER_API_URL environment variable) - Recommended.
     2. Local Inference (requires torch, torchvision, ultralytics, timm, and downloaded weights).
     """
 
     def __init__(self) -> None:
-        self.api_url = os.environ.get("BLINKY_OMNIPARSER_API_URL", "").strip()
+        self.api_url = os.environ.get("SUTRA_OMNIPARSER_API_URL", "").strip()
         self.local_available = False
 
         if self.api_url:
@@ -221,7 +221,7 @@ class OmniParserProvider(OcrProvider):
         import torch
         from ultralytics import YOLO
 
-        model_dir = os.environ.get("BLINKY_OMNIPARSER_MODEL_DIR", "weights/omniparser").strip()
+        model_dir = os.environ.get("SUTRA_OMNIPARSER_MODEL_DIR", "weights/omniparser").strip()
         yolo_path = Path(model_dir) / "icon_detect" / "model.pt"
 
         if not yolo_path.exists():

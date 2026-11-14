@@ -65,7 +65,7 @@ def test_groq_vision_retries_without_response_format_after_json_validate_failed(
     second = response(True, groq_body('{"summary":"Done","steps":[]}'))
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_MODEL": "test-model"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_MODEL": "test-model"}),
         patch("ai.groq_client.requests.post", side_effect=[first, second]) as post,
     ):
         result = ask_groq_vision("Return JSON", screenshot)
@@ -81,7 +81,7 @@ def test_groq_text_retries_without_response_format_after_json_validate_failed() 
     second = response(True, groq_body('{"needs_screen":false,"is_continuation":false}'))
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_MODEL": "test-model"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_MODEL": "test-model"}),
         patch("ai.groq_client.requests.post", side_effect=[first, second]) as post,
     ):
         result = ask_groq_text("Return JSON")
@@ -101,7 +101,7 @@ def test_groq_vision_retries_on_rate_limit_and_succeeds(tmp_path: Path) -> None:
     ok_resp = response(True, groq_body('{"summary":"Recovered after 429","steps":[]}'))
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_MODEL": "test-model"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_MODEL": "test-model"}),
         patch("ai.groq_client.requests.post", side_effect=[rate_err, ok_resp]) as post,
         patch("ai.groq_client.time.sleep") as mock_sleep,
     ):
@@ -122,7 +122,7 @@ def test_groq_vision_raises_helpful_error_when_rate_limit_exceeded(tmp_path: Pat
     rate_err3 = rate_limit_error(wait_s=0.1)
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_MODEL": "test-model"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_MODEL": "test-model"}),
         patch("ai.groq_client.requests.post", side_effect=[rate_err1, rate_err2, rate_err3]),
         patch("ai.groq_client.time.sleep"),
     ):
@@ -183,7 +183,7 @@ def test_groq_vision_retries_as_text_when_messages_content_must_be_string(tmp_pa
     second = response(True, groq_body('{"summary":"Parsed successfully from text","steps":[]}'))
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_MODEL": "openai/gpt-oss-120b"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_MODEL": "openai/gpt-oss-120b"}),
         patch("ai.groq_client.requests.post", side_effect=[first, second]) as post,
     ):
         result = ask_groq_vision("Look at this screen and guide", screenshot)
@@ -214,7 +214,7 @@ def test_groq_vision_retries_with_default_model_when_model_not_found(tmp_path: P
     ok_resp = response(True, groq_body('{"summary":"Recovered with default model","steps":[]}'))
 
     with (
-        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "BLINKY_GROQ_VISION_MODEL": "non-existent-model"}),
+        patch.dict("os.environ", {"GROQ_API_KEY": "test-key", "SUTRA_GROQ_VISION_MODEL": "non-existent-model"}),
         patch("ai.groq_client.requests.post", side_effect=[not_found_err, ok_resp]) as post,
     ):
         result = ask_groq_vision("Look at this screen", screenshot)

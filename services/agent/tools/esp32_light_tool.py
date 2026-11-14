@@ -129,7 +129,7 @@ COLOR_MAP = {
 
 
 def send_to_esp32(r: int, g: int, b: int, ip: str = DEFAULT_ESP32_IP, timeout: float = 1.5) -> dict:
-    """Send RGB values to ESP32 /rgb endpoint (firmware: BlinkyUniversalDaemon).
+    """Send RGB values to ESP32 /rgb endpoint (firmware: SutraUniversalDaemon).
 
     Fast-first: tries the last-known-good host, then the configured IP, then
     mDNS. Short timeout because a healthy daemon answers in milliseconds;

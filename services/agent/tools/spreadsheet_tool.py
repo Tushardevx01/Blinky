@@ -396,13 +396,13 @@ def find_open_spreadsheet_window(preferred_app: str | None = None) -> dict[str, 
             import ctypes
             user32 = ctypes.windll.user32
             hwnd = user32.GetTopWindow(None)
-            blinky_pids = {os.getpid(), os.getppid()}
+            sutra_pids = {os.getpid(), os.getppid()}
 
             while hwnd:
                 if user32.IsWindowVisible(hwnd) and not user32.IsIconic(hwnd):
                     pid = ctypes.c_ulong()
                     user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
-                    if pid.value not in blinky_pids:
+                    if pid.value not in sutra_pids:
                         length = user32.GetWindowTextLengthW(hwnd)
                         if length > 0:
                             buf = ctypes.create_unicode_buffer(length + 1)

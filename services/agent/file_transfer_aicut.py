@@ -38,8 +38,8 @@ def run_transfer_edit(
             return {"success": False, "error": f"The uploaded file is unavailable: {source.name}"}
 
     primary_source = sources[0]
-    output_dir = _normalize_path(os.environ["BLINKY_TRANSFER_OUTPUT_DIR"])
-    transfer_id = os.environ["BLINKY_TRANSFER_ID"]
+    output_dir = _normalize_path(os.environ["SUTRA_TRANSFER_OUTPUT_DIR"])
+    transfer_id = os.environ["SUTRA_TRANSFER_ID"]
 
     isolated_explorer = {
         "active_directory": None,

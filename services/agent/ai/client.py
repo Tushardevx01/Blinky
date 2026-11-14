@@ -23,7 +23,7 @@ LOGGER = get_logger("sutra.ai.client")
 
 
 def _resolve_provider() -> str:
-    provider = os.getenv("BLINKY_AI_PROVIDER", "").strip().lower()
+    provider = os.getenv("SUTRA_AI_PROVIDER", "").strip().lower()
     if provider:
         return provider
     if not (os.getenv("GROQ_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")):
@@ -74,7 +74,7 @@ def ask_model(prompt: str, screenshot_path: Path) -> dict[str, Any]:
         raise primary_err
 
     raise RuntimeError(
-        "Unsupported BLINKY_AI_PROVIDER. Use 'ollama', 'groq', 'gemini', 'deepseek', 'mimo', or 'custom'."
+        "Unsupported SUTRA_AI_PROVIDER. Use 'ollama', 'groq', 'gemini', 'deepseek', 'mimo', or 'custom'."
     )
 
 
@@ -117,7 +117,7 @@ def ask_text_model(prompt: str, max_tokens: int = 300) -> dict[str, Any]:
         raise primary_err
 
     raise RuntimeError(
-        "Unsupported BLINKY_AI_PROVIDER. Use 'ollama', 'groq', 'gemini', 'deepseek', 'mimo', or 'custom'."
+        "Unsupported SUTRA_AI_PROVIDER. Use 'ollama', 'groq', 'gemini', 'deepseek', 'mimo', or 'custom'."
     )
 
 
@@ -128,7 +128,7 @@ def get_provider_label() -> str:
 
 
 def has_vision_capability() -> bool:
-    provider = (os.getenv("BLINKY_AI_PROVIDER", "").strip() or "").lower()
+    provider = (os.getenv("SUTRA_AI_PROVIDER", "").strip() or "").lower()
     if provider == "custom":
         from ai.custom_client import has_vision_capability as _custom_vision
 

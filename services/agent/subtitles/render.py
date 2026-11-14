@@ -28,7 +28,7 @@ def render_ass(srt_path: str | Path, preset_name: str, words_data: list[dict] | 
 def _write_temp_ass(srt_path: str | Path, preset_name: str, words_data: list[dict] | None = None) -> Path:
     import tempfile
 
-    fd, tmp = tempfile.mkstemp(suffix=".ass", prefix="blinky_subs_")
+    fd, tmp = tempfile.mkstemp(suffix=".ass", prefix="sutra_subs_")
     import os
 
     os.close(fd)

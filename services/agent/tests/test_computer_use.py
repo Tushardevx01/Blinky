@@ -8,8 +8,8 @@ from pathlib import Path
 PYTHON_ROOT = Path(__file__).resolve().parent / "common" / "python"
 sys.path.insert(0, str(PYTHON_ROOT))
 
-os.environ["BLINKY_AI_PROVIDER"] = "mimo"
-os.environ["BLINKY_SCREENSHOT_MODE"] = "ocr"
+os.environ["SUTRA_AI_PROVIDER"] = "mimo"
+os.environ["SUTRA_SCREENSHOT_MODE"] = "ocr"
 os.environ["MIMO_API_KEY"] = os.environ.get("DEEPSEEK_API_KEY", "")
 
 from computer_use.loop import run_computer_use_loop

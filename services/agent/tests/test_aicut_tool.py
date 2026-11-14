@@ -412,8 +412,8 @@ def test_file_transfer_aicut_multi_file_merge(tmp_path, monkeypatch):
     dance_path = find_candidate_file("dance.mp4")
     assert dance_path is not None
 
-    monkeypatch.setenv("BLINKY_TRANSFER_OUTPUT_DIR", str(tmp_path))
-    monkeypatch.setenv("BLINKY_TRANSFER_ID", "test-transfer-123")
+    monkeypatch.setenv("SUTRA_TRANSFER_OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setenv("SUTRA_TRANSFER_ID", "test-transfer-123")
 
     # Run transfer edit with 2 videos (using dance.mp4 twice) and an explicit merge instruction
     res = run_transfer_edit("merge these videos", dance_path, input_paths=[dance_path, dance_path])
@@ -593,7 +593,7 @@ def test_format_aicut_summary_silence():
 
 def test_reject_web_urls_and_browser_queries():
     web_queries = [
-        "go to https://instagram.com/blinky_ai and tell me the first comment of latest video",
+        "go to https://instagram.com/sutra_ai and tell me the first comment of latest video",
         "go to https://tiktok.com/@sutra and check the views",
         "open website https://youtube.com/watch?v=123",
         "visit https://twitter.com/ai and read the post",

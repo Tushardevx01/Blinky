@@ -79,9 +79,6 @@ test('STT preserves queued start and audio until the native WSS open event', asy
 });
 
 // Restore global values after all tests in this file.
-import { afterAll } from 'bun:test';
-afterAll(() => {
-  if (oldMode === undefined) delete process.env.VITE_BLINKY_TRANSPORT_MODE;
-  else process.env.VITE_BLINKY_TRANSPORT_MODE = oldMode;
-  (globalThis as any).window = previousWindow;
-});
+if (oldMode === undefined) delete process.env.VITE_SUTRA_TRANSPORT_MODE;
+else process.env.VITE_SUTRA_TRANSPORT_MODE = oldMode;
+(globalThis as any).window = previousWindow;

@@ -12,7 +12,7 @@ from typing import Any
 
 CursorEventSink = Callable[[str, int | None, int | None, str], None]
 _event_sink: contextvars.ContextVar[CursorEventSink | None] = contextvars.ContextVar(
-    "blinky_agent_cursor_event_sink", default=None
+    "sutra_agent_cursor_event_sink", default=None
 )
 
 

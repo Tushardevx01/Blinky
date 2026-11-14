@@ -9,7 +9,7 @@ LOGGER = logging.getLogger("sutra.reasoner")
 
 class Reasoner:
     def synthesize(self, query: str, context: str, callback: Callable[[str], None]) -> str:
-        provider = (os.getenv("BLINKY_AI_PROVIDER", "ollama").strip() or "ollama").lower()
+        provider = (os.getenv("SUTRA_AI_PROVIDER", "ollama").strip() or "ollama").lower()
         location_info = get_user_location()
         user_loc_str = location_info.get("display") or "Unknown"
         
@@ -34,10 +34,10 @@ Avoid mentioning system internal details (like "Playwright script output", "retr
 
         if provider == "groq" or (os.getenv("GROQ_API_KEY") and provider != "ollama"):
             api_key = os.getenv("GROQ_API_KEY", "").strip()
-            model = os.getenv("BLINKY_GROQ_MODEL", "qwen/qwen3.8-27b").strip() or "qwen/qwen3.8-27b"
+            model = os.getenv("SUTRA_GROQ_MODEL", "qwen/qwen3.8-27b").strip() or "qwen/qwen3.8-27b"
             if model in ("llama-3.3-70b-versatile", "llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview", "meta-llama/llama-4-scout-17b-16e-instruct"):
                 model = "qwen/qwen3.8-27b"
-            groq_url = os.getenv("BLINKY_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
+            groq_url = os.getenv("SUTRA_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
 
             try:
                 response = requests.post(
@@ -74,7 +74,7 @@ Avoid mentioning system internal details (like "Playwright script output", "retr
                 LOGGER.error(f"Groq synthesis failed: {e}")
                 handle_chunk(f"\n[Synthesis Error: {str(e)}]")
         else:
-            # Try ask_text_model from ai.client which respects BLINKY_AI_PROVIDER (mimo, deepseek, ollama, custom)
+            # Try ask_text_model from ai.client which respects SUTRA_AI_PROVIDER (mimo, deepseek, ollama, custom)
             try:
                 from ai.client import ask_text_model
                 res = ask_text_model(prompt, max_tokens=1024)
@@ -88,8 +88,8 @@ Avoid mentioning system internal details (like "Playwright script output", "retr
             except Exception as exc:
                 LOGGER.error(f"Synthesis failed via ask_text_model: {exc}")
                 # Fallback to direct Ollama attempt
-                ollama_url = os.getenv("BLINKY_OLLAMA_URL", "http://localhost:11434/api/generate").strip()
-                model = os.getenv("BLINKY_OLLAMA_MODEL", "gemma4:e4b").strip()
+                ollama_url = os.getenv("SUTRA_OLLAMA_URL", "http://localhost:11434/api/generate").strip()
+                model = os.getenv("SUTRA_OLLAMA_MODEL", "gemma4:e4b").strip()
                 try:
                     response = requests.post(
                         ollama_url,

@@ -5,9 +5,9 @@ from playwright.async_api import async_playwright
 
 class BrowserController:
     def __init__(self, channel: str | None = None, headless: bool | None = None):
-        self.channel = channel or os.getenv("BLINKY_BROWSER_CHANNEL", "msedge").strip() or "msedge"
+        self.channel = channel or os.getenv("SUTRA_BROWSER_CHANNEL", "msedge").strip() or "msedge"
         if headless is None:
-            headless_value = os.getenv("BLINKY_BROWSER_HEADLESS", "false").strip().lower()
+            headless_value = os.getenv("SUTRA_BROWSER_HEADLESS", "false").strip().lower()
             headless = headless_value in {"1", "true", "yes", "on"}
         self.headless = headless
         self._playwright = None

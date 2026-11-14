@@ -371,7 +371,7 @@ class PostInstallApp:
                     self.root.after(0, self.update_status, "Launching Docker Desktop Installer...")
                     subprocess.Popen([installer_path])
                     
-                    self.root.after(0, self.set_env_var, "BLINKY_SEARXNG_URL", "http://127.0.0.1:8888")
+                    self.root.after(0, self.set_env_var, "SUTRA_SEARXNG_URL", "http://127.0.0.1:8888")
                     time.sleep(2)
                 except Exception as e:
                     self.root.after(0, self.update_status, f"Docker download failed: {e}", "#f87171")
@@ -399,13 +399,13 @@ class PostInstallApp:
                                 break
                         else:
                             self.root.after(0, self.update_status, "Docker did not start in time. Please open Docker Desktop manually and re-run setup.", "#f87171")
-                            self.root.after(0, self.set_env_var, "BLINKY_SEARXNG_URL", "http://127.0.0.1:8888")
+                            self.root.after(0, self.set_env_var, "SUTRA_SEARXNG_URL", "http://127.0.0.1:8888")
                             time.sleep(4)
                             self.root.after(0, self.complete_installation)
                             return
                     else:
                         self.root.after(0, self.update_status, "Could not find Docker Desktop.exe. Please start Docker manually.", "#f87171")
-                        self.root.after(0, self.set_env_var, "BLINKY_SEARXNG_URL", "http://127.0.0.1:8888")
+                        self.root.after(0, self.set_env_var, "SUTRA_SEARXNG_URL", "http://127.0.0.1:8888")
                         time.sleep(4)
                         self.root.after(0, self.complete_installation)
                         return
@@ -425,7 +425,7 @@ class PostInstallApp:
                     
                     if res.returncode == 0:
                         self.root.after(0, self.update_status, "Local SearXNG container started successfully!", self.success_color)
-                        self.root.after(0, self.set_env_var, "BLINKY_SEARXNG_URL", "http://127.0.0.1:8888")
+                        self.root.after(0, self.set_env_var, "SUTRA_SEARXNG_URL", "http://127.0.0.1:8888")
                     else:
                         self.root.after(0, self.update_status, f"Docker Compose error: {res.stderr or res.stdout}", "#f87171")
                     time.sleep(2)
@@ -434,7 +434,7 @@ class PostInstallApp:
                     time.sleep(3)
         else:
             # If not explicitly starting docker, still write the default URL so it works once docker starts
-            self.root.after(0, self.set_env_var, "BLINKY_SEARXNG_URL", "http://127.0.0.1:8888")
+            self.root.after(0, self.set_env_var, "SUTRA_SEARXNG_URL", "http://127.0.0.1:8888")
 
         self.root.after(0, self.complete_installation)
 

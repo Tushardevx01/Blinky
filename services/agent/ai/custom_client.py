@@ -34,11 +34,11 @@ def _config() -> tuple[str, str, str]:
       - base:     https://opencode.ai/zen/v1            (client appends /chat/completions)
       - full:     https://opencode.ai/zen/v1/chat/completions  (normalized to base)
     """
-    base_url = os.getenv("BLINKY_CUSTOM_URL", DEFAULT_BASE_URL).strip().rstrip("/")
+    base_url = os.getenv("SUTRA_CUSTOM_URL", DEFAULT_BASE_URL).strip().rstrip("/")
     if base_url.endswith("/chat/completions"):
         base_url = base_url[: -len("/chat/completions")].rstrip("/")
     api_key = os.getenv("CUSTOM_API_KEY", "").strip()
-    model = os.getenv("BLINKY_CUSTOM_MODEL", "").strip() or DEFAULT_CUSTOM_MODEL
+    model = os.getenv("SUTRA_CUSTOM_MODEL", "").strip() or DEFAULT_CUSTOM_MODEL
     return base_url, api_key, model
 
 

@@ -17,16 +17,16 @@ import time
 import urllib.request
 from pathlib import Path
 
-BLINKY_HOOK_URL = "http://127.0.0.1:9003/hook"
+SUTRA_HOOK_URL = "http://127.0.0.1:9003/hook"
 QUEUE_FILE = Path(__file__).resolve().parent.parent.parent / ".agents" / "prompt_queue.json"
 
 
-def post_to_blinky(payload: dict, timeout: float = 2.0) -> dict | None:
+def post_to_sutra(payload: dict, timeout: float = 2.0) -> dict | None:
     """Send hook payload to sutra desktop server on loopback port 9003."""
     try:
         data_bytes = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
-            BLINKY_HOOK_URL,
+            SUTRA_HOOK_URL,
             data=data_bytes,
             headers={"Content-Type": "application/json"},
             method="POST",
@@ -90,7 +90,7 @@ def watch_transcript_for_completion(transcript_path: Path, start_line_count: int
     seen_lines = start_line_count
 
     # Notify mobile that prompt was submitted
-    post_to_blinky({
+    post_to_sutra({
         "event": "Progress",
         "tool": "antigravity",
         "detail": "Antigravity received prompt, thinking...",
@@ -127,7 +127,7 @@ def watch_transcript_for_completion(transcript_path: Path, start_line_count: int
                             name = tc.get("name", "")
                             args = tc.get("args", {})
                             detail = format_tool_detail(name, args)
-                            post_to_blinky({
+                            post_to_sutra({
                                 "event": "Progress",
                                 "tool": name,
                                 "detail": detail,
@@ -138,7 +138,7 @@ def watch_transcript_for_completion(transcript_path: Path, start_line_count: int
                     if content and not tool_calls:
                         # Completed! Emit Stop with output to sutra mobile
                         print(f"[Actuator] Found final response (length={len(content)}), notifying sutra.")
-                        post_to_blinky({
+                        post_to_sutra({
                             "event": "Stop",
                             "output": content,
                             "terminationReason": "model_stop",
@@ -154,7 +154,7 @@ def watch_transcript_for_completion(transcript_path: Path, start_line_count: int
                     tool_calls = last_step.get("tool_calls", [])
                     if content and not tool_calls:
                         print(f"[Actuator] Session idle with final response (length={len(content)}).")
-                        post_to_blinky({
+                        post_to_sutra({
                             "event": "Stop",
                             "output": content,
                             "terminationReason": "model_stop",

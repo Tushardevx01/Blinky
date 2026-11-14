@@ -5,7 +5,7 @@ a process-wide singleton.
 
 Selection order:
 
-1. `BLINKY_COMPUTER_USE_BACKEND` env override —
+1. `SUTRA_COMPUTER_USE_BACKEND` env override —
    `auto` (default) | `cua` | `native` | `hyprland` | `gnome` | `kde`.
 2. On Windows / macOS: `cua` (cua-driver) when the driver is reachable,
    otherwise `native` — meaning "no Python backend; fall back to the Rust
@@ -40,7 +40,7 @@ _resolved = False
 
 
 def _requested() -> str:
-    return (os.environ.get("BLINKY_COMPUTER_USE_BACKEND") or "auto").strip().lower()
+    return (os.environ.get("SUTRA_COMPUTER_USE_BACKEND") or "auto").strip().lower()
 
 
 def _ensure_linux_backend_path() -> None:

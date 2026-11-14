@@ -21,7 +21,7 @@ class SearXNGClient:
     _cached_resolved_url = None
 
     def __init__(self, base_url: str = None):
-        self.configured_url = base_url or os.environ.get("BLINKY_SEARXNG_URL") or "http://127.0.0.1:8888"
+        self.configured_url = base_url or os.environ.get("SUTRA_SEARXNG_URL") or "http://127.0.0.1:8888"
         self.base_url = self.configured_url
 
     def _get_headers(self) -> Dict[str, str]:

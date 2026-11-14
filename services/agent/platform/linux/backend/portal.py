@@ -118,7 +118,7 @@ def _capture_python_dbus(timeout_seconds: int, interactive: bool = True) -> Path
 
     DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
-    token = f"blinky_{uuid.uuid4().hex}"
+    token = f"sutra_{uuid.uuid4().hex}"
     portal = bus.get_object(
         "org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop"
     )
@@ -189,7 +189,7 @@ from gi.repository import GLib
 try:
     DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
-    token = "blinky_" + uuid.uuid4().hex
+    token = "sutra_" + uuid.uuid4().hex
     portal = bus.get_object('org.freedesktop.portal.Desktop', '/org/freedesktop/portal/desktop')
     iface = dbus.Interface(portal, 'org.freedesktop.portal.Screenshot')
     loop = GLib.MainLoop()
@@ -249,7 +249,7 @@ def screen_cast_capture(timeout_seconds: int = 30) -> Path:
     import tempfile
     import uuid
 
-    token = f"blinky_{uuid.uuid4().hex[:8]}"
+    token = f"sutra_{uuid.uuid4().hex[:8]}"
     bus_addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS", "")
 
     inline = (
@@ -305,7 +305,7 @@ pipewire_fd = None
 for k, v in res.items():
     pass
 # 4. gst: grab one frame from the PipeWire node
-out_path = tempfile.mktemp(suffix='.png', prefix='blinky_sc_')
+out_path = tempfile.mktemp(suffix='.png', prefix='sutra_sc_')
 pipeline = (
     'pipewiresrc path=%(path)s keepalive-time=0 num-buffers=1 '
     '! videoconvert ! pngenc ! filesink location=%(out)s'

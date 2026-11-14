@@ -17,7 +17,7 @@ class _Backend:
         return {"ok": True}
 
 
-def test_click_uses_blinky_cursor_before_native_click_and_resets_after() -> None:
+def test_click_uses_sutra_cursor_before_native_click_and_resets_after() -> None:
     events: list[tuple] = []
     backend = _Backend(events)
 
@@ -32,7 +32,7 @@ def test_click_uses_blinky_cursor_before_native_click_and_resets_after() -> None
     assert events[2] == ("done", None, None, "Store search")
 
 
-def test_move_uses_blinky_cursor_without_moving_cua_driver_cursor() -> None:
+def test_move_uses_sutra_cursor_without_moving_cua_driver_cursor() -> None:
     events: list[tuple] = []
 
     class Backend:

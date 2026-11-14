@@ -10,8 +10,8 @@ def _run(tmp_path, monkeypatch, names, instruction):
         path.write_bytes(b"uploaded")
         sources.append(str(path))
     output_dir = tmp_path / "output"
-    monkeypatch.setenv("BLINKY_TRANSFER_OUTPUT_DIR", str(output_dir))
-    monkeypatch.setenv("BLINKY_TRANSFER_ID", "remote-test")
+    monkeypatch.setenv("SUTRA_TRANSFER_OUTPUT_DIR", str(output_dir))
+    monkeypatch.setenv("SUTRA_TRANSFER_ID", "remote-test")
     requests = []
 
     def fake_run(request):

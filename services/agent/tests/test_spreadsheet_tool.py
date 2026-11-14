@@ -122,7 +122,7 @@ class TestSpreadsheetTool(unittest.TestCase):
 
     @patch("tools.spreadsheet_tool.set_system_clipboard", return_value=True)
     @patch("tools.spreadsheet_tool.find_open_spreadsheet_window")
-    def test_run_spreadsheet_tool_returns_clean_blinky_result(
+    def test_run_spreadsheet_tool_returns_clean_sutra_result(
         self, mock_find_win, mock_clipboard
     ):
         mock_find_win.return_value = {

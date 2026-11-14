@@ -10,9 +10,9 @@ from computer_use import vercel_engine as v
 @pytest.fixture(autouse=True)
 def isolate(monkeypatch, tmp_path):
     monkeypatch.setattr(v, "ROOT", tmp_path)
-    monkeypatch.setenv("BLINKY_DESKTOP_ENGINE", "agent-desktop")
-    monkeypatch.setenv("BLINKY_BROWSER_ENGINE", "agent-browser")
-    monkeypatch.delenv("BLINKY_BROWSER_CDP_URL", raising=False)
+    monkeypatch.setenv("SUTRA_DESKTOP_ENGINE", "agent-desktop")
+    monkeypatch.setenv("SUTRA_BROWSER_ENGINE", "agent-browser")
+    monkeypatch.delenv("SUTRA_BROWSER_CDP_URL", raising=False)
 
 
 def test_attach_only():

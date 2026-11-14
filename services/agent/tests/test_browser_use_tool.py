@@ -12,7 +12,7 @@ from tools.browser_use_tool import (
 from main import classify_request, run_browser_use_tool
 
 
-@patch.dict("os.environ", {"BLINKY_BROWSER_ENGINE": "browser_use", "BLINKY_DESKTOP_ENGINE": "legacy"})
+@patch.dict("os.environ", {"SUTRA_BROWSER_ENGINE": "browser_use", "SUTRA_DESKTOP_ENGINE": "legacy"})
 class BrowserUseToolTests(unittest.TestCase):
     def setUp(self):
         discovery = patch("tools.browser_use_tool.get_existing_browser_endpoint", return_value=None)
@@ -28,8 +28,8 @@ class BrowserUseToolTests(unittest.TestCase):
             "click on login button on https://example.com",
             "extract the data from https://weather.com",
             "run browser-use to find cheap flights on kayak.com",
-            "go to https://instagram.com/blinky_ai and tell me the first comment of latest video",
-            "tell me the first comment of latest video on https://instagram.com/blinky_ai",
+            "go to https://instagram.com/sutra_ai and tell me the first comment of latest video",
+            "tell me the first comment of latest video on https://instagram.com/sutra_ai",
         ]
         for q in valid_queries:
             res = resolve_browser_use_request(q)
@@ -107,12 +107,12 @@ class BrowserUseToolTests(unittest.TestCase):
         self.assertEqual(res["extracted_params"]["action"], "browser_use")
 
     def test_classify_request_routes_instagram_url_to_browser_use(self):
-        res = classify_request("go to https://instagram.com/blinky_ai and tell me the first comment of latest video", None, [])
+        res = classify_request("go to https://instagram.com/sutra_ai and tell me the first comment of latest video", None, [])
         self.assertEqual(res["intent"], "BROWSER_USE")
         self.assertNotEqual(res["intent"], "VIDEO_EDIT")
 
     @patch("tools.browser_use_tool.run_browser_task")
-    def test_run_browser_use_tool_returns_clean_blinky_result(self, mock_run_task):
+    def test_run_browser_use_tool_returns_clean_sutra_result(self, mock_run_task):
         mock_run_task.return_value = {
             "success": True,
             "action": "browser_use",

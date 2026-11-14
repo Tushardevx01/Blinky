@@ -152,7 +152,7 @@ def resample_to_16k(audio_data, native_sr, resample_poly_fn):
     return resample_poly_fn(audio_data, up, down).astype(np.int16)
 
 
-def start_wake_word_detector(model_name="hey_blinky.onnx", threshold=0.25, verbose=True):
+def start_wake_word_detector(model_name="hey_sutra.onnx", threshold=0.25, verbose=True):
     """Captures microphone audio, resamples cleanly to 16kHz, and emits WAKE_WORD_DETECTED."""
     threading.Thread(target=stdin_listener, daemon=True).start()
 
@@ -268,7 +268,7 @@ def start_wake_word_detector(model_name="hey_blinky.onnx", threshold=0.25, verbo
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OpenWakeWord Detector")
-    parser.add_argument("--model", type=str, default="hey_blinky.onnx", help="Model name or path to custom .onnx model")
+    parser.add_argument("--model", type=str, default="hey_sutra.onnx", help="Model name or path to custom .onnx model")
     parser.add_argument("--threshold", type=float, default=0.25, help="Confidence threshold for wake word detection")
     parser.add_argument("--verbose", action="store_true", help="Show live audio debug logs")
     args = parser.parse_args()

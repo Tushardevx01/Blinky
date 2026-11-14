@@ -53,8 +53,8 @@ def ping_ai_model(
                     "error": "Missing Groq API Key",
                     "details": "Please enter a valid Groq API key."
                 }
-            active_model = (model or os.getenv("BLINKY_GROQ_MODEL", "qwen/qwen3.8-27b")).strip() or "qwen/qwen3.8-27b"
-            url = os.getenv("BLINKY_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
+            active_model = (model or os.getenv("SUTRA_GROQ_MODEL", "qwen/qwen3.8-27b")).strip() or "qwen/qwen3.8-27b"
+            url = os.getenv("SUTRA_GROQ_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
             resp = requests.post(
                 url,
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
@@ -186,8 +186,8 @@ def ping_ai_model(
                 }
 
         elif prov == "ollama":
-            base_url = (custom_url or os.getenv("BLINKY_OLLAMA_URL", "http://127.0.0.1:11434")).rstrip("/")
-            active_model = (model or os.getenv("BLINKY_OLLAMA_MODEL", "qwen2.5:7b")).strip()
+            base_url = (custom_url or os.getenv("SUTRA_OLLAMA_URL", "http://127.0.0.1:11434")).rstrip("/")
+            active_model = (model or os.getenv("SUTRA_OLLAMA_MODEL", "qwen2.5:7b")).strip()
             url = f"{base_url}/api/generate"
             resp = requests.post(
                 url,
@@ -218,7 +218,7 @@ def ping_ai_model(
 
         elif prov in ("custom", "openai"):
             key = (api_key or os.getenv("CUSTOM_API_KEY", "")).strip()
-            base_url = (custom_url or os.getenv("BLINKY_CUSTOM_URL", "")).rstrip("/")
+            base_url = (custom_url or os.getenv("SUTRA_CUSTOM_URL", "")).rstrip("/")
             if not base_url:
                 return {
                     "ok": False,
@@ -230,7 +230,7 @@ def ping_ai_model(
                     "details": "Please enter custom OpenAI-compatible endpoint URL."
                 }
             endpoint = f"{base_url}/chat/completions" if not base_url.endswith("/chat/completions") else base_url
-            active_model = (model or os.getenv("BLINKY_CUSTOM_MODEL", "default")).strip()
+            active_model = (model or os.getenv("SUTRA_CUSTOM_MODEL", "default")).strip()
             headers = {"Content-Type": "application/json"}
             if key:
                 headers["Authorization"] = f"Bearer {key}"

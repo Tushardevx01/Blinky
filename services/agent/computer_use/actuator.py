@@ -10,7 +10,7 @@ Dispatch:
                  Hyprland/GNOME/KDE backend. Behaviour is unchanged.
   - **Windows / macOS** → drives the `cua-driver` backend in the background.
   - **native fallback** → when no Python backend is available (driver missing,
-                 unhealthy, or `BLINKY_COMPUTER_USE_BACKEND=native`), every
+                 unhealthy, or `SUTRA_COMPUTER_USE_BACKEND=native`), every
                  call returns a structured failure so callers fall back to the
                  legacy Rust `SendInput` path. This is what makes the swap
                  reversible.

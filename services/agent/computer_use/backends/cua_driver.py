@@ -24,7 +24,7 @@ background delivery is genuinely impossible the driver returns a structured
 
 We honour that contract: we do NOT pass `foreground` preemptively. Escalation
 happens only in response to that specific error, and only when
-`allow_foreground` is enabled (env `BLINKY_CUA_ALLOW_FOREGROUND`, default on)
+`allow_foreground` is enabled (env `SUTRA_CUA_ALLOW_FOREGROUND`, default on)
 so behaviour never regresses below today's always-foreground SendInput path.
 
 Coordinate space
@@ -101,7 +101,7 @@ _DEAD_SESSION_MARKERS = (
     "revive it",
 )
 
-_SCREENSHOT_DIR = Path(tempfile.gettempdir()) / "blinky_cua"
+_SCREENSHOT_DIR = Path(tempfile.gettempdir()) / "sutra_cua"
 
 
 def _resolve_binary() -> str | None:
@@ -498,14 +498,14 @@ class CuaDriverBackend(ComputerUseBackend):
         # cursor setting and snapshot cache. The transport revives idle-expired
         # sessions and reapplies the hidden-driver-cursor preference.
         if session is None:
-            session = os.environ.get("BLINKY_CUA_SESSION") or "sutra"
+            session = os.environ.get("SUTRA_CUA_SESSION") or "sutra"
         self._session = session
 
         self._transport: _CuaTransport | None = None
         self._started = False
 
         if allow_foreground is None:
-            allow_foreground = os.environ.get("BLINKY_CUA_ALLOW_FOREGROUND", "1") not in {"0", "false", "False"}
+            allow_foreground = os.environ.get("SUTRA_CUA_ALLOW_FOREGROUND", "1") not in {"0", "false", "False"}
         self.allow_foreground = allow_foreground
 
         self._screen_size_cache: tuple[int, int] | None = None

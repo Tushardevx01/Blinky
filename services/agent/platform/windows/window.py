@@ -158,7 +158,7 @@ def _get_target_window_element_impl(window=None, target_pid: int | None = None):
         user32 = ctypes.windll.user32
         
         # Get sutra processes (current python process and parent tauri process)
-        blinky_pids = {os.getpid(), os.getppid()}
+        sutra_pids = {os.getpid(), os.getppid()}
             
         next_hwnd = user32.GetForegroundWindow() if user32.GetForegroundWindow() else user32.GetTopWindow(None)
         
@@ -181,7 +181,7 @@ def _get_target_window_element_impl(window=None, target_pid: int | None = None):
                     continue
  
                 # Skip sutra's own windows
-                if pid in blinky_pids:
+                if pid in sutra_pids:
                     next_hwnd = user32.GetWindow(next_hwnd, 2)
                     continue
                     

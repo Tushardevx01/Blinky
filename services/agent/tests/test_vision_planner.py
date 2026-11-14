@@ -145,7 +145,7 @@ def test_plan_action_metrics_logged_on_error(mock_ask) -> None:
 def test_plan_action_scales_groq_vision_coordinates_to_native_pixels(mock_ask, tmp_path, monkeypatch) -> None:
     screenshot = tmp_path / "screen.png"
     Image.new("RGB", (2560, 1600)).save(screenshot)
-    monkeypatch.setenv("BLINKY_AI_PROVIDER", "groq")
+    monkeypatch.setenv("SUTRA_AI_PROVIDER", "groq")
     mock_ask.return_value = {
         "action": "mouse",
         "args": {"action": "click", "x": 384, "y": 240},
@@ -164,7 +164,7 @@ def test_plan_action_scales_groq_vision_coordinates_to_native_pixels(mock_ask, t
 def test_plan_action_keeps_custom_provider_native_coordinates(mock_ask, tmp_path, monkeypatch) -> None:
     screenshot = tmp_path / "screen.png"
     Image.new("RGB", (1280, 800)).save(screenshot)
-    monkeypatch.setenv("BLINKY_AI_PROVIDER", "custom")
+    monkeypatch.setenv("SUTRA_AI_PROVIDER", "custom")
     mock_ask.return_value = {
         "action": "mouse",
         "args": {"action": "click", "x": 384, "y": 240},

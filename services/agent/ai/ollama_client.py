@@ -18,8 +18,8 @@ DEFAULT_OLLAMA_TIMEOUT_SECONDS = 35
 
 
 def ask_ollama(prompt: str) -> dict[str, Any]:
-    ollama_url = os.getenv("BLINKY_OLLAMA_URL", DEFAULT_OLLAMA_URL).strip() or DEFAULT_OLLAMA_URL
-    model = os.getenv("BLINKY_OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL).strip() or DEFAULT_OLLAMA_MODEL
+    ollama_url = os.getenv("SUTRA_OLLAMA_URL", DEFAULT_OLLAMA_URL).strip() or DEFAULT_OLLAMA_URL
+    model = os.getenv("SUTRA_OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL).strip() or DEFAULT_OLLAMA_MODEL
     timeout_seconds = _ollama_timeout_seconds()
 
     last_error: Exception | None = None
@@ -59,8 +59,8 @@ def ask_ollama(prompt: str) -> dict[str, Any]:
 
 
 def ask_ollama_text(prompt: str, max_tokens: int = 300) -> dict[str, Any]:
-    ollama_url = os.getenv("BLINKY_OLLAMA_URL", DEFAULT_OLLAMA_URL).strip() or DEFAULT_OLLAMA_URL
-    model = os.getenv("BLINKY_OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL).strip() or DEFAULT_OLLAMA_MODEL
+    ollama_url = os.getenv("SUTRA_OLLAMA_URL", DEFAULT_OLLAMA_URL).strip() or DEFAULT_OLLAMA_URL
+    model = os.getenv("SUTRA_OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL).strip() or DEFAULT_OLLAMA_MODEL
     timeout_seconds = _ollama_timeout_seconds()
 
     try:
@@ -91,7 +91,7 @@ def ask_ollama_text(prompt: str, max_tokens: int = 300) -> dict[str, Any]:
 
 def _ollama_timeout_seconds() -> int:
     try:
-        return max(5, int(os.getenv("BLINKY_OLLAMA_TIMEOUT", str(DEFAULT_OLLAMA_TIMEOUT_SECONDS)).strip()))
+        return max(5, int(os.getenv("SUTRA_OLLAMA_TIMEOUT", str(DEFAULT_OLLAMA_TIMEOUT_SECONDS)).strip()))
     except ValueError:
         return DEFAULT_OLLAMA_TIMEOUT_SECONDS
 
