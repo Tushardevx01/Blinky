@@ -61,12 +61,13 @@ flowchart LR
     PyEngine["🧠 Python AI Engine<br/>(Screen & Voice / Wake Word)"]
     Hardware["🔌 Peripherals & OS<br/>(uinput / PipeWire / ESP32)"]
 
-    Mobile -->|WSS :9001 (TLS Pinning)| RustCore
-    Mobile -->|HTTP :9002 (16MB Chunk)| RustCore
+    Mobile -->|WSS TLS Pinning| RustCore
+    Mobile -->|Chunked File Stream| RustCore
     DesktopUI -->|Tauri IPC| RustCore
-    RustCore <-->|Local RPC / Sockets| PyEngine
+    RustCore -->|Local RPC| PyEngine
+    PyEngine -->|Action Dispatches| RustCore
     RustCore -->|Direct Actuation| Hardware
-    PyEngine -->|Antigravity Bridge :9003| Mobile
+    PyEngine -->|Antigravity Bridge| Mobile
 ```
 
 ```
