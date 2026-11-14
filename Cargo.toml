@@ -2,6 +2,7 @@
 members = [
     "crates/sutra-daemon",
     "crates/sutra-agent",
+    "crates/sutra-predict",
     "apps/desktop/src-tauri",
 ]
 resolver = "2"

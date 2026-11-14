@@ -1,9 +1,15 @@
+#[cfg(target_os = "linux")]
 use anyhow::Result;
+#[cfg(target_os = "linux")]
 use sutra_daemon::server::DaemonServer;
+#[cfg(target_os = "linux")]
 use std::path::PathBuf;
+#[cfg(target_os = "linux")]
 use tracing::info;
+#[cfg(target_os = "linux")]
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
+#[cfg(target_os = "linux")]
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::registry()
@@ -21,4 +27,9 @@ async fn main() -> Result<()> {
     server.run().await?;
 
     Ok(())
+}
+
+#[cfg(not(target_os = "linux"))]
+fn main() {
+    println!("sutra-daemon is currently supported on Linux (Wayland / X11).");
 }

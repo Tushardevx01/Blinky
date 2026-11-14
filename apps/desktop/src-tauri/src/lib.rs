@@ -1,8 +1,11 @@
 pub(crate) mod platform;
 mod file_transfer;
+pub(crate) mod predict_ipc;
 mod tls_identity;
 mod transport;
 mod websocket;
+
+use predict_ipc::*;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -1300,7 +1303,23 @@ pub fn run() {
             set_agent_cursor_visibility,
             get_cursor_position,
             open_notebook_window,
-            close_notebook_window
+            close_notebook_window,
+            predict_record_event,
+            predict_next_actions,
+            predict_get_workflow_insights,
+            predict_get_history,
+            predict_submit_feedback,
+            predict_get_metrics,
+            predict_get_recommendations,
+            predict_execute_recommendation,
+            predict_get_analytics_overview,
+            predict_set_tracking,
+            predict_clear_history,
+            predict_purge_data,
+            predict_seed_sample_data,
+            predict_run_evaluation,
+            open_predict_window,
+            close_predict_window
         ])
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
