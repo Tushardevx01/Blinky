@@ -54,6 +54,21 @@
         "visible": false,
         "resizable": true,
         "shadow": true
+      },
+      {
+        "label": "predict",
+        "title": "Sutra Predict — Predictive Analytics",
+        "url": "/predict",
+        "width": 1180,
+        "height": 780,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "visible": false,
+        "resizable": true,
+        "shadow": true
       }
     ],
     "security": {

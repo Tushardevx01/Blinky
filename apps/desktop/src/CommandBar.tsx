@@ -15,7 +15,8 @@ import {
   shouldCompleteStepOnHighlightClick,
   shouldShowSummaryBubble,
 } from './lib/guidance';
-import { runTutor, cancelTutor, showOverlay, hideOverlay, resizeCommandWindow, setCommandWindowSize, getSettings, saveSettings, resizeAndMoveCommandWindow, clickElement, clickScreenPoint, openUrl, openFolder, typeText, scrollAtPoint, pauseWakeWord, resumeWakeWord, logDebugMessage, confirmRecipeSave, setAgentCursorVisibility, getSecureTransportInfo, getMobilePairingPayload, regenerateRemoteToken, openNotebookWindow } from './lib/tauri';
+import { runTutor, cancelTutor, showOverlay, hideOverlay, resizeCommandWindow, setCommandWindowSize, getSettings, saveSettings, resizeAndMoveCommandWindow, clickElement, clickScreenPoint, openUrl, openFolder, typeText, scrollAtPoint, pauseWakeWord, resumeWakeWord, logDebugMessage, confirmRecipeSave, setAgentCursorVisibility, getSecureTransportInfo, getMobilePairingPayload, regenerateRemoteToken, openNotebookWindow, openPredictWindow, predictRecordEvent } from './lib/tauri';
+import { PredictDashboard } from './predict';
 
 import { linkCitationMarkers, preprocessMarkdown } from './lib/citations';
 import {
@@ -340,7 +341,7 @@ export function CommandBar() {
   const [geminiModelsList, setGeminiModelsList] = useState<DynamicModelItem[]>(DEFAULT_GEMINI_CATALOG);
   const [geminiModelsLoading, setGeminiModelsLoading] = useState<boolean>(false);
   const geminiFetchSeqRef = useRef<number>(0);
-  const [settingsTab, setSettingsTab] = useState<'agents' | 'keys' | 'mobile' | 'shortcuts' | 'about'>('agents');
+  const [settingsTab, setSettingsTab] = useState<'agents' | 'keys' | 'mobile' | 'shortcuts' | 'about' | 'predict'>('agents');
 
   const updateGeminiModel = (newModel: string) => {
     const clean = newModel.trim();
@@ -3029,6 +3030,18 @@ export function CommandBar() {
                 >
                   <BookOpen size={16} />
                 </button>
+                <button
+                  type="button"
+                  className="command-agent-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void openPredictWindow();
+                  }}
+                  disabled={isRunning || isTranscribing}
+                  title="Sutra Predict — Predictive Analytics"
+                >
+                  <Brain size={16} />
+                </button>
               </div>
               <div className="command-input-actions-right">
                 <button
@@ -3385,6 +3398,14 @@ export function CommandBar() {
                 >
                   <Command size={15} />
                   <span>Keybindings</span>
+                </button>
+                <button
+                  type="button"
+                  className={`settings-sidebar-btn ${settingsTab === 'predict' ? 'active' : ''}`}
+                  onClick={() => setSettingsTab('predict')}
+                >
+                  <Brain size={15} />
+                  <span>Sutra Predict</span>
                 </button>
                 <button
                   type="button"
@@ -4009,6 +4030,13 @@ export function CommandBar() {
                         <span className="settings-about-stat-val">{voiceProvider === 'assemblyai' ? 'AssemblyAI Realtime' : 'Sarvam Multilingual'}</span>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* TAB 6: SUTRA PREDICT */}
+                {settingsTab === 'predict' && (
+                  <div style={{ width: '100%', height: '540px', overflow: 'hidden' }}>
+                    <PredictDashboard isStandalone={false} />
                   </div>
                 )}
               </div>

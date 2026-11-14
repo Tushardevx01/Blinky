@@ -33,5 +33,6 @@ axum = { version = "0.8", features = ["macros"] }
 http = "1"
 sutra-agent = { path = "../../../crates/sutra-agent" }
 sutra-daemon = { path = "../../../crates/sutra-daemon" }
+sutra-predict = { path = "../../../crates/sutra-predict" }
 [target.'cfg(target_os = "windows")'.dependencies]
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Security", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_WindowsAndMessaging", "Win32_System_Console", "Win32_System_LibraryLoader", "Win32_Graphics_Gdi", "Win32_NetworkManagement_IpHelper", "Win32_System_SystemInformation", "Win32_System_Power", "Win32_System_StationsAndDesktops", "Win32_System_Threading"] }
