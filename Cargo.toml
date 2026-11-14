@@ -1,8 +1,7 @@
 [workspace]
 members = [
-    "crates/sutra-daemon",
-    "crates/sutra-agent",
-    "crates/sutra-predict",
-    "apps/desktop/src-tauri",
+    "crates/blinky-daemon",
+    "crates/blinky-agent",
+    "common/src-tauri",
 ]
 resolver = "2"

@@ -1,69 +1,81 @@
-# Environment files
+# Root-level ignore patterns (common/.gitignore handles per-directory patterns)
+/searxng/
+.brain
 .env
-.env*
-*.env
 .env.local
-.env.*.local
-
-# Node modules / Dependencies
+.env.development.local
+.env.test.local
+.env.production.local
+/.venv/
+/env/
+/venv/
+/Lib/
+/Scripts/
+/Include/
+/pyvenv.cfg
 node_modules/
-node_modules
-*/node_modules/
-**/node_modules/
-node_module/
-node_module
-**/node_module/
-
-# Rust / Cargo build artifacts
-target/
-**/target/
-Cargo.lock
-
-# Python virtual environment and cache
-.venv/
-venv/
 __pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-
-# Build outputs
-dist/
-dist-ssr/
-out/
-build/
-*.egg-info/
-
-# Tauri build artifacts
+*.pyc
+tmp/
+.agent/
+.agents/
+!.agents/hooks.json
+target/
+*.pt
+*.safetensors
 src-tauri/target/
-apps/desktop/src-tauri/target/
-
-# Mobile / Expo / Metro
-.expo/
-.expo-shared/
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-
-# Logs
-logs/
+common/src-tauri/target/
+common/src-tauri/target-nsis-release/
+screenshots/
+python/cache/
+# Runtime-generated artifacts (regenerated on demand; never commit)
+common/python/python/cache/
+common/python/tools/temp_candidate*
+common/whatsapp_backend/data/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# OS and Editor files
+bun-debug.log*
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
+desktop.ini
 .vscode/
 .idea/
-tmp/
-apps/mobile/scripts/install_apk.bat
-apps/mobile/scripts/install_apk.bat
-services/agent/app_context/foot.md
-docs/specifications/legacy_ai_docs/00_repo_summary.md
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.wwebjs_auth
+data/users/blinky-default-session/summary-memory.json
+data
+data/users/blinky-default-session/summary-memory.json
+.wwebjs_cache
+screenshots_parsed
+landing
+# npm lockfiles — bun is the package manager
+package-lock.json
+log.txt
+log[0-9]*.txt
+
+# Whitelist root-level scripts folder
+!/scripts/
+# Whisper/STT model caches (downloaded on demand)
+.huggingface/
+cache/huggingface/
+models/
+*.bin
+# Hardware firmware credentials & build configs
+config.h
+esp32_firmware/**/config.h
+scratch/
+
+docs/history.md
+ skills/
+enhancement/
+/releases/
+hackathon-cover-16x9.png

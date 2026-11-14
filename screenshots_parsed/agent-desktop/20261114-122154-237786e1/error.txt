@@ -1,1 +1,0 @@
-Install sutra's agent tools: powershell -File scripts/setup-vercel-agents.ps1

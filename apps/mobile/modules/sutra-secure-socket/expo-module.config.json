@@ -1,9 +1,0 @@
-{
-  "platforms": ["android", "apple"],
-  "android": {
-    "modules": ["com.technerds.sutra.securesocket.SutraSecureSocketModule"]
-  },
-  "apple": {
-    "modules": ["SutraSecureSocketModule"]
-  }
-}

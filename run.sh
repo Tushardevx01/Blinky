@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sutra one-click run (Linux). Validates setup, then launches the app.
+# Blinky one-click run (Linux). Validates setup, then launches the app.
 # Usage:
 #   chmod +x run.sh && ./run.sh
 #   ./run.sh --no-docker   # force skip Docker/SearXNG
@@ -33,16 +33,17 @@ fail() {
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_ROOT"
-echo -e "${MAGENTA}  sutra - One-click Run (Linux)  |  Repo: $REPO_ROOT${NC}"
+echo -e "${MAGENTA}  Blinky - One-click Run (Linux)  |  Repo: $REPO_ROOT${NC}"
 
-command -v node >/dev/null 2>&1 \
-  || fail "Node.js not found. Setup did not complete." "Please install Node.js 20+." "https://nodejs.org or via package manager"
-command -v npm >/dev/null 2>&1 \
-  || fail "npm not found. Setup did not complete." "npm is required." "https://nodejs.org"
+command -v bun >/dev/null 2>&1 || {
+  [ -f "$HOME/.bun/bin/bun" ] && export PATH="$HOME/.bun/bin:$PATH"
+}
+command -v bun >/dev/null 2>&1 \
+  || fail "Bun not found. Setup did not complete." "One-click setup installs Bun first." "./setup.sh  # then ./run.sh"
 
 step "Pre-flight checks"
 [ -f "$REPO_ROOT/package.json" ] \
-  || fail "package.json missing in $REPO_ROOT." "Wrong folder." "cd <path-to-sutra> then ./run.sh"
+  || fail "package.json missing in $REPO_ROOT." "Wrong folder." "cd <path-to-Blinky> then ./run.sh"
 [ -d "$REPO_ROOT/node_modules" ] \
   || fail "node_modules missing. Dependencies were never installed." "Run setup once." "./setup.sh  # then ./run.sh"
 ok "node_modules present"
@@ -55,7 +56,7 @@ ok "$(cargo --version)"
 [ -f "$REPO_ROOT/.env" ] \
   || fail ".env missing. API keys/config were never created." "Run setup once." "./setup.sh  # then edit .env, then ./run.sh"
 ok ".env present"
-if grep -qE "^SUTRA_AI_PROVIDER=groq" "$REPO_ROOT/.env" 2>/dev/null && ! grep -qE "^GROQ_API_KEY=gsk_" "$REPO_ROOT/.env" 2>/dev/null; then
+if grep -qE "^BLINKY_AI_PROVIDER=groq" "$REPO_ROOT/.env" 2>/dev/null && ! grep -qE "^GROQ_API_KEY=gsk_" "$REPO_ROOT/.env" 2>/dev/null; then
   warn "GROQ_API_KEY empty with provider=groq: app starts but AI answers 401. Fix: paste gsk_... key into .env (https://console.groq.com)."
 fi
 
@@ -72,11 +73,11 @@ if [ "$USE_NO_DOCKER" = "0" ]; then
   else USE_NO_DOCKER=1; warn "Docker daemon not running: launching WITHOUT SearXNG web search. Start docker to enable search."; fi
 fi
 
-step "Launching sutra (Ctrl+C to stop)"
+step "Launching Blinky (Ctrl+C to stop)"
 echo "  Hotkeys: CTRL + SHIFT + SPACE  (fallback CTRL + SHIFT + ENTER)"
 echo "  Mobile:  ./setup-mobile.sh  (QR + USB flow, phone remote)"
 if [ "$USE_NO_DOCKER" = "1" ]; then
-  npm run dev:no-docker -- "${EXTRA[@]}"
+  bun run dev:no-docker -- "${EXTRA[@]}"
 else
-  npm run dev -- "${EXTRA[@]}"
+  bun run dev -- "${EXTRA[@]}"
 fi
