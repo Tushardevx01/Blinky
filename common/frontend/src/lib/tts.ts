@@ -49,7 +49,7 @@ export function cleanSpokenText(text: string): string {
 export function buildSpeechContent(
   summaryText: string,
   stepsList: SpeechStep[] = [],
-  options: { includeSteps?: boolean } = {},
+  options: { includeSteps?: boolean } = {}
 ): string {
   const summary = cleanSpokenText(summaryText);
   if (summary) {

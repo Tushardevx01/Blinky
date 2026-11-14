@@ -23,9 +23,15 @@ test('parses a full PC pairing QR payload', () => {
 });
 
 test('parses release payload with certificate pin', () => {
-  const parsed = parsePairingQr(JSON.stringify({
-    v: 1, ip: '100.122.62.2', token: 'tok', pin: 'sha256/xyz', mode: 'release',
-  }));
+  const parsed = parsePairingQr(
+    JSON.stringify({
+      v: 1,
+      ip: '100.122.62.2',
+      token: 'tok',
+      pin: 'sha256/xyz',
+      mode: 'release',
+    })
+  );
   expect(parsed!.ip).toBe('100.122.62.2');
   expect(parsed!.pin).toBe('sha256/xyz');
 });

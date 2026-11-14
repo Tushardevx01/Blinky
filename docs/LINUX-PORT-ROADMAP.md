@@ -57,6 +57,7 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 ## Port order (dependency-driven) — 9 phases
 
 ### Phase 0 — Environment + skeleton
+
 - `sudo pacman -S wtype tesseract` (verified missing)
 - Start ydotool daemon (needs root: `sudo systemctl enable --now ydotool` or uinput group) — verify with `ydotool click 0xC0`
 - Copy ABC contract into `linux/python/backend/abc.py` (strip cua-specific fields: element_token,
@@ -66,9 +67,10 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 **Windows parity ref:** `windows/python/*` + `windows/src-tauri/src/platform/*`
 
 ### Phase 1 — Capture (no dependencies; first visual milestone) ✅ DONE
+
 - `backend/capture.py`: grim-first cascade — `GrimFullscreenCaptureStrategy` (multi-monitor stitch)
-  + `GrimWindowCropCaptureStrategy` (active-window crop via hyprctl bounds, scale-aware)
-  + `WaylandPortalCaptureStrategy` (salvaged, compositor-agnostic fallback)
+  - `GrimWindowCropCaptureStrategy` (active-window crop via hyprctl bounds, scale-aware)
+  - `WaylandPortalCaptureStrategy` (salvaged, compositor-agnostic fallback)
 - `backend/window.py`: `hyprctl activewindow/clients/monitors -j` → WindowInfo + screen_size
 - `backend/portal.py`: portal capture salvaged (python-dbus + CLI-dbus fallback)
 - `backend/hyprland.py`: HyprlandBackend (Phase 1: capture + window + screen; input/apps raise
@@ -80,6 +82,7 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 **Windows ref:** `dxcam_capture.py` (strategy pattern) + `capture/__init__.py:46-74` (dispatch)
 
 ### Phase 2 — Physical input (Rust) — unlocks autopilot clicking ✅ DONE
+
 - **KEY FINDING:** ydotool's `--absolute` is **software-emulated** (virtual device is REL-only,
   no ABS axes) and drifts badly on real compositors — large jumps get ~1.8×-scaled by libinput
   pointer acceleration. REL-based positioning is only exact for small deltas.
@@ -99,6 +102,7 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 - **Windows parity ref:** `windows.rs:15-53` (SendInput) → linux.rs (hyprctl+ydotool)
 
 ### Phase 3 — Screen semantics: OCR + window identity ✅ DONE
+
 - OCR: pytesseract already dispatched from `common/ocr/__init__.py` on Linux (tesseract 5.5.2 + eng
   data installed). **376-449 items/screenshot** in ~1.8s, coords in screenshot space (same shape as
   Windows WinRT OCR — `attach_matches`/frontend unchanged).
@@ -112,20 +116,23 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 - **Windows ref:** `winrt_ocr.py` → pytesseract; `uia.py` → OCR-only for now (AT-SPI in P8)
 
 ### Phase 4 — Direct actions (Python tools) — port `tools_win.py` one fn at a time
-| tools_win.py fn | Hyprland equivalent |
-|---|---|
-| `open_app_tool_impl` (protocol→known_path→start_apps→search) | `open_app_tool_linux` exists — add hyprctl/gio launch + .desktop scan; flatpak detection |
-| `shortcut_tool_impl` (pywinauto send_keys + VK media codes) | **NEW** `linux/backend/input.py` media keys via ydotool keycodes (KEY_PLAYPAUSE 0xCF etc.) |
-| `find_start_app_impl` (Get-StartApps) | `app_inventory.py` `_kde_apps/_gnome_apps` + `hyprctl clients` running set |
-| `open_app_via_windows_search_impl` (Win+S type) | not needed: `.desktop` scan replaces search |
-| `find_windows_search_result_impl` (UIA match) | drop — search-launch is direct on Linux |
-| `click_item_center` (pywinauto.mouse) | `backend/input.py` ydotool click at center |
+
+| tools_win.py fn                                              | Hyprland equivalent                                                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `open_app_tool_impl` (protocol→known_path→start_apps→search) | `open_app_tool_linux` exists — add hyprctl/gio launch + .desktop scan; flatpak detection   |
+| `shortcut_tool_impl` (pywinauto send_keys + VK media codes)  | **NEW** `linux/backend/input.py` media keys via ydotool keycodes (KEY_PLAYPAUSE 0xCF etc.) |
+| `find_start_app_impl` (Get-StartApps)                        | `app_inventory.py` `_kde_apps/_gnome_apps` + `hyprctl clients` running set                 |
+| `open_app_via_windows_search_impl` (Win+S type)              | not needed: `.desktop` scan replaces search                                                |
+| `find_windows_search_result_impl` (UIA match)                | drop — search-launch is direct on Linux                                                    |
+| `click_item_center` (pywinauto.mouse)                        | `backend/input.py` ydotool click at center                                                 |
+
 - Update `shortcut_tool()` dispatch in tools.py (currently ImportError → "Windows only")
 - Media playback (play_spotify/play_youtube/seek) already platform-neutral via webbrowser/DBus? —
   **check spotify seek path** (tools.py seek_spotify_tool) — port if it shells out
 - **Verify:** "open firefox", "press ctrl+s", "next song", "volume up"
 
 ### Phase 5 — Autopilot loop rewrite (`loop.py` calls) ✅ DONE
+
 - `linux_mcp.py` is now a **re-export shim** over `backend/linux_mcp_compat.py` — same function
   names/signatures (list_windows, list_apps, get_app_state, click_element, type_text, press_key,
   screenshot, get_focused_window_bounds, doctor, get_client, _check_ok) implemented over
@@ -138,11 +145,13 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
   (loop quirk: gemma4 called a nonexistent "answer" tool — pre-existing, not a port issue)
 
 ### Phase 6 — Power + volume ✅ DONE
+
 - `power.rs` updated: pactl-only volume (dropped amixer — ALSA-only), hyprctl lock → loginctl →
   DE fallbacks, grim screenshot first (headless, prompt-free) → gnome-screenshot/spectacle.
 - `cargo check` clean; live pactl +5%/-5% round-trip verified (100% → 105% → 100%).
 
 ### Phase 7 — Cleanup + tests ✅ DONE
+
 - **Deleted:** `mcp_bridge.rs` (+ `mod mcp_bridge` in lib.rs), `linux/python/window_linux.py`,
   `wayland_vision.py` (old), `linux_capture.py` (old).
 - **Replaced with shims (same signatures, backend-backed):** `computer_use/linux_mcp.py` →
@@ -155,6 +164,7 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 - Rust: cargo check clean, 12/12 tests pass.
 
 ### Phase 8 — GNOME → KDE backends (same ABC, different window source) ✅ DONE (code-complete, untestable here)
+
 - **`backend/atspi.py`** (NEW): AT-SPI accessibility-tree bridge — the DE-agnostic
   element/window source shared by GNOME + KDE. `get_elements` flattens the a11y
   tree into UIElement boxes (bounded, role/name aware), `get_active_window`/
@@ -173,11 +183,11 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
   singleton. `get_backend_name()` exposes the active backend.
 - **`backend/input.py`**: the ONLY compositor-dependent pieces (cursor pos +
   move_to) are now dispatched per availability:
-    1. xdotool (X11/XWayland — pixel-exact, GNOME/KDE fall here)
-    2. hyprctl `hl.dsp.cursor.move` (Hyprland — pixel-exact)
-    3. ydotool REL emulation + ~0.55× accel compensation (pure-Wayland fallback)
-  `focus_window` now tries hyprctl → xdotool → portal `activate_window`
-  (GNOME Shell.Eval / KWin script).
+  1. xdotool (X11/XWayland — pixel-exact, GNOME/KDE fall here)
+  2. hyprctl `hl.dsp.cursor.move` (Hyprland — pixel-exact)
+  3. ydotool REL emulation + ~0.55× accel compensation (pure-Wayland fallback)
+     `focus_window` now tries hyprctl → xdotool → portal `activate_window`
+     (GNOME Shell.Eval / KWin script).
 - **`backend/portal.py`**: added `activate_window()` (per-DE DBus focus path).
 - **`linux_mcp_compat.get_app_state`**: now pulls the AT-SPI element tree when
   available (GNOME/KDE); returns empty elements on Hyprland (loop falls back to
@@ -194,24 +204,25 @@ in lib.rs deleted; `tools.py` linux tools (`list_windows_tool`, `get_app_state_t
 
 ## Reference: what to port (Windows → Hyprland) — complete map
 
-| # | Windows component | Ported by phase | Hyprland target |
-|---|---|---|---|
-| 1 | `dxcam_capture.py` DXCam strategy | P1 | grim + portal strategies |
-| 2 | `winrt_ocr.py` | P3 | pytesseract (already in common/ocr) |
-| 3 | `uia.py` get_visible_ui_text | P3(+P8) | OCR-only now; AT-SPI later |
-| 4 | `window.py` target-window scan | P3 | hyprctl activewindow/clients |
-| 5 | `windows.rs` click/scroll/type (SendInput) | P2 | linux.rs → ydotool/wtype |
-| 6 | `windows.rs` global click listener | P2 | no-op (overlay passthrough OK) |
-| 7 | `power.rs` (Windows) | P6 | linux power.rs exists, +hyprctl lock, pactl |
-| 8 | `tools_win.py` open_app_tool_impl | P4 | open_app_tool_linux + .desktop scan |
-| 9 | `tools_win.py` shortcut_tool_impl | P4 | backend/input.py media keys |
-| 10 | `tools_win.py` find_start_app_impl | P4 | app_inventory + hyprctl clients |
-| 11 | `tools_win.py` windows-search fns | P4 | drop (direct launch) |
-| 12 | `loop.py` linux_mcp calls | P5 | backend ABC |
-| 13 | `mcp_bridge.rs` | P7 | DELETE |
-| 14 | `linux_mcp.py` | P7 | DELETE |
+| #   | Windows component                          | Ported by phase | Hyprland target                             |
+| --- | ------------------------------------------ | --------------- | ------------------------------------------- |
+| 1   | `dxcam_capture.py` DXCam strategy          | P1              | grim + portal strategies                    |
+| 2   | `winrt_ocr.py`                             | P3              | pytesseract (already in common/ocr)         |
+| 3   | `uia.py` get_visible_ui_text               | P3(+P8)         | OCR-only now; AT-SPI later                  |
+| 4   | `window.py` target-window scan             | P3              | hyprctl activewindow/clients                |
+| 5   | `windows.rs` click/scroll/type (SendInput) | P2              | linux.rs → ydotool/wtype                    |
+| 6   | `windows.rs` global click listener         | P2              | no-op (overlay passthrough OK)              |
+| 7   | `power.rs` (Windows)                       | P6              | linux power.rs exists, +hyprctl lock, pactl |
+| 8   | `tools_win.py` open_app_tool_impl          | P4              | open_app_tool_linux + .desktop scan         |
+| 9   | `tools_win.py` shortcut_tool_impl          | P4              | backend/input.py media keys                 |
+| 10  | `tools_win.py` find_start_app_impl         | P4              | app_inventory + hyprctl clients             |
+| 11  | `tools_win.py` windows-search fns          | P4              | drop (direct launch)                        |
+| 12  | `loop.py` linux_mcp calls                  | P5              | backend ABC                                 |
+| 13  | `mcp_bridge.rs`                            | P7              | DELETE                                      |
+| 14  | `linux_mcp.py`                             | P7              | DELETE                                      |
 
 ## Hyprland-specific notes
+
 - **ydotool needs root/uinput:** either `sudo systemctl enable --now ydotool` or add user to
   `input` group + udev rule. Verify before P2.
 - **Coordinates:** Hyprland global monitors — use `hyprctl monitors -j` for per-monitor origin +
@@ -347,23 +358,24 @@ class ComputerUseBackend(ABC):
 
 ### HyprlandBackend impl map (what each method calls)
 
-| Method | Implementation |
-|---|---|
-| `start/stop/is_available` | check `ydotool` daemon socket + `grim` + `wtype` + `hyprctl` presence |
-| `capture(window=False)` | `grim -o <monitor> out.png`; `window=True` → `hyprctl activewindow -j` bounds → `grim -g "x,y WxH"` |
-| `screen_size` | `hyprctl monitors -j` (max x+width, y+height; multiply by scale) |
-| `get_active_window` | `hyprctl activewindow -j` → WindowInfo |
-| `list_windows` | `hyprctl clients -j` → [WindowInfo] (filter mapped+visible) |
-| `list_apps` | scan 3 .desktop dirs (user > flatpak exports > system); parse Name/Exec/StartupWMClass |
-| `launch_app` | find .desktop by Name or stem → `gio launch <file>`; fallback binary_map → `hyprctl dispatch exec` |
-| `click` | `ydotool mousemove --absolute x y` + `ydotool click 0xC0` (scale-aware) |
-| `scroll` | `ydotool mousemove` + `ydotool click --repeat N 0x08/0x09` (wheel) |
-| `type_text` | `wtype -s <rate> "<text>"` |
-| `key` | combos: `wtype -M ctrl s -m ctrl`; media: `ydotool key 0xA4/0xA3/0xA5` |
-| `focus_window` | `hyprctl dispatch focuswindow address:<id>` |
+| Method                    | Implementation                                                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `start/stop/is_available` | check `ydotool` daemon socket + `grim` + `wtype` + `hyprctl` presence                               |
+| `capture(window=False)`   | `grim -o <monitor> out.png`; `window=True` → `hyprctl activewindow -j` bounds → `grim -g "x,y WxH"` |
+| `screen_size`             | `hyprctl monitors -j` (max x+width, y+height; multiply by scale)                                    |
+| `get_active_window`       | `hyprctl activewindow -j` → WindowInfo                                                              |
+| `list_windows`            | `hyprctl clients -j` → [WindowInfo] (filter mapped+visible)                                         |
+| `list_apps`               | scan 3 .desktop dirs (user > flatpak exports > system); parse Name/Exec/StartupWMClass              |
+| `launch_app`              | find .desktop by Name or stem → `gio launch <file>`; fallback binary_map → `hyprctl dispatch exec`  |
+| `click`                   | `ydotool mousemove --absolute x y` + `ydotool click 0xC0` (scale-aware)                             |
+| `scroll`                  | `ydotool mousemove` + `ydotool click --repeat N 0x08/0x09` (wheel)                                  |
+| `type_text`               | `wtype -s <rate> "<text>"`                                                                          |
+| `key`                     | combos: `wtype -M ctrl s -m ctrl`; media: `ydotool key 0xA4/0xA3/0xA5`                              |
+| `focus_window`            | `hyprctl dispatch focuswindow address:<id>`                                                         |
 
 ### P0 environment checklist (this machine)
-- [ ] `sudo pacman -S tesseract tesseract-data-eng`  ← Arch name (NOT tesseract-ocr)
+
+- [ ] `sudo pacman -S tesseract tesseract-data-eng` ← Arch name (NOT tesseract-ocr)
 - [ ] wtype ✓ (already installed)
 - [ ] ydotool daemon: **no systemd unit on Arch** — either:
       `sudo systemctl edit --force --full ydotool.service` (Type=simple, ExecStart=/usr/bin/ydotool)

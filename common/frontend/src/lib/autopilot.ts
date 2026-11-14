@@ -20,11 +20,38 @@ export interface AutopilotRunInput {
 export interface AutopilotRunResult {
   finalResult: TutorResult;
   attempts: number;
-  stopReason: 'complete' | 'unsafe_step' | 'missing_target' | 'single_action' | 'unchanged_after_action' | 'max_attempts';
+  stopReason:
+    | 'complete'
+    | 'unsafe_step'
+    | 'missing_target'
+    | 'single_action'
+    | 'unchanged_after_action'
+    | 'max_attempts';
 }
 
-const SAFE_ACTION_HINTS = ['click', 'open', 'select', 'choose', 'go to', 'type', 'enter', 'search', 'submit', 'scroll'];
-const BLOCKED_ACTION_HINTS = ['install', 'enable', 'delete', 'remove', 'buy', 'purchase', 'pay', 'sign in', 'login'];
+const SAFE_ACTION_HINTS = [
+  'click',
+  'open',
+  'select',
+  'choose',
+  'go to',
+  'type',
+  'enter',
+  'search',
+  'submit',
+  'scroll',
+];
+const BLOCKED_ACTION_HINTS = [
+  'install',
+  'enable',
+  'delete',
+  'remove',
+  'buy',
+  'purchase',
+  'pay',
+  'sign in',
+  'login',
+];
 
 export function createEmptyTutorResult(): TutorResult {
   return {
@@ -104,7 +131,11 @@ export async function runAutopilotLoop({
     // feel like it landed long after the cursor arrived.
     try {
       if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
-        await emit('blinky://agent-cursor-move', { x: point.x, y: point.y, instruction: nextStep.instruction });
+        await emit('blinky://agent-cursor-move', {
+          x: point.x,
+          y: point.y,
+          instruction: nextStep.instruction,
+        });
       }
     } catch {}
 
@@ -127,7 +158,11 @@ export async function runAutopilotLoop({
           await emit('blinky://agent-cursor-done', {});
         }
       } catch {}
-      return { finalResult: current, attempts, stopReason: isCancelled?.() ? 'complete' : 'single_action' };
+      return {
+        finalResult: current,
+        attempts,
+        stopReason: isCancelled?.() ? 'complete' : 'single_action',
+      };
     }
 
     await wait();
@@ -201,7 +236,11 @@ function isConfidentAutopilotMatch(step: TutorStep): boolean {
   if (match.ref && step.target_ref === match.ref) {
     return true;
   }
-  if (match.match_method === 'ref' && match.ref && (!step.target_ref || step.target_ref === match.ref)) {
+  if (
+    match.match_method === 'ref' &&
+    match.ref &&
+    (!step.target_ref || step.target_ref === match.ref)
+  ) {
     return true;
   }
   if (match.match_method === 'text') {
@@ -214,13 +253,19 @@ function isConfidentAutopilotMatch(step: TutorStep): boolean {
     const score = match.score ?? 0;
     const textSimilarity = match.text_similarity ?? 0;
     const ambiguousCandidateCount = match.ambiguous_candidate_count ?? 1;
-    return (match.is_exact_text === true && ambiguousCandidateCount <= 1) ||
-           (score >= 0.82 || textSimilarity >= 0.86);
+    return (
+      (match.is_exact_text === true && ambiguousCandidateCount <= 1) ||
+      score >= 0.82 ||
+      textSimilarity >= 0.86
+    );
   }
   const score = match.score ?? 0;
   const textSimilarity = match.text_similarity ?? 0;
-  return (match.is_exact_text === true && (match.ambiguous_candidate_count ?? 1) <= 1) ||
-         (score >= 0.82 || textSimilarity >= 0.86);
+  return (
+    (match.is_exact_text === true && (match.ambiguous_candidate_count ?? 1) <= 1) ||
+    score >= 0.82 ||
+    textSimilarity >= 0.86
+  );
 }
 
 function isTextEntryStep(step: TutorStep): boolean {
@@ -240,7 +285,9 @@ function isInputLikeMatch(step: TutorStep): boolean {
 
   return (
     ['edit', 'textbox', 'combobox'].includes(controlType) ||
-    ['search', 'filter', 'find', 'input', 'text field', 'search bar'].some((hint) => searchable.includes(hint))
+    ['search', 'filter', 'find', 'input', 'text field', 'search bar'].some((hint) =>
+      searchable.includes(hint)
+    )
   );
 }
 
@@ -257,7 +304,10 @@ export function getClickablePoint(step: TutorStep): ScreenPoint {
 
   if (!isInput && match.width > 140) {
     const textLength = match.text ? String(match.text).length : 8;
-    const estimatedWidth = Math.min(match.width, Math.max(55, Math.round(24 + textLength * 7.2 + 28)));
+    const estimatedWidth = Math.min(
+      match.width,
+      Math.max(55, Math.round(24 + textLength * 7.2 + 28))
+    );
     return {
       x: Math.round(match.x + 20 + estimatedWidth / 2),
       y: Math.round(match.y + match.height / 2),
@@ -303,35 +353,54 @@ function defaultWait(): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, 200));
 }
 
-
 export function extractTextToType(instruction: string): string | null {
   const normalized = instruction.trim();
-  
+
   // Try matching quotes first
-  const quoteMatch = normalized.match(/(?:type|enter|input|search\s+for)\s+['"‘’“”]([^'"‘’“”]+)['"‘’“”]/i);
+  const quoteMatch = normalized.match(
+    /(?:type|enter|input|search\s+for)\s+['"‘’“”]([^'"‘’“”]+)['"‘’“”]/i
+  );
   if (quoteMatch && quoteMatch[1]) {
     return quoteMatch[1];
   }
-  
+
   // Fallback to matching until prepositions or "and press"
-  const fallbackMatch = normalized.match(/(?:type|enter|input|search\s+for)\s+(.+?)(?:\s+(?:into|in|on|to|and\s+press)\b|$)/i);
+  const fallbackMatch = normalized.match(
+    /(?:type|enter|input|search\s+for)\s+(.+?)(?:\s+(?:into|in|on|to|and\s+press)\b|$)/i
+  );
   if (fallbackMatch && fallbackMatch[1]) {
     return fallbackMatch[1].trim().replace(/^['"‘’“”]+|['"‘’“”]+$/g, '');
   }
-  
+
   return null;
 }
 
 export function shouldPressEnterAfterTyping(instruction: string): boolean {
   const normalized = instruction.toLowerCase();
-  return normalized.includes('press enter') || normalized.includes('press return') || normalized.includes('submit') || normalized.includes('search');
+  return (
+    normalized.includes('press enter') ||
+    normalized.includes('press return') ||
+    normalized.includes('submit') ||
+    normalized.includes('search')
+  );
 }
 
 export function isScrollAction(instruction: string): boolean {
   const norm = normalize(instruction);
   if (!/\bscroll\b/.test(norm)) return false;
-  const otherVerbs = ['click', 'type', 'enter', 'input', 'search', 'submit', 'select', 'choose', 'go to', 'open'];
-  const startsWithOther = otherVerbs.some(verb => norm.startsWith(verb));
+  const otherVerbs = [
+    'click',
+    'type',
+    'enter',
+    'input',
+    'search',
+    'submit',
+    'select',
+    'choose',
+    'go to',
+    'open',
+  ];
+  const startsWithOther = otherVerbs.some((verb) => norm.startsWith(verb));
   return !startsWithOther;
 }
 
@@ -351,6 +420,7 @@ export function isClickInstruction(instruction: string): boolean {
 export function isSingleActionQuery(query: string): boolean {
   const norm = normalize(query).replace(/[?.!,;:]+$/, '');
   if (!norm) return false;
-  return /^(?:please\s+)?(?:click|tap|press|select|choose|hit|double\s*click|open\s+(?:link|app|video|website|channel|post|photo|profile)|focus)\b/i.test(norm);
+  return /^(?:please\s+)?(?:click|tap|press|select|choose|hit|double\s*click|open\s+(?:link|app|video|website|channel|post|photo|profile)|focus)\b/i.test(
+    norm
+  );
 }
-

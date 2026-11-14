@@ -1,4 +1,12 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -38,13 +46,7 @@ export type FileTransferItem = {
 };
 
 export type BatchTransferPhase =
-  | 'idle'
-  | 'preparing'
-  | 'uploading'
-  | 'editing'
-  | 'downloading'
-  | 'done'
-  | 'error';
+  'idle' | 'preparing' | 'uploading' | 'editing' | 'downloading' | 'done' | 'error';
 
 export type TransferSession = {
   requestId: string;
@@ -83,7 +85,12 @@ export type FileTransferPanelRef = {
    * Start a transfer programmatically (e.g. from the chat bar).
    * The panel does NOT need to be visible — it runs silently in the background.
    */
-  startTransfer(files: SelectedFile[], instruction: string, destination?: string, destinationHint?: string): void;
+  startTransfer(
+    files: SelectedFile[],
+    instruction: string,
+    destination?: string,
+    destinationHint?: string
+  ): void;
 };
 
 const CHUNK_SIZE = 16 * 1024 * 1024;
@@ -116,7 +123,10 @@ function getFileIcon(name: string): keyof typeof Ionicons.glyphMap {
 }
 
 function transferBaseUrl(address: string, secure: boolean) {
-  let authority = address.trim().replace(/^(?:https?|wss?):\/\//i, '').replace(/\/.*$/, '');
+  let authority = address
+    .trim()
+    .replace(/^(?:https?|wss?):\/\//i, '')
+    .replace(/\/.*$/, '');
   if (!authority) throw new Error('Enter the PC address in Local Link Setup first.');
   if (authority.startsWith('[')) {
     const close = authority.indexOf(']');
@@ -136,25 +146,30 @@ function ProgressBar({ bytes, total }: { bytes: number; total: number }) {
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${percent}%` }]} />
       </View>
-      <Text style={styles.progressLabel}>{Math.floor(percent)}% · {formatBytes(bytes)} / {formatBytes(total)}</Text>
+      <Text style={styles.progressLabel}>
+        {Math.floor(percent)}% · {formatBytes(bytes)} / {formatBytes(total)}
+      </Text>
     </View>
   );
 }
 
 /** Picks, uploads, merges/edits, and receives multiple files over the authenticated PC link. */
-export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(function FileTransferPanel({
-  visible,
-  connected,
-  hostAddress,
-  releaseTransport,
-  certificatePin,
-  fileTransferMessage,
-  sendMessage,
-  getNativeModule,
-  onClose,
-  onTransferStatusChange,
-  onTransferDone,
-}: Props, ref) {
+export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(function FileTransferPanel(
+  {
+    visible,
+    connected,
+    hostAddress,
+    releaseTransport,
+    certificatePin,
+    fileTransferMessage,
+    sendMessage,
+    getNativeModule,
+    onClose,
+    onTransferStatusChange,
+    onTransferDone,
+  }: Props,
+  ref
+) {
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [instruction, setInstruction] = useState('');
   const [destinationPath, setDestinationPath] = useState('');
@@ -167,8 +182,11 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
   const abortRef = useRef<boolean>(false);
 
   const transferBase = useMemo(() => {
-    try { return transferBaseUrl(hostAddress, releaseTransport); }
-    catch { return ''; }
+    try {
+      return transferBaseUrl(hostAddress, releaseTransport);
+    } catch {
+      return '';
+    }
   }, [hostAddress, releaseTransport]);
 
   const updateSession = useCallback((update: (current: TransferSession) => TransferSession) => {
@@ -184,33 +202,46 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
   }, [selectedFiles]);
 
   // Handle incoming websocket messages from the PC
-  const handleServerMessage = useCallback((message: FileTransferMessage) => {
-    if ((message.type === 'file_offer_result' || message.type === 'file_error') && message.requestId) {
-      const resolver = pendingOfferResolvers.current.get(message.requestId);
-      if (resolver) {
-        pendingOfferResolvers.current.delete(message.requestId);
-        resolver(message);
-        return;
+  const handleServerMessage = useCallback(
+    (message: FileTransferMessage) => {
+      if (
+        (message.type === 'file_offer_result' || message.type === 'file_error') &&
+        message.requestId
+      ) {
+        const resolver = pendingOfferResolvers.current.get(message.requestId);
+        if (resolver) {
+          pendingOfferResolvers.current.delete(message.requestId);
+          resolver(message);
+          return;
+        }
       }
-    }
 
-    if (message.type === 'file_edit_complete' || message.type === 'file_edit_error' ||
-        (message.type === 'file_error' && sessionRef.current?.phase === 'editing')) {
-      if (editCompleteResolver.current) {
-        const resolver = editCompleteResolver.current;
-        editCompleteResolver.current = null;
-        resolver(message);
-        return;
+      if (
+        message.type === 'file_edit_complete' ||
+        message.type === 'file_edit_error' ||
+        (message.type === 'file_error' && sessionRef.current?.phase === 'editing')
+      ) {
+        if (editCompleteResolver.current) {
+          const resolver = editCompleteResolver.current;
+          editCompleteResolver.current = null;
+          resolver(message);
+          return;
+        }
       }
-    }
 
-    if (message.type === 'file_error') {
-      const current = sessionRef.current;
-      if (current) {
-        updateSession(s => ({ ...s, phase: 'error', error: message.message || 'The PC reported a transfer error.' }));
+      if (message.type === 'file_error') {
+        const current = sessionRef.current;
+        if (current) {
+          updateSession((s) => ({
+            ...s,
+            phase: 'error',
+            error: message.message || 'The PC reported a transfer error.',
+          }));
+        }
       }
-    }
-  }, [updateSession]);
+    },
+    [updateSession]
+  );
 
   useEffect(() => {
     if (!fileTransferMessage || fileTransferMessage === lastMessageRef.current) return;
@@ -226,9 +257,9 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
     if (!visible && !sessionRef.current) return;
     const native = getNativeModule();
     if (!native) return;
-    const subscription = native.addListener('onTransferProgress', event => {
+    const subscription = native.addListener('onTransferProgress', (event) => {
       if (typeof event.bytes !== 'number') return;
-      updateSession(curr => {
+      updateSession((curr) => {
         if (!curr) return curr;
         if (curr.phase === 'downloading') {
           return {
@@ -236,7 +267,7 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
             items: curr.items.map((it, idx) => (idx === 0 ? { ...it, bytes: event.bytes! } : it)),
           };
         }
-        const updatedItems = curr.items.map(it => {
+        const updatedItems = curr.items.map((it) => {
           if (it.transferId === event.id) {
             return { ...it, bytes: event.bytes! };
           }
@@ -248,7 +279,12 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
     return () => subscription.remove();
   }, [getNativeModule, updateSession, visible, session?.phase]);
 
-  const chatTransferQueueRef = useRef<{ files: SelectedFile[]; instruction: string; destination: string; destinationHint: string } | null>(null);
+  const chatTransferQueueRef = useRef<{
+    files: SelectedFile[];
+    instruction: string;
+    destination: string;
+    destinationHint: string;
+  } | null>(null);
   // Stable ref so that useImperativeHandle can call the latest startBatchTransferDirect
   const startBatchTransferDirectRef = useRef<typeof startBatchTransferDirect | null>(null);
 
@@ -261,27 +297,30 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
         base64: false,
       });
       if (result.canceled || !result.assets?.length) return;
-      const newFiles: SelectedFile[] = result.assets.map(asset => ({
+      const newFiles: SelectedFile[] = result.assets.map((asset) => ({
         uri: asset.uri,
         name: asset.name,
         size: asset.size,
       }));
 
-      setSelectedFiles(prev => {
+      setSelectedFiles((prev) => {
         if (!append) return newFiles;
-        const existingUris = new Set(prev.map(f => f.uri));
-        const filteredNew = newFiles.filter(f => !existingUris.has(f.uri));
+        const existingUris = new Set(prev.map((f) => f.uri));
+        const filteredNew = newFiles.filter((f) => !existingUris.has(f.uri));
         return [...prev, ...filteredNew];
       });
       setSession(null);
       sessionRef.current = null;
     } catch (error: any) {
-      Alert.alert('Could not open files', error?.message || 'Choose files from the system picker and try again.');
+      Alert.alert(
+        'Could not open files',
+        error?.message || 'Choose files from the system picker and try again.'
+      );
     }
   }, []);
 
   const removeFile = useCallback((index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setSession(null);
     sessionRef.current = null;
   }, []);
@@ -297,276 +336,313 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
    * chat-bar triggered path.  When called from chat, files/instruction/destination
    * are passed directly so we don't depend on React state being flushed.
    */
-  const startBatchTransferDirect = useCallback(async (
-    filesToSend: SelectedFile[],
-    instructionText: string,
-    destPath: string,
-    destinationHint = '',
-  ) => {
-    if (!connected) {
-      if (onTransferDone) onTransferDone(false, 'Not connected to PC.');
-      else Alert.alert('PC disconnected', 'Connect to Blinky before sending files.');
-      return;
-    }
-    if (filesToSend.length === 0 || !transferBase) {
-      if (onTransferDone) onTransferDone(false, 'No files selected.');
-      else Alert.alert('Choose files', 'Select one or more files before starting a transfer.');
-      return;
-    }
-    const native = getNativeModule();
-    if (!native) {
-      if (onTransferDone) onTransferDone(false, 'File transfer is not supported on this device.');
-      else Alert.alert('Transfer Unavailable', 'File transfer is not supported on this device.');
-      return;
-    }
-    if (releaseTransport && !certificatePin.trim()) {
-      if (onTransferDone) onTransferDone(false, 'Certificate pin required.');
-      else Alert.alert('Certificate pin required', 'Enter the PC release certificate pin in Local Link Setup.');
-      return;
-    }
-
-    const withEdit = transferIntent(instructionText) === 'edit';
-    let batchDestination = destPath.trim();
-    let destinationWarning = '';
-
-    abortRef.current = false;
-
-    const sortedFiles = [...filesToSend].sort((a, b) => {
-      const priority = (name: string) => {
-        const type = getMediaType(name);
-        return type === 'video' ? 0 : type === 'audio' ? 1 : 2;
-      };
-      return priority(a.name) - priority(b.name);
-    });
-
-    const initialItems: FileTransferItem[] = sortedFiles.map((f, i) => ({
-      id: `item-${i}-${f.name}`,
-      file: f,
-      size: f.size || 0,
-      sha256: '',
-      bytes: 0,
-      phase: 'pending',
-    }));
-
-    const totalRaw = sortedFiles.reduce((acc, f) => acc + (f.size || 0), 0);
-
-    const sessionData: TransferSession = {
-      requestId: newRequestId(),
-      items: initialItems,
-      currentIndex: 0,
-      instruction: instructionText.trim(),
-      destinationPath: batchDestination || 'Downloads/Blinky',
-      isEdit: withEdit,
-      phase: 'preparing',
-      totalBytes: totalRaw,
-    };
-    sessionRef.current = sessionData;
-    setSession(sessionData);
-
-    const notifyStatus = (msg: string) => onTransferStatusChange?.(msg);
-
-    try {
-      for (let i = 0; i < initialItems.length; i++) {
-        if (abortRef.current) break;
-
-        const currentItem = initialItems[i];
-        updateSession(curr => ({
-          ...curr,
-          currentIndex: i,
-          phase: 'preparing',
-          items: curr.items.map((it, idx) => (idx === i ? { ...it, phase: 'hashing' } : it)),
-        }));
-        notifyStatus(`Verifying ${currentItem.file.name}…`);
-
-        const digest = await native.hashFile(currentItem.file.uri);
-        if (abortRef.current) break;
-
-        currentItem.size = digest.size;
-        currentItem.sha256 = digest.sha256;
-
-        updateSession(curr => {
-          const updatedItems = curr.items.map((it, idx) =>
-            idx === i ? { ...it, size: digest.size, sha256: digest.sha256, phase: 'offering' as const } : it
+  const startBatchTransferDirect = useCallback(
+    async (
+      filesToSend: SelectedFile[],
+      instructionText: string,
+      destPath: string,
+      destinationHint = ''
+    ) => {
+      if (!connected) {
+        if (onTransferDone) onTransferDone(false, 'Not connected to PC.');
+        else Alert.alert('PC disconnected', 'Connect to Blinky before sending files.');
+        return;
+      }
+      if (filesToSend.length === 0 || !transferBase) {
+        if (onTransferDone) onTransferDone(false, 'No files selected.');
+        else Alert.alert('Choose files', 'Select one or more files before starting a transfer.');
+        return;
+      }
+      const native = getNativeModule();
+      if (!native) {
+        if (onTransferDone) onTransferDone(false, 'File transfer is not supported on this device.');
+        else Alert.alert('Transfer Unavailable', 'File transfer is not supported on this device.');
+        return;
+      }
+      if (releaseTransport && !certificatePin.trim()) {
+        if (onTransferDone) onTransferDone(false, 'Certificate pin required.');
+        else
+          Alert.alert(
+            'Certificate pin required',
+            'Enter the PC release certificate pin in Local Link Setup.'
           );
-          const newTotal = updatedItems.reduce((acc, it) => acc + it.size, 0);
-          return { ...curr, items: updatedItems, totalBytes: newTotal };
-        });
+        return;
+      }
 
-        const offerReqId = newRequestId();
-        const offerPromise = new Promise<FileTransferMessage>((resolve, reject) => {
-          const timer = setTimeout(() => {
-            pendingOfferResolvers.current.delete(offerReqId);
-            reject(new Error(`Timed out waiting for PC to accept ${currentItem.file.name}.`));
-          }, 75000);
-          pendingOfferResolvers.current.set(offerReqId, msg => {
-            clearTimeout(timer);
-            resolve(msg);
+      const withEdit = transferIntent(instructionText) === 'edit';
+      let batchDestination = destPath.trim();
+      let destinationWarning = '';
+
+      abortRef.current = false;
+
+      const sortedFiles = [...filesToSend].sort((a, b) => {
+        const priority = (name: string) => {
+          const type = getMediaType(name);
+          return type === 'video' ? 0 : type === 'audio' ? 1 : 2;
+        };
+        return priority(a.name) - priority(b.name);
+      });
+
+      const initialItems: FileTransferItem[] = sortedFiles.map((f, i) => ({
+        id: `item-${i}-${f.name}`,
+        file: f,
+        size: f.size || 0,
+        sha256: '',
+        bytes: 0,
+        phase: 'pending',
+      }));
+
+      const totalRaw = sortedFiles.reduce((acc, f) => acc + (f.size || 0), 0);
+
+      const sessionData: TransferSession = {
+        requestId: newRequestId(),
+        items: initialItems,
+        currentIndex: 0,
+        instruction: instructionText.trim(),
+        destinationPath: batchDestination || 'Downloads/Blinky',
+        isEdit: withEdit,
+        phase: 'preparing',
+        totalBytes: totalRaw,
+      };
+      sessionRef.current = sessionData;
+      setSession(sessionData);
+
+      const notifyStatus = (msg: string) => onTransferStatusChange?.(msg);
+
+      try {
+        for (let i = 0; i < initialItems.length; i++) {
+          if (abortRef.current) break;
+
+          const currentItem = initialItems[i];
+          updateSession((curr) => ({
+            ...curr,
+            currentIndex: i,
+            phase: 'preparing',
+            items: curr.items.map((it, idx) => (idx === i ? { ...it, phase: 'hashing' } : it)),
+          }));
+          notifyStatus(`Verifying ${currentItem.file.name}…`);
+
+          const digest = await native.hashFile(currentItem.file.uri);
+          if (abortRef.current) break;
+
+          currentItem.size = digest.size;
+          currentItem.sha256 = digest.sha256;
+
+          updateSession((curr) => {
+            const updatedItems = curr.items.map((it, idx) =>
+              idx === i
+                ? { ...it, size: digest.size, sha256: digest.sha256, phase: 'offering' as const }
+                : it
+            );
+            const newTotal = updatedItems.reduce((acc, it) => acc + it.size, 0);
+            return { ...curr, items: updatedItems, totalBytes: newTotal };
           });
-        });
 
-        const sent = sendMessage(buildFileOffer({
-          requestId: offerReqId,
-          name: currentItem.file.name,
-          size: digest.size,
-          sha256: digest.sha256,
-          instruction: instructionText,
-          destinationPath: batchDestination,
-          destinationHint,
-        }));
-        if (!sent) throw new Error('Could not send file offer. Check PC connection.');
+          const offerReqId = newRequestId();
+          const offerPromise = new Promise<FileTransferMessage>((resolve, reject) => {
+            const timer = setTimeout(() => {
+              pendingOfferResolvers.current.delete(offerReqId);
+              reject(new Error(`Timed out waiting for PC to accept ${currentItem.file.name}.`));
+            }, 75000);
+            pendingOfferResolvers.current.set(offerReqId, (msg) => {
+              clearTimeout(timer);
+              resolve(msg);
+            });
+          });
 
-        notifyStatus(`Offering ${currentItem.file.name} to PC…`);
-        const offerResult = await offerPromise;
-        if (offerResult.destinationPath) {
-          updateSession(curr => ({ ...curr, destinationPath: offerResult.destinationPath! }));
-          batchDestination = offerResult.destinationPath;
+          const sent = sendMessage(
+            buildFileOffer({
+              requestId: offerReqId,
+              name: currentItem.file.name,
+              size: digest.size,
+              sha256: digest.sha256,
+              instruction: instructionText,
+              destinationPath: batchDestination,
+              destinationHint,
+            })
+          );
+          if (!sent) throw new Error('Could not send file offer. Check PC connection.');
+
+          notifyStatus(`Offering ${currentItem.file.name} to PC…`);
+          const offerResult = await offerPromise;
+          if (offerResult.destinationPath) {
+            updateSession((curr) => ({ ...curr, destinationPath: offerResult.destinationPath! }));
+            batchDestination = offerResult.destinationPath;
+          }
+          if (offerResult.destinationWarning) destinationWarning = offerResult.destinationWarning;
+          if (!offerResult.transferId || !offerResult.temporaryToken) {
+            throw new Error(
+              offerResult.message || `PC rejected transfer of ${currentItem.file.name}.`
+            );
+          }
+
+          currentItem.transferId = offerResult.transferId;
+          currentItem.token = offerResult.temporaryToken;
+          currentItem.phase = 'uploading';
+
+          if (i === 0) {
+            sessionData.primaryTransferId = offerResult.transferId;
+            sessionData.primaryToken = offerResult.temporaryToken;
+          }
+
+          updateSession((curr) => ({
+            ...curr,
+            phase: 'uploading',
+            primaryTransferId: i === 0 ? offerResult.transferId : curr.primaryTransferId,
+            primaryToken: i === 0 ? offerResult.temporaryToken : curr.primaryToken,
+            items: curr.items.map((it, idx) =>
+              idx === i
+                ? {
+                    ...it,
+                    transferId: offerResult.transferId,
+                    token: offerResult.temporaryToken,
+                    phase: 'uploading',
+                  }
+                : it
+            ),
+          }));
+
+          notifyStatus(`Uploading ${currentItem.file.name} (${i + 1}/${initialItems.length})…`);
+
+          await native.uploadFile({
+            sourceUri: currentItem.file.uri,
+            transferId: offerResult.transferId,
+            url: `${transferBase}/upload/${offerResult.transferId}`,
+            token: offerResult.temporaryToken,
+            pin: releaseTransport ? certificatePin : undefined,
+            size: digest.size,
+            chunkSize: offerResult.chunkSize || CHUNK_SIZE,
+            offset: offerResult.uploadOffset || 0,
+          });
+
+          if (abortRef.current) break;
+
+          currentItem.phase = 'uploaded';
+          currentItem.bytes = digest.size;
+          updateSession((curr) => ({
+            ...curr,
+            items: curr.items.map((it, idx) =>
+              idx === i ? { ...it, phase: 'uploaded', bytes: digest.size } : it
+            ),
+          }));
         }
-        if (offerResult.destinationWarning) destinationWarning = offerResult.destinationWarning;
-        if (!offerResult.transferId || !offerResult.temporaryToken) {
-          throw new Error(offerResult.message || `PC rejected transfer of ${currentItem.file.name}.`);
-        }
 
-        currentItem.transferId = offerResult.transferId;
-        currentItem.token = offerResult.temporaryToken;
-        currentItem.phase = 'uploading';
+        if (abortRef.current) return;
 
-        if (i === 0) {
-          sessionData.primaryTransferId = offerResult.transferId;
-          sessionData.primaryToken = offerResult.temporaryToken;
-        }
+        if (withEdit) {
+          const latestSession = sessionRef.current;
+          if (!latestSession || !latestSession.primaryTransferId || !latestSession.primaryToken) {
+            throw new Error('Transfer session details missing.');
+          }
 
-        updateSession(curr => ({
-          ...curr,
-          phase: 'uploading',
-          primaryTransferId: i === 0 ? offerResult.transferId : curr.primaryTransferId,
-          primaryToken: i === 0 ? offerResult.temporaryToken : curr.primaryToken,
-          items: curr.items.map((it, idx) =>
-            idx === i
-              ? { ...it, transferId: offerResult.transferId, token: offerResult.temporaryToken, phase: 'uploading' }
-              : it
-          ),
-        }));
+          updateSession((s) => ({ ...s, phase: 'editing', error: undefined }));
+          notifyStatus('AiCut is processing on PC…');
 
-        notifyStatus(`Uploading ${currentItem.file.name} (${i + 1}/${initialItems.length})…`);
+          const editReqId = newRequestId();
+          const primaryId = latestSession.primaryTransferId;
+          const primaryTok = latestSession.primaryToken;
+          const allTransferIds = latestSession.items.map((it) => it.transferId!).filter(Boolean);
+          const additionalTransferIds = allTransferIds.filter((id) => id !== primaryId);
 
-        await native.uploadFile({
-          sourceUri: currentItem.file.uri,
-          transferId: offerResult.transferId,
-          url: `${transferBase}/upload/${offerResult.transferId}`,
-          token: offerResult.temporaryToken,
-          pin: releaseTransport ? certificatePin : undefined,
-          size: digest.size,
-          chunkSize: offerResult.chunkSize || CHUNK_SIZE,
-          offset: offerResult.uploadOffset || 0,
-        });
+          const editPromise = new Promise<FileTransferMessage>((resolve, reject) => {
+            const timer = setTimeout(
+              () => {
+                editCompleteResolver.current = null;
+                reject(new Error('AiCut is taking longer than usual.'));
+              },
+              6 * 3600 * 1000
+            );
+            editCompleteResolver.current = (msg) => {
+              clearTimeout(timer);
+              resolve(msg);
+            };
+          });
 
-        if (abortRef.current) break;
+          const sent = sendMessage({
+            type: 'file_edit',
+            requestId: editReqId,
+            transferId: primaryId,
+            temporaryToken: primaryTok,
+            additionalTransferIds,
+            transferIds: allTransferIds,
+            instruction: instructionText.trim(),
+          });
+          if (!sent)
+            throw new Error('Upload completed, but could not request AiCut edit from the PC.');
 
-        currentItem.phase = 'uploaded';
-        currentItem.bytes = digest.size;
-        updateSession(curr => ({
-          ...curr,
-          items: curr.items.map((it, idx) =>
-            idx === i ? { ...it, phase: 'uploaded', bytes: digest.size } : it
-          ),
-        }));
-      }
+          const editResult = await editPromise;
+          if (editResult.type === 'file_edit_error' || editResult.type === 'file_error') {
+            throw new Error(editResult.message || 'AiCut could not complete the edit.');
+          }
+          if (!editResult.name || !editResult.size || !editResult.sha256) {
+            throw new Error('AiCut completed without returning output file details.');
+          }
 
-      if (abortRef.current) return;
-
-      if (withEdit) {
-        const latestSession = sessionRef.current;
-        if (!latestSession || !latestSession.primaryTransferId || !latestSession.primaryToken) {
-          throw new Error('Transfer session details missing.');
-        }
-
-        updateSession(s => ({ ...s, phase: 'editing', error: undefined }));
-        notifyStatus('AiCut is processing on PC…');
-
-        const editReqId = newRequestId();
-        const primaryId = latestSession.primaryTransferId;
-        const primaryTok = latestSession.primaryToken;
-        const allTransferIds = latestSession.items.map(it => it.transferId!).filter(Boolean);
-        const additionalTransferIds = allTransferIds.filter(id => id !== primaryId);
-
-        const editPromise = new Promise<FileTransferMessage>((resolve, reject) => {
-          const timer = setTimeout(() => {
-            editCompleteResolver.current = null;
-            reject(new Error('AiCut is taking longer than usual.'));
-          }, 6 * 3600 * 1000);
-          editCompleteResolver.current = msg => {
-            clearTimeout(timer);
-            resolve(msg);
+          const outputMeta = {
+            name: editResult.name,
+            size: editResult.size,
+            sha256: editResult.sha256,
           };
-        });
 
-        const sent = sendMessage({
-          type: 'file_edit',
-          requestId: editReqId,
-          transferId: primaryId,
-          temporaryToken: primaryTok,
-          additionalTransferIds,
-          transferIds: allTransferIds,
-          instruction: instructionText.trim(),
-        });
-        if (!sent) throw new Error('Upload completed, but could not request AiCut edit from the PC.');
+          updateSession((s) => ({
+            ...s,
+            phase: 'downloading',
+            output: outputMeta,
+            items: s.items.map((it, idx) => (idx === 0 ? { ...it, bytes: 0 } : it)),
+          }));
+          notifyStatus('Downloading edited result…');
 
-        const editResult = await editPromise;
-        if (editResult.type === 'file_edit_error' || editResult.type === 'file_error') {
-          throw new Error(editResult.message || 'AiCut could not complete the edit.');
+          const localUri = await native.downloadFile({
+            transferId: primaryId,
+            url: `${transferBase}/download/${primaryId}`,
+            token: primaryTok,
+            pin: releaseTransport ? certificatePin : undefined,
+            size: outputMeta.size,
+            sha256: outputMeta.sha256,
+            filename: outputMeta.name,
+          });
+
+          updateSession((s) => ({
+            ...s,
+            phase: 'done',
+            output: outputMeta,
+            localUri,
+            error: undefined,
+          }));
+          onTransferStatusChange?.(null);
+          onTransferDone?.(
+            true,
+            `✅ Transfer & edit complete — ${outputMeta.name} saved on PC in ${sessionRef.current?.destinationPath || batchDestination} and copied to your device.${destinationWarning ? ` ${destinationWarning}` : ''}`
+          );
+        } else {
+          updateSession((s) => ({ ...s, phase: 'done', error: undefined }));
+          onTransferStatusChange?.(null);
+          const dest =
+            sessionRef.current?.destinationPath || batchDestination || 'Downloads/Blinky';
+          const label =
+            filesToSend.length > 1
+              ? `✅ ${filesToSend.length} files sent to PC (${dest})`
+              : `✅ ${filesToSend[0]?.name} sent to PC (${dest})`;
+          onTransferDone?.(true, destinationWarning ? `${label}. ${destinationWarning}` : label);
         }
-        if (!editResult.name || !editResult.size || !editResult.sha256) {
-          throw new Error('AiCut completed without returning output file details.');
-        }
-
-        const outputMeta = { name: editResult.name, size: editResult.size, sha256: editResult.sha256 };
-
-        updateSession(s => ({
-          ...s,
-          phase: 'downloading',
-          output: outputMeta,
-          items: s.items.map((it, idx) => (idx === 0 ? { ...it, bytes: 0 } : it)),
-        }));
-        notifyStatus('Downloading edited result…');
-
-        const localUri = await native.downloadFile({
-          transferId: primaryId,
-          url: `${transferBase}/download/${primaryId}`,
-          token: primaryTok,
-          pin: releaseTransport ? certificatePin : undefined,
-          size: outputMeta.size,
-          sha256: outputMeta.sha256,
-          filename: outputMeta.name,
-        });
-
-        updateSession(s => ({ ...s, phase: 'done', output: outputMeta, localUri, error: undefined }));
+      } catch (err: any) {
+        updateSession((s) => ({ ...s, phase: 'error', error: err?.message || 'Transfer failed.' }));
         onTransferStatusChange?.(null);
-        onTransferDone?.(true, `✅ Transfer & edit complete — ${outputMeta.name} saved on PC in ${sessionRef.current?.destinationPath || batchDestination} and copied to your device.${destinationWarning ? ` ${destinationWarning}` : ''}`);
-      } else {
-        updateSession(s => ({ ...s, phase: 'done', error: undefined }));
-        onTransferStatusChange?.(null);
-        const dest = sessionRef.current?.destinationPath || batchDestination || 'Downloads/Blinky';
-        const label = filesToSend.length > 1
-          ? `✅ ${filesToSend.length} files sent to PC (${dest})`
-          : `✅ ${filesToSend[0]?.name} sent to PC (${dest})`;
-        onTransferDone?.(true, destinationWarning ? `${label}. ${destinationWarning}` : label);
+        onTransferDone?.(false, `❌ Transfer failed: ${err?.message || 'unknown error'}`);
       }
-    } catch (err: any) {
-      updateSession(s => ({ ...s, phase: 'error', error: err?.message || 'Transfer failed.' }));
-      onTransferStatusChange?.(null);
-      onTransferDone?.(false, `❌ Transfer failed: ${err?.message || 'unknown error'}`);
-    }
-  }, [
-    certificatePin,
-    connected,
-    getNativeModule,
-    releaseTransport,
-    sendMessage,
-    transferBase,
-    updateSession,
-    onTransferStatusChange,
-    onTransferDone,
-  ]);
+    },
+    [
+      certificatePin,
+      connected,
+      getNativeModule,
+      releaseTransport,
+      sendMessage,
+      transferBase,
+      updateSession,
+      onTransferStatusChange,
+      onTransferDone,
+    ]
+  );
 
   const startBatchTransfer = useCallback(async () => {
     // Delegate to the unified core transfer, passing current UI state
@@ -579,25 +655,44 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
 
   // Expose imperative startTransfer for chat-bar triggered transfers.
   // The panel does NOT need to be visible — the transfer runs silently.
-  useImperativeHandle(ref, () => ({
-    startTransfer(files: SelectedFile[], instruction: string, destination?: string, destinationHint = '') {
-      if (!files.length) return;
-      setSelectedFiles(files);
-      setInstruction(instruction);
-      setDestinationPath(destination || '');
-      setSession(null);
-      sessionRef.current = null;
-      // Enqueue the transfer data and kick it off after React flushes state
-      chatTransferQueueRef.current = { files, instruction, destination: destination || '', destinationHint };
-      setTimeout(() => {
-        const q = chatTransferQueueRef.current;
-        if (q) {
-          chatTransferQueueRef.current = null;
-          void startBatchTransferDirectRef.current?.(q.files, q.instruction, q.destination, q.destinationHint);
-        }
-      }, 0);
-    },
-  }), []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      startTransfer(
+        files: SelectedFile[],
+        instruction: string,
+        destination?: string,
+        destinationHint = ''
+      ) {
+        if (!files.length) return;
+        setSelectedFiles(files);
+        setInstruction(instruction);
+        setDestinationPath(destination || '');
+        setSession(null);
+        sessionRef.current = null;
+        // Enqueue the transfer data and kick it off after React flushes state
+        chatTransferQueueRef.current = {
+          files,
+          instruction,
+          destination: destination || '',
+          destinationHint,
+        };
+        setTimeout(() => {
+          const q = chatTransferQueueRef.current;
+          if (q) {
+            chatTransferQueueRef.current = null;
+            void startBatchTransferDirectRef.current?.(
+              q.files,
+              q.instruction,
+              q.destination,
+              q.destinationHint
+            );
+          }
+        }, 0);
+      },
+    }),
+    []
+  );
 
   const shareFile = useCallback(async () => {
     if (!session?.localUri) return;
@@ -610,7 +705,8 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
     });
   }, [session]);
 
-  const busy = !!session && ['preparing', 'uploading', 'editing', 'downloading'].includes(session.phase);
+  const busy =
+    !!session && ['preparing', 'uploading', 'editing', 'downloading'].includes(session.phase);
 
   // Dynamic status heading & label
   const phaseLabel = useMemo(() => {
@@ -686,17 +782,28 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
           </View>
 
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-            {!connected && <Text style={styles.notice}>Connect to your Blinky PC before starting a transfer.</Text>}
-            {!transferBase && <Text style={styles.notice}>Set a PC address in Local Link Setup.</Text>}
+            {!connected && (
+              <Text style={styles.notice}>
+                Connect to your Blinky PC before starting a transfer.
+              </Text>
+            )}
+            {!transferBase && (
+              <Text style={styles.notice}>Set a PC address in Local Link Setup.</Text>
+            )}
             {!releaseTransport && (
               <Text style={styles.notice}>
-                Development mode: unencrypted local network transfer. Release builds use TLS certificate pinning.
+                Development mode: unencrypted local network transfer. Release builds use TLS
+                certificate pinning.
               </Text>
             )}
 
             {/* File Selection Controls */}
             {selectedFiles.length === 0 ? (
-              <Pressable style={styles.pickButton} onPress={() => void chooseFiles(false)} disabled={busy}>
+              <Pressable
+                style={styles.pickButton}
+                onPress={() => void chooseFiles(false)}
+                disabled={busy}
+              >
                 <Ionicons name="document-attach-outline" size={22} color="#FF7254" />
                 <Text style={styles.pickButtonText}>Choose files (videos, audios, etc.)</Text>
               </Pressable>
@@ -735,7 +842,8 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
                               <Ionicons name="checkmark-circle" size={18} color="#43D6A1" />
                             ) : sessionItem?.phase === 'uploading' ? (
                               <ActivityIndicator size="small" color="#FF7254" />
-                            ) : sessionItem?.phase === 'hashing' || sessionItem?.phase === 'offering' ? (
+                            ) : sessionItem?.phase === 'hashing' ||
+                              sessionItem?.phase === 'offering' ? (
                               <ActivityIndicator size="small" color="#B7A8FF" />
                             ) : (
                               <Ionicons name="time-outline" size={16} color="#7A748E" />
@@ -756,10 +864,7 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
                 </View>
 
                 {!busy && (
-                  <Pressable
-                    style={styles.addMoreButton}
-                    onPress={() => void chooseFiles(true)}
-                  >
+                  <Pressable style={styles.addMoreButton} onPress={() => void chooseFiles(true)}>
                     <Ionicons name="add-circle-outline" size={18} color="#B7A8FF" />
                     <Text style={styles.addMoreText}>Add more files</Text>
                   </Pressable>
@@ -779,7 +884,9 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
               autoCorrect={false}
               accessibilityLabel="PC destination folder"
             />
-            <Text style={styles.helpText}>Enter an existing writable folder path on your PC. Leave blank for Downloads/Blinky.</Text>
+            <Text style={styles.helpText}>
+              Enter an existing writable folder path on your PC. Leave blank for Downloads/Blinky.
+            </Text>
 
             {/* Instruction input */}
             <Text style={styles.fieldLabel}>AiCut instruction (optional)</Text>
@@ -797,7 +904,10 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
               editable={!busy && session?.phase !== 'done'}
               autoCorrect
             />
-            <Text style={styles.helpText}>Leave blank to upload every selected file. Enter a merge, trim, audio, or captions request to run AiCut on uploaded media. PDFs and images are still transferred.</Text>
+            <Text style={styles.helpText}>
+              Leave blank to upload every selected file. Enter a merge, trim, audio, or captions
+              request to run AiCut on uploaded media. PDFs and images are still transferred.
+            </Text>
 
             {/* Progress Card */}
             {session && busy && (
@@ -816,10 +926,7 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
             {session?.phase === 'error' && (
               <View style={styles.errorCard}>
                 <Text style={styles.errorText}>{session.error}</Text>
-                <Pressable
-                  style={styles.secondaryButton}
-                  onPress={() => void startBatchTransfer()}
-                >
+                <Pressable style={styles.secondaryButton} onPress={() => void startBatchTransfer()}>
                   <Text style={styles.secondaryButtonText}>Retry transfer</Text>
                 </Pressable>
               </View>
@@ -850,7 +957,10 @@ export const FileTransferPanel = forwardRef<FileTransferPanelRef, Props>(functio
 
           {/* Action Footer */}
           <View style={styles.actions}>
-            <Pressable style={[styles.secondaryButton, busy && styles.disabledButton]} onPress={onClose}>
+            <Pressable
+              style={[styles.secondaryButton, busy && styles.disabledButton]}
+              onPress={onClose}
+            >
               <Text style={styles.secondaryButtonText}>Close</Text>
             </Pressable>
 

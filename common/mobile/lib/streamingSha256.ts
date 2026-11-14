@@ -42,13 +42,19 @@ export class StreamingSha256 {
       w[t] = (((w[t - 16] + s0) >>> 0) + ((w[t - 7] + s1) >>> 0)) >>> 0;
     }
 
-    let a = this.h0, b = this.h1, c = this.h2, d = this.h3;
-    let e = this.h4, f = this.h5, g = this.h6, h = this.h7;
+    let a = this.h0,
+      b = this.h1,
+      c = this.h2,
+      d = this.h3;
+    let e = this.h4,
+      f = this.h5,
+      g = this.h6,
+      h = this.h7;
 
     for (let t = 0; t < 64; t++) {
       const s1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
-      const ch = (e & f) ^ ((~e) & g);
-      const temp1 = (((h + s1) >>> 0) + (((ch + K[t]) >>> 0) + w[t]) >>> 0) >>> 0;
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = ((((h + s1) >>> 0) + (((ch + K[t]) >>> 0) + w[t])) >>> 0) >>> 0;
       const s0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
       const maj = (a & b) ^ (a & c) ^ (b & c);
       const temp2 = (s0 + maj) >>> 0;
@@ -112,7 +118,7 @@ export class StreamingSha256 {
     const bitLenHi = Math.floor(totalBytes / 0x20000000);
     const bitLenLo = (totalBytes * 8) >>> 0;
 
-    const padLen = (totalBytes % 64 < 56) ? (56 - (totalBytes % 64)) : (120 - (totalBytes % 64));
+    const padLen = totalBytes % 64 < 56 ? 56 - (totalBytes % 64) : 120 - (totalBytes % 64);
     const padding = new Uint8Array(padLen + 8);
     padding[0] = 0x80;
     const view = new DataView(padding.buffer, padding.byteOffset, padding.byteLength);
@@ -137,8 +143,14 @@ export class StreamingSha256 {
 
     const toHex = (n: number) => (n >>> 0).toString(16).padStart(8, '0');
     return (
-      toHex(this.h0) + toHex(this.h1) + toHex(this.h2) + toHex(this.h3) +
-      toHex(this.h4) + toHex(this.h5) + toHex(this.h6) + toHex(this.h7)
+      toHex(this.h0) +
+      toHex(this.h1) +
+      toHex(this.h2) +
+      toHex(this.h3) +
+      toHex(this.h4) +
+      toHex(this.h5) +
+      toHex(this.h6) +
+      toHex(this.h7)
     );
   }
 }

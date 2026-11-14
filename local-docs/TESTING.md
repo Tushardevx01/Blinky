@@ -2,17 +2,17 @@
 
 ## Validation matrix
 
-| Area | Command | What it covers |
-|---|---|---|
-| Frontend typecheck | `bun run typecheck` | TypeScript compile contract for `common/frontend` |
-| Frontend unit tests | `bun test common/frontend/tests` | Bun executes frontend tests directly, including mocked native speech lifecycle tests; no root convenience `test` script |
-| Mobile unit tests | `bun test common/mobile/tests` | Mobile connection state, file transfer entry point, and destination/edit offer contract |
-| Python syntax | `python -m compileall -q common/python linux/python windows/python python common/aicut/aicut_mcp.py` | parse/byte-compile all Python source |
-| Python unit/integration | `python -m pytest common/python/tests -q` | 30 modules across routing, UI, computer use, WIL, tools, and providers |
-| Rust/Tauri | `cargo test --locked --manifest-path common/src-tauri/Cargo.toml` | Rust unit tests and Tauri compile/build contract |
-| AiCut native | `cmake -S common/aicut -B <build>; cmake --build <build>; ctest --test-dir <build> --output-on-failure` | CLI parser and trim/music/merge engine tests |
-| Wake word | `python python/test_wake_word.py` | manual dependencies/audio/model/live detection; requires microphone and model runtime |
-| Linux diagnostics | `bun run linux:check:ollama`, `bun run linux:check:groq`, `bun run linux:check:computer-use` | environment/service checks; last command targets the external package doctor |
+| Area                    | Command                                                                                                 | What it covers                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Frontend typecheck      | `bun run typecheck`                                                                                     | TypeScript compile contract for `common/frontend`                                                                       |
+| Frontend unit tests     | `bun test common/frontend/tests`                                                                        | Bun executes frontend tests directly, including mocked native speech lifecycle tests; no root convenience `test` script |
+| Mobile unit tests       | `bun test common/mobile/tests`                                                                          | Mobile connection state, file transfer entry point, and destination/edit offer contract                                 |
+| Python syntax           | `python -m compileall -q common/python linux/python windows/python python common/aicut/aicut_mcp.py`    | parse/byte-compile all Python source                                                                                    |
+| Python unit/integration | `python -m pytest common/python/tests -q`                                                               | 30 modules across routing, UI, computer use, WIL, tools, and providers                                                  |
+| Rust/Tauri              | `cargo test --locked --manifest-path common/src-tauri/Cargo.toml`                                       | Rust unit tests and Tauri compile/build contract                                                                        |
+| AiCut native            | `cmake -S common/aicut -B <build>; cmake --build <build>; ctest --test-dir <build> --output-on-failure` | CLI parser and trim/music/merge engine tests                                                                            |
+| Wake word               | `python python/test_wake_word.py`                                                                       | manual dependencies/audio/model/live detection; requires microphone and model runtime                                   |
+| Linux diagnostics       | `bun run linux:check:ollama`, `bun run linux:check:groq`, `bun run linux:check:computer-use`            | environment/service checks; last command targets the external package doctor                                            |
 
 Use the Python executable from the configured project environment. The Windows production requirements intentionally omit pytest, so install development test dependencies into `.venv`, not the pruned bundled runtime.
 

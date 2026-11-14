@@ -6,8 +6,7 @@ import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 export const PROMO_UNLOCKED_STORAGE_KEY = '@blinky_pc_promo_unlocked';
 export const PROMO_CODE_STORAGE_KEY = '@blinky_pc_redeemed_code';
 
-export const PC_ENTITLEMENT_ID =
-  process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID || 'pc_access';
+export const PC_ENTITLEMENT_ID = process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID || 'pc_access';
 
 const DEFAULT_PROMO_CODES = ['SHIPATHON', 'BLINKYVIP', 'EARLYBIRD'];
 
@@ -96,7 +95,10 @@ export async function initializePurchases(): Promise<boolean> {
     console.log('[Purchases] RevenueCat initialized successfully.');
     return true;
   } catch (error) {
-    console.warn('[Purchases] Failed to initialize RevenueCat (likely Expo Go or missing native link):', error);
+    console.warn(
+      '[Purchases] Failed to initialize RevenueCat (likely Expo Go or missing native link):',
+      error
+    );
     isConfigured = false;
     return false;
   }
@@ -138,8 +140,7 @@ export async function hasPcAccess(): Promise<boolean> {
   if (isConfigured) {
     try {
       const customerInfo = await Purchases.getCustomerInfo();
-      const hasEntitlement =
-        customerInfo.entitlements.active[PC_ENTITLEMENT_ID] !== undefined;
+      const hasEntitlement = customerInfo.entitlements.active[PC_ENTITLEMENT_ID] !== undefined;
       return hasEntitlement;
     } catch (e) {
       console.warn('[Purchases] Error checking customer info:', e);
@@ -223,8 +224,7 @@ export async function restorePurchases(): Promise<{
 
   try {
     const customerInfo = await Purchases.restorePurchases();
-    const hasAccess =
-      customerInfo.entitlements.active[PC_ENTITLEMENT_ID] !== undefined;
+    const hasAccess = customerInfo.entitlements.active[PC_ENTITLEMENT_ID] !== undefined;
     notifyListeners(hasAccess);
 
     if (hasAccess) {
@@ -281,8 +281,7 @@ export async function presentPcPaywall(): Promise<{
 
     return {
       success:
-        paywallResult === PAYWALL_RESULT.PURCHASED ||
-        paywallResult === PAYWALL_RESULT.RESTORED,
+        paywallResult === PAYWALL_RESULT.PURCHASED || paywallResult === PAYWALL_RESULT.RESTORED,
       result: paywallResult,
     };
   } catch (error: any) {

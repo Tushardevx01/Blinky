@@ -13,6 +13,8 @@
     "mobile:dev": "cd common/mobile && bun run start",
     "tauri:dev": "bun tauri dev",
     "build": "bun run typecheck && vite build --config common/frontend/vite.config.ts",
+    "format": "bunx prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html,yaml,yml}\"",
+    "format:check": "bunx prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html,yaml,yml}\"",
     "build:release": "bun run typecheck && bun scripts/build-release.ts",
     "tauri:build": "bun tauri build",
     "preview": "vite preview --config common/frontend/vite.config.ts",

@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, scanFromURLAsync } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -45,7 +38,10 @@ export function QrScanner({ onScanned, scanActive }: QrScannerProps) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
           onScanned(scanResults[0].data);
         } else {
-          Alert.alert('No QR Code Found', 'Could not detect a valid Blinky QR code in that image. Please try scanning directly with the camera.');
+          Alert.alert(
+            'No QR Code Found',
+            'Could not detect a valid Blinky QR code in that image. Please try scanning directly with the camera.'
+          );
         }
       }
     } catch (e: any) {
@@ -105,7 +101,9 @@ export function QrScanner({ onScanned, scanActive }: QrScannerProps) {
             scanActive && !locked
               ? ({ data }: { data: string }) => {
                   setLocked(true);
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
+                    () => {}
+                  );
                   onScanned(data);
                 }
               : undefined

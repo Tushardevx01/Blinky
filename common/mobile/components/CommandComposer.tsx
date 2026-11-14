@@ -53,7 +53,7 @@ export function CommandComposer({
   isVoiceRecording,
   isVoiceTranscribing,
   onToggleVoice,
-  liveTranscript
+  liveTranscript,
 }: CommandComposerProps) {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
@@ -68,7 +68,7 @@ export function CommandComposer({
       toValue: showAttachMenu ? 1 : 0,
       useNativeDriver: true,
       friction: 9,
-      tension: 70
+      tension: 70,
     }).start();
   }, [showAttachMenu]);
 
@@ -77,7 +77,7 @@ export function CommandComposer({
     if (isVoiceRecording) {
       setRecordingDuration(0);
       interval = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
+        setRecordingDuration((prev) => prev + 1);
       }, 1000);
     } else {
       setRecordingDuration(0);
@@ -112,9 +112,9 @@ export function CommandComposer({
 
   const appendAttachments = (files: AttachedFile[]) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setAttachedFiles(previous => {
-      const existing = new Set(previous.map(file => file.uri));
-      return [...previous, ...files.filter(file => !existing.has(file.uri))];
+    setAttachedFiles((previous) => {
+      const existing = new Set(previous.map((file) => file.uri));
+      return [...previous, ...files.filter((file) => !existing.has(file.uri))];
     });
   };
 
@@ -137,14 +137,18 @@ export function CommandComposer({
         });
         if (!result.canceled && result.assets && result.assets.length > 0) {
           const asset = result.assets[0];
-          const sizeMB = asset.fileSize ? Number((asset.fileSize / (1024 * 1024)).toFixed(2)) : undefined;
-          appendAttachments([{
-            uri: asset.uri,
-            name: asset.fileName || `Photo_${Date.now()}.jpg`,
-            size: sizeMB,
-            type: 'image',
-            mimeType: asset.mimeType || 'image/jpeg',
-          }]);
+          const sizeMB = asset.fileSize
+            ? Number((asset.fileSize / (1024 * 1024)).toFixed(2))
+            : undefined;
+          appendAttachments([
+            {
+              uri: asset.uri,
+              name: asset.fileName || `Photo_${Date.now()}.jpg`,
+              size: sizeMB,
+              type: 'image',
+              mimeType: asset.mimeType || 'image/jpeg',
+            },
+          ]);
         }
       } else if (option === 'Image') {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -155,13 +159,17 @@ export function CommandComposer({
           base64: false,
         });
         if (!result.canceled && result.assets && result.assets.length > 0) {
-          appendAttachments(result.assets.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName || `Image_${Date.now()}.jpg`,
-            size: asset.fileSize ? Number((asset.fileSize / (1024 * 1024)).toFixed(2)) : undefined,
-            type: 'image',
-            mimeType: asset.mimeType || 'image/jpeg',
-          })));
+          appendAttachments(
+            result.assets.map((asset) => ({
+              uri: asset.uri,
+              name: asset.fileName || `Image_${Date.now()}.jpg`,
+              size: asset.fileSize
+                ? Number((asset.fileSize / (1024 * 1024)).toFixed(2))
+                : undefined,
+              type: 'image',
+              mimeType: asset.mimeType || 'image/jpeg',
+            }))
+          );
         }
       } else if (option === 'File') {
         const result = await DocumentPicker.getDocumentAsync({
@@ -170,16 +178,21 @@ export function CommandComposer({
           multiple: true,
         });
         if (!result.canceled && result.assets && result.assets.length > 0) {
-          appendAttachments(result.assets.map(asset => ({
-            uri: asset.uri,
-            name: asset.name,
-            size: asset.size ? Number((asset.size / (1024 * 1024)).toFixed(2)) : undefined,
-            type: asset.mimeType?.startsWith('image/') || /\.(jpe?g|png|webp|gif)$/i.test(asset.name)
-              ? 'image'
-              : asset.mimeType?.startsWith('video/') || /\.(mp4|mov|mkv|avi|webm)$/i.test(asset.name)
-                ? 'video' : 'document',
-            mimeType: asset.mimeType,
-          })));
+          appendAttachments(
+            result.assets.map((asset) => ({
+              uri: asset.uri,
+              name: asset.name,
+              size: asset.size ? Number((asset.size / (1024 * 1024)).toFixed(2)) : undefined,
+              type:
+                asset.mimeType?.startsWith('image/') || /\.(jpe?g|png|webp|gif)$/i.test(asset.name)
+                  ? 'image'
+                  : asset.mimeType?.startsWith('video/') ||
+                      /\.(mp4|mov|mkv|avi|webm)$/i.test(asset.name)
+                    ? 'video'
+                    : 'document',
+              mimeType: asset.mimeType,
+            }))
+          );
         }
       } else if (option === 'Screenshot') {
         if (onCaptureScreenshot) {
@@ -195,7 +208,7 @@ export function CommandComposer({
   const handleRemoveAttachment = (uri: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setAttachedFiles(previous => previous.filter(file => file.uri !== uri));
+    setAttachedFiles((previous) => previous.filter((file) => file.uri !== uri));
   };
 
   const formatDuration = (seconds: number) => {
@@ -217,68 +230,105 @@ export function CommandComposer({
                 {
                   translateY: attachAnim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [10, 0]
-                  })
+                    outputRange: [10, 0],
+                  }),
                 },
                 {
                   scale: attachAnim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0.94, 1]
-                  })
-                }
-              ]
-            }
+                    outputRange: [0.94, 1],
+                  }),
+                },
+              ],
+            },
           ]}
         >
           <View style={styles.attachMenuRow}>
-            <AttachOption icon="document-text-outline" label="File" sublabel="PDF, DOC, etc." onPress={() => handleAttachOption('File')} />
-            <AttachOption icon="image-outline" label="Image" sublabel="JPG, PNG, etc." onPress={() => handleAttachOption('Image')} />
-            <AttachOption icon="camera-outline" label="Camera" sublabel="Take a photo" onPress={() => handleAttachOption('Camera')} />
-            <AttachOption icon="desktop-outline" label="Screenshot" sublabel="Capture screen" onPress={() => handleAttachOption('Screenshot')} />
+            <AttachOption
+              icon="document-text-outline"
+              label="File"
+              sublabel="PDF, DOC, etc."
+              onPress={() => handleAttachOption('File')}
+            />
+            <AttachOption
+              icon="image-outline"
+              label="Image"
+              sublabel="JPG, PNG, etc."
+              onPress={() => handleAttachOption('Image')}
+            />
+            <AttachOption
+              icon="camera-outline"
+              label="Camera"
+              sublabel="Take a photo"
+              onPress={() => handleAttachOption('Camera')}
+            />
+            <AttachOption
+              icon="desktop-outline"
+              label="Screenshot"
+              sublabel="Capture screen"
+              onPress={() => handleAttachOption('Screenshot')}
+            />
           </View>
         </Animated.View>
       )}
 
       {/* Main Composer Box */}
-      <View style={[
-        styles.composerBox,
-        !isConnected && styles.composerDisabled,
-        isVoiceRecording && styles.composerRecording
-      ]}>
-
+      <View
+        style={[
+          styles.composerBox,
+          !isConnected && styles.composerDisabled,
+          isVoiceRecording && styles.composerRecording,
+        ]}
+      >
         {/* Attachment Preview (if any) */}
         {attachedFiles.length > 0 && !isVoiceRecording && (
           <ScrollView style={styles.attachmentList} keyboardShouldPersistTaps="handled">
-          {attachedFiles.map(attachedFile => <View key={attachedFile.uri} style={styles.attachmentPreview}>
-            <TouchableOpacity
-              style={styles.attachmentContentRow}
-              activeOpacity={attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image') ? 0.7 : 1}
-              onPress={() => {
-                if (attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image')) {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  onPeekImage?.(attachedFile.uri);
-                }
-              }}
-            >
-              <View style={styles.attachmentIconBox}>
-                {attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image') ? (
-                  <Image source={{ uri: attachedFile.uri }} style={styles.attachmentThumb} />
-                ) : (
-                  <Ionicons name="document-text" size={20} color={colors.accent} />
-                )}
+            {attachedFiles.map((attachedFile) => (
+              <View key={attachedFile.uri} style={styles.attachmentPreview}>
+                <TouchableOpacity
+                  style={styles.attachmentContentRow}
+                  activeOpacity={
+                    attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image')
+                      ? 0.7
+                      : 1
+                  }
+                  onPress={() => {
+                    if (
+                      attachedFile.type === 'image' ||
+                      attachedFile.mimeType?.startsWith('image')
+                    ) {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      onPeekImage?.(attachedFile.uri);
+                    }
+                  }}
+                >
+                  <View style={styles.attachmentIconBox}>
+                    {attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image') ? (
+                      <Image source={{ uri: attachedFile.uri }} style={styles.attachmentThumb} />
+                    ) : (
+                      <Ionicons name="document-text" size={20} color={colors.accent} />
+                    )}
+                  </View>
+                  <View style={styles.attachmentDetails}>
+                    <Text style={styles.attachmentName} numberOfLines={1}>
+                      {attachedFile.name}
+                    </Text>
+                    <Text style={styles.attachmentSize}>
+                      {attachedFile.size ? `${attachedFile.size} MB` : 'Attached'}
+                      {attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image')
+                        ? ' • Tap to peek'
+                        : ''}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleRemoveAttachment(attachedFile.uri)}
+                  style={styles.attachmentRemove}
+                >
+                  <Ionicons name="close" size={16} color={colors.textSecondary} />
+                </TouchableOpacity>
               </View>
-              <View style={styles.attachmentDetails}>
-                <Text style={styles.attachmentName} numberOfLines={1}>{attachedFile.name}</Text>
-                <Text style={styles.attachmentSize}>
-                  {attachedFile.size ? `${attachedFile.size} MB` : 'Attached'}
-                  {(attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image')) ? ' • Tap to peek' : ''}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleRemoveAttachment(attachedFile.uri)} style={styles.attachmentRemove}>
-              <Ionicons name="close" size={16} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>)}
+            ))}
           </ScrollView>
         )}
 
@@ -294,7 +344,7 @@ export function CommandComposer({
               <Ionicons name="sync" size={20} color={colors.accent} style={{ opacity: 0.7 }} />
             ) : (
               <Ionicons
-                name={isVoiceRecording ? "mic" : "mic"}
+                name={isVoiceRecording ? 'mic' : 'mic'}
                 size={22}
                 color={isVoiceRecording ? colors.danger : colors.textSecondary}
               />
@@ -318,7 +368,7 @@ export function CommandComposer({
                       styles.liveTranscript,
                       {
                         opacity: fadeAnim,
-                      }
+                      },
                     ]}
                     numberOfLines={1}
                   >
@@ -356,7 +406,12 @@ export function CommandComposer({
                 onPress={handleToggleAttach}
                 activeOpacity={0.7}
               >
-                <Ionicons name="attach-outline" size={24} color={colors.textSecondary} style={{ transform: [{ rotate: '45deg' }] }} />
+                <Ionicons
+                  name="attach-outline"
+                  size={24}
+                  color={colors.textSecondary}
+                  style={{ transform: [{ rotate: '45deg' }] }}
+                />
               </TouchableOpacity>
 
               {status === 'processing' ? (
@@ -374,7 +429,8 @@ export function CommandComposer({
                 <TouchableOpacity
                   style={[
                     styles.sendBtn,
-                    (!isConnected || (!queryText.trim() && attachedFiles.length === 0)) && styles.sendBtnDisabled
+                    (!isConnected || (!queryText.trim() && attachedFiles.length === 0)) &&
+                      styles.sendBtnDisabled,
                   ]}
                   onPress={async () => {
                     if (submission.current.pending) return;
@@ -383,12 +439,17 @@ export function CommandComposer({
                     const submitted = new Set(attachedFiles);
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     try {
-                      if (await onSubmit(attachedFiles) && submission.current.id === id) {
-                        setAttachedFiles(previous => previous.filter(file => !submitted.has(file)));
+                      if ((await onSubmit(attachedFiles)) && submission.current.id === id) {
+                        setAttachedFiles((previous) =>
+                          previous.filter((file) => !submitted.has(file))
+                        );
                       }
                     } catch (error) {
                       if (submission.current.id === id) {
-                        Alert.alert('Message not sent', error instanceof Error ? error.message : 'Please try again.');
+                        Alert.alert(
+                          'Message not sent',
+                          error instanceof Error ? error.message : 'Please try again.'
+                        );
                       }
                     } finally {
                       if (submission.current.id === id) submission.current.pending = false;
@@ -397,7 +458,15 @@ export function CommandComposer({
                   disabled={!isConnected || (!queryText.trim() && attachedFiles.length === 0)}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name="arrow-up" size={20} color={(!isConnected || (!queryText.trim() && attachedFiles.length === 0)) ? colors.accent : "#FFFFFF"} />
+                  <Ionicons
+                    name="arrow-up"
+                    size={20}
+                    color={
+                      !isConnected || (!queryText.trim() && attachedFiles.length === 0)
+                        ? colors.accent
+                        : '#FFFFFF'
+                    }
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -418,14 +487,26 @@ export function CommandComposer({
   );
 }
 
-function AttachOption({ icon, label, sublabel, onPress }: { icon: any, label: string, sublabel: string, onPress: () => void }) {
+function AttachOption({
+  icon,
+  label,
+  sublabel,
+  onPress,
+}: {
+  icon: any;
+  label: string;
+  sublabel: string;
+  onPress: () => void;
+}) {
   return (
     <TouchableOpacity style={styles.attachOption} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.attachOptionIcon}>
         <Ionicons name={icon} size={22} color={colors.textPrimary} />
       </View>
       <Text style={styles.attachOptionLabel}>{label}</Text>
-      <Text style={styles.attachOptionSublabel} numberOfLines={1}>{sublabel}</Text>
+      <Text style={styles.attachOptionSublabel} numberOfLines={1}>
+        {sublabel}
+      </Text>
     </TouchableOpacity>
   );
 }

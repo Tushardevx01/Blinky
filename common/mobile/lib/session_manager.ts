@@ -26,7 +26,10 @@ const DEFAULT_WELCOME_MESSAGE: Message = {
  */
 export function generateSessionTitle(prompt: string): string {
   if (!prompt || !prompt.trim()) return 'New Conversation';
-  const clean = prompt.trim().replace(/^[\/#!?]+/, '').trim();
+  const clean = prompt
+    .trim()
+    .replace(/^[\/#!?]+/, '')
+    .trim();
   const words = clean.split(/\s+/);
   if (words.length <= 5) {
     return clean.charAt(0).toUpperCase() + clean.slice(1);

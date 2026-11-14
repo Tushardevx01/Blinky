@@ -11,7 +11,12 @@ interface BrandHeaderProps {
   onPressHistory?: () => void;
 }
 
-export function BrandHeader({ status, isConnected, onPressConnection, onPressHistory }: BrandHeaderProps) {
+export function BrandHeader({
+  status,
+  isConnected,
+  onPressConnection,
+  onPressHistory,
+}: BrandHeaderProps) {
   return (
     <View style={styles.header}>
       {/* Brand / Logo */}
@@ -70,15 +75,20 @@ export function BrandHeader({ status, isConnected, onPressConnection, onPressHis
                 backgroundColor: isConnected
                   ? colors.success
                   : status === 'connecting'
-                  ? colors.warning
-                  : colors.danger,
+                    ? colors.warning
+                    : colors.danger,
               },
             ]}
           />
           <Text style={styles.connectionText}>
             {isConnected ? 'My PC' : status === 'connecting' ? 'Connecting...' : 'Disconnected'}
           </Text>
-          <Ionicons name="chevron-down" size={14} color={colors.textSecondary} style={{ marginLeft: 4 }} />
+          <Ionicons
+            name="chevron-down"
+            size={14}
+            color={colors.textSecondary}
+            style={{ marginLeft: 4 }}
+          />
         </TouchableOpacity>
       </View>
     </View>

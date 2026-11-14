@@ -67,10 +67,7 @@
             "collectionIndex": 11,
             "artifactIndex": 12
           },
-          "point": [
-            400,
-            168
-          ]
+          "point": [400, 168]
         },
         {
           "left": {
@@ -87,10 +84,7 @@
             "collectionIndex": 11,
             "artifactIndex": 12
           },
-          "point": [
-            500,
-            168
-          ]
+          "point": [500, 168]
         },
         {
           "left": {
@@ -107,10 +101,7 @@
             "collectionIndex": 13,
             "artifactIndex": 14
           },
-          "point": [
-            930,
-            416
-          ]
+          "point": [930, 416]
         }
       ],
       "detours": [],

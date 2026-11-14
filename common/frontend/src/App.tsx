@@ -6,7 +6,15 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import QRCode from 'qrcode';
 import { linkCitationMarkers, preprocessMarkdown } from './lib/citations';
-import { runTutor, showOverlay, resizeCommandWindow, getSettings, saveSettings, resizeAndMoveCommandWindow, openUrl } from './lib/tauri';
+import {
+  runTutor,
+  showOverlay,
+  resizeCommandWindow,
+  getSettings,
+  saveSettings,
+  resizeAndMoveCommandWindow,
+  openUrl,
+} from './lib/tauri';
 
 export function App() {
   const [question, setQuestion] = useState('');
@@ -40,7 +48,7 @@ export function App() {
       initialX: position.x / scaleFactor,
       initialY: position.y / scaleFactor,
       scaleFactor,
-      side
+      side,
     };
     setIsResizing(true);
   };
@@ -48,7 +56,8 @@ export function App() {
   const handleResize = async (event: React.PointerEvent<HTMLDivElement>) => {
     if (!isResizing || !resizeRef.current) return;
 
-    const { startX, initialWidth, initialHeight, initialX, initialY, scaleFactor, side } = resizeRef.current;
+    const { startX, initialWidth, initialHeight, initialX, initialY, scaleFactor, side } =
+      resizeRef.current;
     const dx = (event.screenX - startX) / scaleFactor;
 
     if (side === 'right') {
@@ -93,7 +102,8 @@ export function App() {
         if (s.voice_provider === 'sarvam' || s.voice_provider === 'assemblyai') {
           setVoiceProvider(s.voice_provider);
         } else {
-          const cached = localStorage.getItem('blinky_voice_provider') as 'assemblyai' | 'sarvam' | null;
+          const cached = localStorage.getItem('blinky_voice_provider') as
+            'assemblyai' | 'sarvam' | null;
           if (cached === 'sarvam' || cached === 'assemblyai') {
             setVoiceProvider(cached);
           }
@@ -119,7 +129,9 @@ export function App() {
   // WhatsApp connection states
 
   const [waBackendUrl, setWaBackendUrl] = useState('http://localhost:3000');
-  const [waStatus, setWaStatus] = useState<'loading' | 'disconnected' | 'qr' | 'connected' | 'error'>('loading');
+  const [waStatus, setWaStatus] = useState<
+    'loading' | 'disconnected' | 'qr' | 'connected' | 'error'
+  >('loading');
   const [waQr, setWaQr] = useState('');
   const [waError, setWaError] = useState('');
   const [isWaActionLoading, setIsWaActionLoading] = useState(false);
@@ -136,7 +148,7 @@ export function App() {
         const res = await fetch(`${url}/api/sessions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: SESSION_ID })
+          body: JSON.stringify({ sessionId: SESSION_ID }),
         });
         if (res.ok || res.status === 400) {
           return url;
@@ -155,11 +167,11 @@ export function App() {
       const res = await fetch(`${backendUrl}/api/sessions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: SESSION_ID })
+        body: JSON.stringify({ sessionId: SESSION_ID }),
       });
       if (res.ok) {
         const statusRes = await fetch(`${backendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
+          headers: { 'X-Session-Id': SESSION_ID },
         });
         if (statusRes.ok) {
           const data = await statusRes.json();
@@ -187,8 +199,8 @@ export function App() {
         method: 'POST',
         headers: {
           'X-Session-Id': SESSION_ID,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       if (res.ok) {
         setWaStatus('disconnected');
@@ -227,7 +239,7 @@ export function App() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(`${waBackendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
+          headers: { 'X-Session-Id': SESSION_ID },
         });
         if (!active) return;
         if (res.ok) {
@@ -270,8 +282,8 @@ export function App() {
           margin: 2,
           color: {
             dark: '#140f13',
-            light: '#ffffff'
-          }
+            light: '#ffffff',
+          },
         },
         (error) => {
           if (error) console.error('Failed to render QR Code:', error);
@@ -334,7 +346,18 @@ export function App() {
     const cleanProvider = newProvider.toLowerCase().trim();
     setProvider(cleanProvider);
     try {
-      await saveSettings(cleanProvider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        cleanProvider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save provider:', err);
     }
@@ -343,7 +366,18 @@ export function App() {
   const updateShortcut = async (newShortcut: string) => {
     setShortcut(newShortcut);
     try {
-      await saveSettings(provider, newShortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        newShortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save shortcut:', err);
     }
@@ -352,7 +386,18 @@ export function App() {
   const updateSarvamApiKey = async (newKey: string) => {
     setSarvamApiKey(newKey);
     try {
-      await saveSettings(provider, shortcut, newKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        newKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save Sarvam API key:', err);
     }
@@ -361,7 +406,18 @@ export function App() {
   const updateAssemblyaiApiKey = async (newKey: string) => {
     setAssemblyaiApiKey(newKey);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, customApiKey, newKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        newKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save AssemblyAI API key:', err);
     }
@@ -370,7 +426,18 @@ export function App() {
   const updateGroqApiKey = async (newKey: string) => {
     setGroqApiKey(newKey);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, newKey, deepseekApiKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        newKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save Groq API key:', err);
     }
@@ -379,7 +446,18 @@ export function App() {
   const updateDeepseekApiKey = async (newKey: string) => {
     setDeepseekApiKey(newKey);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, newKey, customUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        newKey,
+        customUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save DeepSeek API key:', err);
     }
@@ -388,7 +466,18 @@ export function App() {
   const updateCustomUrl = async (newUrl: string) => {
     setCustomUrl(newUrl);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, newUrl, customModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        newUrl,
+        customModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save custom URL:', err);
     }
@@ -397,7 +486,18 @@ export function App() {
   const updateCustomModel = async (newModel: string) => {
     setCustomModel(newModel);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, newModel, customApiKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        newModel,
+        customApiKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save custom model:', err);
     }
@@ -406,7 +506,18 @@ export function App() {
   const updateCustomApiKey = async (newKey: string) => {
     setCustomApiKey(newKey);
     try {
-      await saveSettings(provider, shortcut, sarvamApiKey, groqApiKey, deepseekApiKey, customUrl, customModel, newKey, assemblyaiApiKey, voiceProvider);
+      await saveSettings(
+        provider,
+        shortcut,
+        sarvamApiKey,
+        groqApiKey,
+        deepseekApiKey,
+        customUrl,
+        customModel,
+        newKey,
+        assemblyaiApiKey,
+        voiceProvider
+      );
     } catch (err) {
       console.error('Failed to save custom API key:', err);
     }
@@ -435,9 +546,12 @@ export function App() {
     let unlistenStatus: Promise<any>;
     let unlistenChunk: Promise<any>;
 
-    unlistenStatus = listen<{ phase: string; message: string }>('blinky://tutor-status', (event) => {
-      setStatus(event.payload.message);
-    });
+    unlistenStatus = listen<{ phase: string; message: string }>(
+      'blinky://tutor-status',
+      (event) => {
+        setStatus(event.payload.message);
+      }
+    );
 
     unlistenChunk = listen<{ message: string }>('blinky://tutor-chunk', (event) => {
       setStatus((prev) => {
@@ -548,7 +662,10 @@ export function App() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    let trimmed = question.trim().replace(/^(hey\s+)?blinky[\s,.:;!?]*/i, '').trim();
+    let trimmed = question
+      .trim()
+      .replace(/^(hey\s+)?blinky[\s,.:;!?]*/i, '')
+      .trim();
     if (!trimmed || isRunning) return;
 
     setIsRunning(true);
@@ -612,7 +729,8 @@ export function App() {
           </div>
 
           <div className="command-top-hint" data-tauri-drag-region>
-            Blinky app <span className="keys">Ctrl + Shift + {shortcut === 'Space' ? 'Space' : 'Enter'}</span>
+            Blinky app{' '}
+            <span className="keys">Ctrl + Shift + {shortcut === 'Space' ? 'Space' : 'Enter'}</span>
           </div>
 
           <div className="command-actions">
@@ -657,8 +775,14 @@ export function App() {
                     className={`dropdown-option ${provider.toLowerCase().trim() === p ? 'active' : ''}`}
                     onClick={() => updateProvider(p)}
                   >
-                    <span>{p === 'custom' ? 'Custom (OpenAI-compatible)' : p.charAt(0).toUpperCase() + p.slice(1)}</span>
-                    {provider.toLowerCase().trim() === p && <Check size={14} className="active-dot" />}
+                    <span>
+                      {p === 'custom'
+                        ? 'Custom (OpenAI-compatible)'
+                        : p.charAt(0).toUpperCase() + p.slice(1)}
+                    </span>
+                    {provider.toLowerCase().trim() === p && (
+                      <Check size={14} className="active-dot" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -748,9 +872,28 @@ export function App() {
             )}
 
             <div className="dropdown-section">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '2px',
+                }}
+              >
                 <h4>Voice Provider</h4>
-                <span style={{ fontSize: '10px', background: voiceProvider === 'assemblyai' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 110, 95, 0.2)', color: voiceProvider === 'assemblyai' ? '#93c5fd' : '#ff8b6a', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                <span
+                  style={{
+                    fontSize: '10px',
+                    background:
+                      voiceProvider === 'assemblyai'
+                        ? 'rgba(59, 130, 246, 0.2)'
+                        : 'rgba(255, 110, 95, 0.2)',
+                    color: voiceProvider === 'assemblyai' ? '#93c5fd' : '#ff8b6a',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    fontWeight: 600,
+                  }}
+                >
                   {voiceProvider === 'assemblyai' ? 'Universal-3 Pro' : 'Indic Voice'}
                 </span>
               </div>
@@ -774,9 +917,18 @@ export function App() {
 
             {voiceProvider === 'assemblyai' ? (
               <div className="dropdown-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '2px',
+                  }}
+                >
                   <h4>AssemblyAI API Key</h4>
-                  <span style={{ fontSize: '9.5px', color: 'rgba(255, 255, 255, 0.5)' }}>Universal-3 Pro</span>
+                  <span style={{ fontSize: '9.5px', color: 'rgba(255, 255, 255, 0.5)' }}>
+                    Universal-3 Pro
+                  </span>
                 </div>
                 <input
                   type="password"
@@ -811,19 +963,23 @@ export function App() {
                   }}
                 >
                   <span>Link / Connection Status</span>
-                  <div className={`wa-indicator-dot ${waStatus === 'connected' ? 'connected' : 'disconnected'}`} />
+                  <div
+                    className={`wa-indicator-dot ${waStatus === 'connected' ? 'connected' : 'disconnected'}`}
+                  />
                 </button>
               </div>
             </div>
 
             <div className="dropdown-section dropdown-about">
-              <span>Theme: <strong>Ember</strong></span>
-              <span>About: <strong>v1.0.0</strong></span>
+              <span>
+                Theme: <strong>Ember</strong>
+              </span>
+              <span>
+                About: <strong>v1.0.0</strong>
+              </span>
             </div>
           </div>
         )}
-
-
 
         <div className="command-stack">
           <div className="command-input" onClick={() => inputRef.current?.focus()}>
@@ -841,7 +997,11 @@ export function App() {
                 }
               }}
             />
-            <button className="command-send" type="submit" disabled={isRunning || question.trim().length === 0}>
+            <button
+              className="command-send"
+              type="submit"
+              disabled={isRunning || question.trim().length === 0}
+            >
               {isRunning ? <Loader2 className="spin" size={16} /> : <ArrowUp size={16} />}
             </button>
           </div>
@@ -849,13 +1009,20 @@ export function App() {
           {showStatus && (
             <div className="command-result-container">
               <div className="command-summary-bubble">
-                <img src="/blinky_mascot_logo.png" className="summary-sparkle" style={{ height: 24, objectFit: 'contain' }} alt="Blinky" />
+                <img
+                  src="/blinky_mascot_logo.png"
+                  className="summary-sparkle"
+                  style={{ height: 24, objectFit: 'contain' }}
+                  alt="Blinky"
+                />
                 <span className="command-status">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
                       a: ({ node, href, children, ...props }: any) => {
-                        const linkText = Array.isArray(children) ? children.join('') : String(children || '');
+                        const linkText = Array.isArray(children)
+                          ? children.join('')
+                          : String(children || '');
                         const isCitation = /^\d+$/.test(linkText);
                         return (
                           <a
@@ -879,7 +1046,9 @@ export function App() {
                       li: ({ children }: any) => <li className="markdown-li">{children}</li>,
                       ul: ({ children }: any) => <ul className="markdown-ul">{children}</ul>,
                       ol: ({ children }: any) => <ol className="markdown-ol">{children}</ol>,
-                      strong: ({ children }: any) => <strong className="markdown-strong">{children}</strong>,
+                      strong: ({ children }: any) => (
+                        <strong className="markdown-strong">{children}</strong>
+                      ),
                       em: ({ children }: any) => <em className="markdown-em">{children}</em>,
                       h1: ({ children }: any) => <h1 className="markdown-h1">{children}</h1>,
                       h2: ({ children }: any) => <h2 className="markdown-h2">{children}</h2>,
@@ -890,19 +1059,31 @@ export function App() {
                           <table className="markdown-table">{children}</table>
                         </div>
                       ),
-                      thead: ({ children }: any) => <thead className="markdown-thead">{children}</thead>,
-                      tbody: ({ children }: any) => <tbody className="markdown-tbody">{children}</tbody>,
+                      thead: ({ children }: any) => (
+                        <thead className="markdown-thead">{children}</thead>
+                      ),
+                      tbody: ({ children }: any) => (
+                        <tbody className="markdown-tbody">{children}</tbody>
+                      ),
                       tr: ({ children }: any) => <tr className="markdown-tr">{children}</tr>,
                       th: ({ children }: any) => <th className="markdown-th">{children}</th>,
                       td: ({ children }: any) => <td className="markdown-td">{children}</td>,
-                      blockquote: ({ children }: any) => <blockquote className="markdown-blockquote">{children}</blockquote>,
+                      blockquote: ({ children }: any) => (
+                        <blockquote className="markdown-blockquote">{children}</blockquote>
+                      ),
                       hr: () => <hr className="markdown-hr" />,
                       code: ({ inline, className, children, ...props }: any) => {
                         const isInline = inline ?? !String(children).includes('\n');
                         return isInline ? (
-                          <code className="markdown-inline-code" {...props}>{children}</code>
+                          <code className="markdown-inline-code" {...props}>
+                            {children}
+                          </code>
                         ) : (
-                          <pre className="markdown-pre"><code className="markdown-code-block" {...props}>{children}</code></pre>
+                          <pre className="markdown-pre">
+                            <code className="markdown-code-block" {...props}>
+                              {children}
+                            </code>
+                          </pre>
                         );
                       },
                     }}
@@ -918,7 +1099,7 @@ export function App() {
                   <ul className="steps">
                     {steps.map((step, idx) => (
                       <li key={step.step || idx}>
-                        <span>{step.step || (idx + 1)}</span>
+                        <span>{step.step || idx + 1}</span>
                         <div>
                           <p>{step.instruction}</p>
                         </div>
@@ -965,21 +1146,29 @@ export function App() {
 
               {waStatus === 'disconnected' && (
                 <div className="wa-disconnected">
-                  <p className="wa-help-text">Connect to summarize group or direct chats using AI commands.</p>
+                  <p className="wa-help-text">
+                    Connect to summarize group or direct chats using AI commands.
+                  </p>
                   <button
                     type="button"
                     className="wa-btn wa-btn-connect"
                     onClick={() => connectWhatsApp()}
                     disabled={isWaActionLoading}
                   >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Connect WhatsApp'}
+                    {isWaActionLoading ? (
+                      <Loader2 className="spin" size={14} />
+                    ) : (
+                      'Connect WhatsApp'
+                    )}
                   </button>
                 </div>
               )}
 
               {waStatus === 'qr' && (
                 <div className="wa-qr-container">
-                  <p className="wa-scan-instruction">Scan this QR code with WhatsApp Linked Devices:</p>
+                  <p className="wa-scan-instruction">
+                    Scan this QR code with WhatsApp Linked Devices:
+                  </p>
                   <div className="wa-qr-canvas-wrapper">
                     <canvas ref={waCanvasRef} className="wa-qr-canvas" />
                     {isWaActionLoading && (
@@ -1011,7 +1200,11 @@ export function App() {
                     onClick={logoutWhatsApp}
                     disabled={isWaActionLoading}
                   >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Disconnect Account'}
+                    {isWaActionLoading ? (
+                      <Loader2 className="spin" size={14} />
+                    ) : (
+                      'Disconnect Account'
+                    )}
                   </button>
                 </div>
               )}

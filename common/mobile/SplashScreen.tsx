@@ -30,13 +30,13 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
   // Phase 2: Reveal
   const overlayOpacity = useRef(new Animated.Value(1)).current; // Fades out to reveal gradient
   const cardsAnim = useRef(new Animated.Value(0)).current; // 0 to 1 for staggering
-  
+
   // Entire screen dismiss
   const screenOpacity = useRef(new Animated.Value(1)).current;
   const screenScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    console.log("🔥 SPLASH SCREEN MOUNTED! 🔥");
+    console.log('🔥 SPLASH SCREEN MOUNTED! 🔥');
     // 1. Start the blinking (pulsing) animation
     Animated.loop(
       Animated.sequence([
@@ -56,7 +56,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
     // 2. Simulate loading time, then transition to "reveal" phase
     const timer = setTimeout(() => {
       setPhase('reveal');
-      
+
       // Stop the blinking smoothly by animating it to 0 opacity
       Animated.timing(blinkAnim, {
         toValue: 0,
@@ -78,7 +78,6 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
         friction: 8,
         useNativeDriver: true,
       }).start(() => setPhase('idle'));
-
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -86,7 +85,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
 
   const handleDismiss = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     // Graceful exit animation
     Animated.parallel([
       Animated.timing(screenOpacity, {
@@ -98,7 +97,7 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
         toValue: 1.1,
         duration: 400,
         useNativeDriver: true,
-      })
+      }),
     ]).start(() => {
       onDismiss();
     });
@@ -120,13 +119,15 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
     outputRange: [300, 300, 0],
     extrapolate: 'clamp',
   });
-  
+
   const fade1 = cardsAnim.interpolate({ inputRange: [0, 0.4, 1], outputRange: [0, 0, 1] });
   const fade2 = cardsAnim.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 0, 1] });
   const fade3 = cardsAnim.interpolate({ inputRange: [0, 0.8, 1], outputRange: [0, 0, 1] });
 
   return (
-    <Animated.View style={[styles.container, { opacity: screenOpacity, transform: [{ scale: screenScale }] }]}>
+    <Animated.View
+      style={[styles.container, { opacity: screenOpacity, transform: [{ scale: screenScale }] }]}
+    >
       <StatusBar barStyle="dark-content" />
 
       {/* The Ambient Gradient Background */}
@@ -140,25 +141,64 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
       {/* Floating Cards (Hidden during loading, slides up on reveal) */}
       <View style={styles.heroContainer}>
         {/* Card 1: Vision */}
-        <Animated.View style={[styles.card, styles.cardRed, { transform: [{ translateY: translateY1 }, { rotateZ: '-8deg' }], opacity: fade1 }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardRed,
+            { transform: [{ translateY: translateY1 }, { rotateZ: '-8deg' }], opacity: fade1 },
+          ]}
+        >
           <Ionicons name="eye" size={40} color="#FFF" style={styles.cardIcon} />
           <Text style={styles.cardTitle}>Computer Vision</Text>
         </Animated.View>
 
         {/* Card 2: Agent */}
-        <Animated.View style={[styles.card, styles.cardBlue, { transform: [{ translateY: translateY2 }, { rotateZ: '4deg' }], opacity: fade2, marginLeft: 120, marginTop: -40 }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardBlue,
+            {
+              transform: [{ translateY: translateY2 }, { rotateZ: '4deg' }],
+              opacity: fade2,
+              marginLeft: 120,
+              marginTop: -40,
+            },
+          ]}
+        >
           <Ionicons name="hardware-chip" size={32} color="#FFF" style={styles.cardIcon} />
           <Text style={styles.cardTitle}>Agent Actions</Text>
         </Animated.View>
 
         {/* Card 3: Web Search */}
-        <Animated.View style={[styles.card, styles.cardGreen, { transform: [{ translateY: translateY3 }, { rotateZ: '-3deg' }], opacity: fade3, marginLeft: -40, marginTop: 20 }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardGreen,
+            {
+              transform: [{ translateY: translateY3 }, { rotateZ: '-3deg' }],
+              opacity: fade3,
+              marginLeft: -40,
+              marginTop: 20,
+            },
+          ]}
+        >
           <Ionicons name="search" size={28} color="#FFF" style={styles.cardIcon} />
           <Text style={styles.cardTitle}>Web Intelligence</Text>
         </Animated.View>
-        
+
         {/* Card 4: Automate */}
-        <Animated.View style={[styles.card, styles.cardPurple, { transform: [{ translateY: translateY1 }, { rotateZ: '6deg' }], opacity: fade1, marginLeft: 80, marginTop: 20 }]}>
+        <Animated.View
+          style={[
+            styles.card,
+            styles.cardPurple,
+            {
+              transform: [{ translateY: translateY1 }, { rotateZ: '6deg' }],
+              opacity: fade1,
+              marginLeft: 80,
+              marginTop: 20,
+            },
+          ]}
+        >
           <Ionicons name="flash" size={36} color="#FFF" style={styles.cardIcon} />
           <Text style={styles.cardTitle}>Automate</Text>
         </Animated.View>
@@ -176,12 +216,10 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
 
         <Text style={styles.headlineTitle}>Delightful</Text>
         <Text style={styles.headlineTitle}>automation</Text>
-        
+
         <MaskedView
           style={{ height: 48 }}
-          maskElement={
-            <Text style={styles.headlineTitle}>starts here</Text>
-          }
+          maskElement={<Text style={styles.headlineTitle}>starts here</Text>}
         >
           <LinearGradient
             colors={['#FF5A36', '#FF9800']}
@@ -197,17 +235,16 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
 
       {/* CTA Button */}
       <Animated.View style={[styles.ctaContainer, { opacity: fade3 }]}>
-        <TouchableOpacity 
-          style={styles.ctaButton} 
-          activeOpacity={0.8}
-          onPress={handleDismiss}
-        >
+        <TouchableOpacity style={styles.ctaButton} activeOpacity={0.8} onPress={handleDismiss}>
           <Ionicons name="arrow-forward" size={24} color="#000" />
         </TouchableOpacity>
       </Animated.View>
 
       {/* Initial Loading Overlay - Covers everything until phase switches to reveal */}
-      <Animated.View style={[StyleSheet.absoluteFill, styles.loadingOverlay, { opacity: overlayOpacity }]} pointerEvents={phase === 'loading' ? 'auto' : 'none'}>
+      <Animated.View
+        style={[StyleSheet.absoluteFill, styles.loadingOverlay, { opacity: overlayOpacity }]}
+        pointerEvents={phase === 'loading' ? 'auto' : 'none'}
+      >
         <Animated.View style={{ opacity: blinkAnim, alignItems: 'center' }}>
           <Image
             source={require('./assets/blinky-mascot-logo.png')}
@@ -216,7 +253,6 @@ export default function SplashScreen({ onDismiss }: SplashScreenProps) {
           />
         </Animated.View>
       </Animated.View>
-
     </Animated.View>
   );
 }
@@ -349,5 +385,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
-  }
+  },
 });

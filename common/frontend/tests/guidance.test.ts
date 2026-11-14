@@ -56,7 +56,7 @@ describe('getHighlightSteps', () => {
             control_type: 'Image',
           },
         },
-      ]),
+      ])
     ).toEqual([]);
   });
 
@@ -172,7 +172,7 @@ describe('getPendingSteps', () => {
       getPendingSteps(steps, {
         completed_targets: ['Extensions'],
         completed_instructions: [],
-      }),
+      })
     ).toEqual([steps[1]]);
   });
 });
@@ -188,7 +188,7 @@ describe('getCurrentGuideSteps', () => {
       getCurrentGuideSteps(steps, {
         completed_targets: [],
         completed_instructions: [],
-      }),
+      })
     ).toEqual([steps[0]]);
   });
 
@@ -232,7 +232,7 @@ describe('getCurrentGuideSteps', () => {
       getCurrentGuideSteps(steps, {
         completed_targets: ['Extensions'],
         completed_instructions: ['Click the Extensions button on the left sidebar.'],
-      }),
+      })
     ).toEqual([steps[1]]);
   });
 });
@@ -270,7 +270,7 @@ describe('mergeGuideHistory', () => {
       mergeGuideHistory([completedStep], [nextStep], {
         completed_targets: ['Extensions'],
         completed_instructions: ['Click the Extensions button on the left sidebar.'],
-      }),
+      })
     ).toEqual([completedStep, nextStep]);
   });
 
@@ -286,7 +286,7 @@ describe('mergeGuideHistory', () => {
       mergeGuideHistory([currentStep], [currentStep], {
         completed_targets: [],
         completed_instructions: [],
-      }),
+      })
     ).toEqual([currentStep]);
   });
 });
@@ -299,7 +299,7 @@ describe('shouldShowSummaryBubble', () => {
         status: 'Use the active app extension workflow.',
         defaultStatus: 'Ask anything on your screen',
         steps: [{ step: 1, instruction: 'Click Extensions.', target_text: 'Extensions' }],
-      }),
+      })
     ).toBe(false);
   });
 
@@ -311,7 +311,7 @@ describe('shouldShowSummaryBubble', () => {
         defaultStatus: 'Ask anything on your screen',
         steps: [{ step: 1, instruction: 'Click Install.', target_text: 'Install' }],
         forceShow: true,
-      }),
+      })
     ).toBe(true);
   });
 
@@ -322,7 +322,7 @@ describe('shouldShowSummaryBubble', () => {
         status: 'Hi, I am ready to help.',
         defaultStatus: 'Ask anything on your screen',
         steps: [],
-      }),
+      })
     ).toBe(true);
 
     expect(
@@ -331,7 +331,7 @@ describe('shouldShowSummaryBubble', () => {
         status: 'Thinking...',
         defaultStatus: 'Ask anything on your screen',
         steps: [],
-      }),
+      })
     ).toBe(true);
   });
 });
@@ -362,7 +362,7 @@ describe('shouldCompleteStepOnHighlightClick', () => {
           confidence: 0.95,
           control_type: 'Edit',
         },
-      }),
+      })
     ).toBe(false);
   });
 
@@ -381,7 +381,7 @@ describe('shouldCompleteStepOnHighlightClick', () => {
           confidence: 0.9,
           control_type: 'Button',
         },
-      }),
+      })
     ).toBe(true);
   });
 
@@ -400,7 +400,7 @@ describe('shouldCompleteStepOnHighlightClick', () => {
           confidence: 0.9,
           control_type: 'Button',
         },
-      }),
+      })
     ).toBe(false);
   });
 
@@ -421,8 +421,8 @@ describe('shouldCompleteStepOnHighlightClick', () => {
             control_type: 'Button',
           },
         },
-        'where is the extension button',
-      ),
+        'where is the extension button'
+      )
     ).toBe(false);
   });
 
@@ -443,8 +443,8 @@ describe('shouldCompleteStepOnHighlightClick', () => {
             control_type: 'Button',
           },
         },
-        'how to install code runner extension',
-      ),
+        'how to install code runner extension'
+      )
     ).toBe(true);
   });
 });

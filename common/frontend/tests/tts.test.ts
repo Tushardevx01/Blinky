@@ -1,25 +1,36 @@
 import { describe, expect, test } from 'bun:test';
-import { buildAudioDataUrl, buildSarvamTtsPayload, buildSpeechContent, getSarvamErrorMessage } from '../src/lib/tts';
+import {
+  buildAudioDataUrl,
+  buildSarvamTtsPayload,
+  buildSpeechContent,
+  getSarvamErrorMessage,
+} from '../src/lib/tts';
 
 describe('getSarvamErrorMessage', () => {
   test('extracts nested Sarvam error messages', () => {
     expect(
-      getSarvamErrorMessage({
-        error: {
-          message: 'Invalid API key. Check your credentials.',
-          code: 'invalid_api_key_error',
+      getSarvamErrorMessage(
+        {
+          error: {
+            message: 'Invalid API key. Check your credentials.',
+            code: 'invalid_api_key_error',
+          },
         },
-      }, 403),
+        403
+      )
     ).toBe('Invalid API key. Check your credentials.');
   });
 
   test('falls back to a useful code and status instead of object text', () => {
     expect(
-      getSarvamErrorMessage({
-        error: {
-          code: 'insufficient_quota_error',
+      getSarvamErrorMessage(
+        {
+          error: {
+            code: 'insufficient_quota_error',
+          },
         },
-      }, 429),
+        429
+      )
     ).toBe('Sarvam TTS failed with status 429: insufficient_quota_error');
   });
 });
@@ -50,26 +61,23 @@ describe('buildSpeechContent', () => {
       buildSpeechContent('Open Extensions from the sidebar.', [
         { step: 1, instruction: 'Click Extensions.' },
         { step: 2, instruction: 'Search Python.' },
-      ]),
+      ])
     ).toBe('Open Extensions from the sidebar.');
   });
 
   test('strips robotic Step 1 prefixes from summary or instructions', () => {
-    expect(
-      buildSpeechContent('Step 1: click reddit', []),
-    ).toBe('Click reddit');
+    expect(buildSpeechContent('Step 1: click reddit', [])).toBe('Click reddit');
 
-    expect(
-      buildSpeechContent('Step 1. Click on the Reddit icon.', []),
-    ).toBe('Click on the Reddit icon.');
+    expect(buildSpeechContent('Step 1. Click on the Reddit icon.', [])).toBe(
+      'Click on the Reddit icon.'
+    );
   });
 
   test('speaks fallback step cleanly without step numbers when summary is empty', () => {
     expect(
-      buildSpeechContent(
-        '',
-        [{ step: 3, instruction: 'Step 3: Click the Install button for the extension.' }],
-      ),
+      buildSpeechContent('', [
+        { step: 3, instruction: 'Step 3: Click the Install button for the extension.' },
+      ])
     ).toBe('Click the Install button for the extension.');
   });
 });

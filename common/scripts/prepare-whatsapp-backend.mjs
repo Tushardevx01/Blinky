@@ -10,20 +10,20 @@ const backendDir = path.join(repoRoot, 'common', 'whatsapp_backend');
 const packageJsonPath = path.join(backendDir, 'package.json');
 if (!existsSync(packageJsonPath)) {
   const packageJsonContent = {
-    name: "blinky-whatsapp-backend",
-    version: "0.1.0",
+    name: 'blinky-whatsapp-backend',
+    version: '0.1.0',
     private: true,
-    type: "module",
+    type: 'module',
     dependencies: {
-      "axios": "^1.7.9",
-      "cors": "^2.8.6",
-      "dotenv": "^17.3.1",
-      "express": "^5.2.1",
-      "groq-sdk": "^0.37.0",
-      "qrcode-terminal": "^0.12.0",
-      "socket.io": "^4.8.3",
-      "whatsapp-web.js": "^1.26.0"
-    }
+      axios: '^1.7.9',
+      cors: '^2.8.6',
+      dotenv: '^17.3.1',
+      express: '^5.2.1',
+      'groq-sdk': '^0.37.0',
+      'qrcode-terminal': '^0.12.0',
+      'socket.io': '^4.8.3',
+      'whatsapp-web.js': '^1.26.0',
+    },
   };
   writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
   console.log('Created package.json for whatsapp_backend');
@@ -37,8 +37,8 @@ try {
     env: {
       ...process.env,
       PUPPETEER_SKIP_DOWNLOAD: 'true',
-      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
-    }
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true',
+    },
   });
   console.log('WhatsApp backend dependencies installed successfully.');
 } catch (err) {
@@ -50,8 +50,8 @@ try {
       env: {
         ...process.env,
         PUPPETEER_SKIP_DOWNLOAD: 'true',
-        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
-      }
+        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true',
+      },
     });
     console.log('WhatsApp backend dependencies installed successfully using npm.');
   } catch (npmErr) {

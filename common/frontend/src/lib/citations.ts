@@ -4,15 +4,18 @@ export function linkCitationMarkers(markdown: string): string {
     return markdown;
   }
 
-  return markdown.replace(/(^|[^\]!])\[(\d{1,3})\](?!\()/g, (match, prefix: string, value: string) => {
-    const index = Number.parseInt(value, 10) - 1;
-    const url = urls[index];
-    if (!url) {
-      return match;
-    }
+  return markdown.replace(
+    /(^|[^\]!])\[(\d{1,3})\](?!\()/g,
+    (match, prefix: string, value: string) => {
+      const index = Number.parseInt(value, 10) - 1;
+      const url = urls[index];
+      if (!url) {
+        return match;
+      }
 
-    return `${prefix}[${value}](${url})`;
-  });
+      return `${prefix}[${value}](${url})`;
+    }
+  );
 }
 
 export function extractReferenceUrls(markdown: string): string[] {
@@ -48,7 +51,10 @@ export function preprocessMarkdown(markdown: string): string {
   text = text.replace(/(\|(?:\s*:?-+:?\s*\|)+)\s*(\|[^\n\r]+?\|)/g, '$1\n$2');
 
   // 3. Separate consecutive data rows placed on the same line
-  while (/(\|[^\n\r]+?\|)\s{2,}(\|[^\n\r]+?\|)/.test(text) || /(\|[^\n\r]+?\|)\s+(\|[^\n\r]+?\|)/.test(text)) {
+  while (
+    /(\|[^\n\r]+?\|)\s{2,}(\|[^\n\r]+?\|)/.test(text) ||
+    /(\|[^\n\r]+?\|)\s+(\|[^\n\r]+?\|)/.test(text)
+  ) {
     const next = text.replace(/(\|[^\n\r]+?\|)\s+(\|[^\n\r]+?\|)/g, '$1\n$2');
     if (next === text) break;
     text = next;

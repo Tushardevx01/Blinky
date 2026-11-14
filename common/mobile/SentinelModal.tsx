@@ -79,12 +79,7 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
   const batteryStatusText = systemInfo?.battery?.status || 'AC Mains Nominal';
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={false}
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
       <LinearGradient colors={['#070313', '#090710', '#05020B']} style={styles.container}>
         <StatusBar barStyle="light-content" />
         <View style={styles.safeArea}>
@@ -142,9 +137,7 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
               </Text>
               {systemInfo?.platform && (
                 <View style={styles.platformBadge}>
-                  <Text style={styles.platformBadgeText}>
-                    {systemInfo.platform.toUpperCase()}
-                  </Text>
+                  <Text style={styles.platformBadgeText}>{systemInfo.platform.toUpperCase()}</Text>
                 </View>
               )}
             </View>
@@ -152,7 +145,12 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
             {/* Broadcast Power Alert Banner if triggered */}
             {latestPowerEvent && (
               <View style={styles.powerEventAlertBanner}>
-                <Ionicons name="notifications-outline" size={18} color="#FF5A36" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="notifications-outline"
+                  size={18}
+                  color="#FF5A36"
+                  style={{ marginRight: 8 }}
+                />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.powerEventTitle}>
                     {latestPowerEvent.action.toUpperCase()} TRIGGERED
@@ -165,7 +163,12 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
             {/* WoL feedback */}
             {wolFeedback && (
               <View style={styles.feedbackBanner}>
-                <Ionicons name="wifi-outline" size={16} color="#10B981" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="wifi-outline"
+                  size={16}
+                  color="#10B981"
+                  style={{ marginRight: 8 }}
+                />
                 <Text style={styles.feedbackText}>{wolFeedback}</Text>
               </View>
             )}
@@ -198,7 +201,13 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                   <Text style={styles.telemetryLabel}>POWER SOURCE</Text>
                   <View style={styles.inlineRow}>
                     <Ionicons
-                      name={hasBattery ? (isCharging ? 'battery-charging' : 'battery-half') : 'flash-outline'}
+                      name={
+                        hasBattery
+                          ? isCharging
+                            ? 'battery-charging'
+                            : 'battery-half'
+                          : 'flash-outline'
+                      }
                       size={18}
                       color={hasBattery ? (isCharging ? '#10B981' : '#F59E0B') : '#10B981'}
                       style={{ marginRight: 6 }}
@@ -293,13 +302,19 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                     <Text style={[styles.tileTitle, { color: '#10B981' }]}>
                       {isLocked ? 'Wake / Unlock' : 'Wake PC'}
                     </Text>
-                    <Text style={styles.tileSub}>{isLocked ? 'Unlock or WoL Burst' : 'WoL Magic Packet'}</Text>
+                    <Text style={styles.tileSub}>
+                      {isLocked ? 'Unlock or WoL Burst' : 'WoL Magic Packet'}
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
 
                 {/* 2. Hibernate */}
                 <TouchableOpacity
-                  style={[styles.actionTile, styles.tileHibernate, !isConnected && styles.tileDisabled]}
+                  style={[
+                    styles.actionTile,
+                    styles.tileHibernate,
+                    !isConnected && styles.tileDisabled,
+                  ]}
                   onPress={() => {
                     if (!isConnected) {
                       Alert.alert('Offline', 'Connect to host over Wi-Fi to trigger Hibernate.');
@@ -350,7 +365,10 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                   ]}
                   onPress={() => {
                     if (!isConnected) {
-                      Alert.alert('Offline', `Connect to host over Wi-Fi to trigger ${isLocked ? 'Unlock' : 'Lock'}.`);
+                      Alert.alert(
+                        'Offline',
+                        `Connect to host over Wi-Fi to trigger ${isLocked ? 'Unlock' : 'Lock'}.`
+                      );
                       return;
                     }
                     if (isLocked) {
@@ -377,13 +395,19 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                     <Text style={[styles.tileTitle, { color: isLocked ? '#10B981' : '#94A3B8' }]}>
                       {isLocked ? 'Unlock' : 'Lock'}
                     </Text>
-                    <Text style={styles.tileSub}>{isLocked ? 'Unlock Session' : 'Lock Screen'}</Text>
+                    <Text style={styles.tileSub}>
+                      {isLocked ? 'Unlock Session' : 'Lock Screen'}
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
 
                 {/* 5. Reboot */}
                 <TouchableOpacity
-                  style={[styles.actionTile, styles.tileRestart, !isConnected && styles.tileDisabled]}
+                  style={[
+                    styles.actionTile,
+                    styles.tileRestart,
+                    !isConnected && styles.tileDisabled,
+                  ]}
                   onPress={() => {
                     if (!isConnected) {
                       Alert.alert('Offline', 'Connect to host over Wi-Fi to trigger Reboot.');
@@ -405,7 +429,11 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
 
                 {/* 6. Shutdown */}
                 <TouchableOpacity
-                  style={[styles.actionTile, styles.tileShutdown, !isConnected && styles.tileDisabled]}
+                  style={[
+                    styles.actionTile,
+                    styles.tileShutdown,
+                    !isConnected && styles.tileDisabled,
+                  ]}
                   onPress={() => {
                     if (!isConnected) {
                       Alert.alert('Offline', 'Connect to host over Wi-Fi to trigger Shutdown.');
@@ -435,7 +463,12 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                 activeOpacity={0.7}
               >
                 <View style={styles.inlineRow}>
-                  <Ionicons name="settings-outline" size={16} color="#8A86AA" style={{ marginRight: 8 }} />
+                  <Ionicons
+                    name="settings-outline"
+                    size={16}
+                    color="#8A86AA"
+                    style={{ marginRight: 8 }}
+                  />
                   <Text style={styles.cardSectionTitle}>WAKE-ON-LAN CONFIGURATION</Text>
                 </View>
                 <Ionicons
@@ -463,10 +496,15 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                     ) : null}
                   </View>
                   <View style={styles.inputWrapper}>
-                    <Ionicons name="hardware-chip-outline" size={18} color="#6C6985" style={styles.inputIcon} />
+                    <Ionicons
+                      name="hardware-chip-outline"
+                      size={18}
+                      color="#6C6985"
+                      style={styles.inputIcon}
+                    />
                     <TextInput
                       style={styles.input}
-                      placeholder={systemInfo?.network?.mac_address || "e.g. 18:c0:4d:b9:0a:7d"}
+                      placeholder={systemInfo?.network?.mac_address || 'e.g. 18:c0:4d:b9:0a:7d'}
                       placeholderTextColor="#6C6985"
                       value={macAddress}
                       onChangeText={onChangeMacAddress}
@@ -477,7 +515,12 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
 
                   <Text style={styles.inputLabel}>SUBNET BROADCAST IP</Text>
                   <View style={styles.inputWrapper}>
-                    <Ionicons name="globe-outline" size={18} color="#6C6985" style={styles.inputIcon} />
+                    <Ionicons
+                      name="globe-outline"
+                      size={18}
+                      color="#6C6985"
+                      style={styles.inputIcon}
+                    />
                     <TextInput
                       style={styles.input}
                       placeholder="255.255.255.255"
@@ -504,7 +547,12 @@ export const SentinelModal: React.FC<SentinelModalProps> = ({
                       end={{ x: 1, y: 1 }}
                       style={styles.wolBurstGradient}
                     >
-                      <Ionicons name="send-outline" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+                      <Ionicons
+                        name="send-outline"
+                        size={16}
+                        color="#FFFFFF"
+                        style={{ marginRight: 6 }}
+                      />
                       <Text style={styles.wolBurstText}>
                         {isSendingWol ? 'Sending Magic Packet...' : 'Dispatch WoL Burst'}
                       </Text>
@@ -526,7 +574,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) : 44,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 44,
   },
   header: {
     flexDirection: 'row',

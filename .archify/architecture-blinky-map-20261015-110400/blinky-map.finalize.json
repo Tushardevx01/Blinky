@@ -135,9 +135,7 @@
           {
             "name": "single_svg",
             "ok": true,
-            "details": [
-              "found 1 <svg> block(s)"
-            ]
+            "details": ["found 1 <svg> block(s)"]
           },
           {
             "name": "finite_svg",
@@ -234,10 +232,7 @@
                   "collectionIndex": 11,
                   "artifactIndex": 12
                 },
-                "point": [
-                  400,
-                  168
-                ]
+                "point": [400, 168]
               },
               {
                 "left": {
@@ -254,10 +249,7 @@
                   "collectionIndex": 11,
                   "artifactIndex": 12
                 },
-                "point": [
-                  500,
-                  168
-                ]
+                "point": [500, 168]
               },
               {
                 "left": {
@@ -274,10 +266,7 @@
                   "collectionIndex": 13,
                   "artifactIndex": 14
                 },
-                "point": [
-                  930,
-                  416
-                ]
+                "point": [930, 416]
               }
             ],
             "detours": []

@@ -94,8 +94,10 @@ const STORAGE_KEY = '@blinky_pc_ip';
 const TOKEN_STORAGE_KEY = '@blinky_pc_token';
 const CERTIFICATE_PIN_STORAGE_KEY = '@blinky_pc_certificate_pin';
 const WORKSTATION_PIN_STORAGE_KEY = '@blinky_workstation_pin';
-const isProduction = typeof __DEV__ !== 'undefined' ? !__DEV__ : process.env.NODE_ENV === 'production';
-const RELEASE_TRANSPORT = isProduction || process.env.EXPO_PUBLIC_BLINKY_TRANSPORT_MODE === 'release';
+const isProduction =
+  typeof __DEV__ !== 'undefined' ? !__DEV__ : process.env.NODE_ENV === 'production';
+const RELEASE_TRANSPORT =
+  isProduction || process.env.EXPO_PUBLIC_BLINKY_TRANSPORT_MODE === 'release';
 
 type NativeSecureSocketModule = typeof import('./modules/blinky-secure-socket');
 
@@ -107,7 +109,10 @@ const loadNativeSecureSocketModule = (): NativeSecureSocketModule | null => {
   }
 };
 
-const readSavedCredential = async (secureKey: string, legacyKey: string): Promise<string | null> => {
+const readSavedCredential = async (
+  secureKey: string,
+  legacyKey: string
+): Promise<string | null> => {
   if (RELEASE_TRANSPORT) {
     const mod = loadNativeSecureSocketModule();
     if (mod && 'isNative' in mod && !(mod as any).isNative) return null;
@@ -116,7 +121,11 @@ const readSavedCredential = async (secureKey: string, legacyKey: string): Promis
   return AsyncStorage.getItem(legacyKey);
 };
 
-const saveCredential = async (secureKey: string, legacyKey: string, value: string): Promise<void> => {
+const saveCredential = async (
+  secureKey: string,
+  legacyKey: string,
+  value: string
+): Promise<void> => {
   if (RELEASE_TRANSPORT) {
     const nativeModule = loadNativeSecureSocketModule();
     if (!nativeModule || ('isNative' in nativeModule && !(nativeModule as any).isNative)) {
@@ -175,7 +184,7 @@ const fetchDiscoveryInfo = async (ip: string, port = 9001): Promise<DiscoveryRes
     // Try discovery port first
     const res = await fetch(`http://${ip}:${DISCOVERY_PORT}/discover`, {
       signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
+      headers: { Accept: 'application/json' },
     });
     clearTimeout(timeout);
     if (res.ok) {
@@ -188,7 +197,7 @@ const fetchDiscoveryInfo = async (ip: string, port = 9001): Promise<DiscoveryRes
     const timeout = setTimeout(() => controller.abort(), 2000);
     const res = await fetch(`http://${ip}:${port}/discover`, {
       signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
+      headers: { Accept: 'application/json' },
     });
     clearTimeout(timeout);
     if (res.ok) {
@@ -198,8 +207,17 @@ const fetchDiscoveryInfo = async (ip: string, port = 9001): Promise<DiscoveryRes
   return null;
 };
 
-const checkIpAddress = (rawIp: string, port = 9001, timeoutMs = 3000, certificatePin?: string): Promise<string> => {
-  const clean = rawIp.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
+const checkIpAddress = (
+  rawIp: string,
+  port = 9001,
+  timeoutMs = 3000,
+  certificatePin?: string
+): Promise<string> => {
+  const clean = rawIp
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/^wss?:\/\//i, '')
+    .replace(/\/+$/, '');
   const [ipOnly, customPort] = clean.includes(':') ? clean.split(':') : [clean, undefined];
   const targetPort = customPort ? parseInt(customPort, 10) : port;
   const ip = ipOnly;
@@ -208,7 +226,9 @@ const checkIpAddress = (rawIp: string, port = 9001, timeoutMs = 3000, certificat
     const nativeModule = loadNativeSecureSocketModule();
     const pin = certificatePin?.trim();
     if (!nativeModule || ('isNative' in nativeModule && !(nativeModule as any).isNative) || !pin) {
-      return Promise.reject(new Error('Release discovery requires the secure socket module and certificate pin.'));
+      return Promise.reject(
+        new Error('Release discovery requires the secure socket module and certificate pin.')
+      );
     }
     const socketId = `discovery-${ip}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     return new Promise((resolve, reject) => {
@@ -285,7 +305,7 @@ const checkIpAddress = (rawIp: string, port = 9001, timeoutMs = 3000, certificat
       }
 
       ws = new WebSocket(`ws://${ip}:${targetPort}`);
-      
+
       ws.onopen = () => {
         cleanup();
         // Send auth token if we have one
@@ -294,12 +314,12 @@ const checkIpAddress = (rawIp: string, port = 9001, timeoutMs = 3000, certificat
         }
         resolve(clean);
       };
-      
+
       ws.onerror = () => {
         cleanup();
         reject(new Error('Connection error'));
       };
-      
+
       ws.onclose = () => {
         cleanup();
         reject(new Error('Closed'));
@@ -314,14 +334,16 @@ const checkIpAddress = (rawIp: string, port = 9001, timeoutMs = 3000, certificat
 const scanSubnet = async (
   subnet: string,
   onProgress?: (msg: string) => void,
-  certificatePin?: string,
+  certificatePin?: string
 ): Promise<string | null> => {
   const port = 9001;
   const timeoutMs = 1200;
   const concurrency = 15;
-  
+
   // Prioritize common host IP suffixes first for faster discovery
-  const prioritySuffixes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 20, 50, 100, 101, 102, 105, 110, 150, 200, 254];
+  const prioritySuffixes = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 20, 50, 100, 101, 102, 105, 110, 150, 200, 254,
+  ];
   const remainingSuffixes: number[] = [];
   for (let i = 1; i <= 254; i++) {
     if (!prioritySuffixes.includes(i)) {
@@ -329,27 +351,27 @@ const scanSubnet = async (
     }
   }
   const orderedSuffixes = [...prioritySuffixes, ...remainingSuffixes];
-  const ips = orderedSuffixes.map(i => `${subnet}.${i}`);
+  const ips = orderedSuffixes.map((i) => `${subnet}.${i}`);
 
   for (let i = 0; i < ips.length; i += concurrency) {
     const batch = ips.slice(i, i + concurrency);
     if (onProgress) {
       onProgress(`Scanning Wi-Fi subnet ${subnet}.x (${i + 1}/${ips.length})...`);
     }
-    
-    const promises = batch.map(ip => 
+
+    const promises = batch.map((ip) =>
       checkIpAddress(ip, port, timeoutMs, certificatePin)
-        .then(foundIp => foundIp)
+        .then((foundIp) => foundIp)
         .catch(() => null)
     );
-    
+
     const results = await Promise.all(promises);
-    const found = results.find(res => res !== null);
+    const found = results.find((res) => res !== null);
     if (found) {
       return found;
     }
   }
-  
+
   return null;
 };
 
@@ -428,9 +450,15 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
   const tyVal = useRef(0);
 
   useEffect(() => {
-    const idS = scale.addListener(({ value }) => { scaleVal.current = value; });
-    const idX = translateX.addListener(({ value }) => { txVal.current = value; });
-    const idY = translateY.addListener(({ value }) => { tyVal.current = value; });
+    const idS = scale.addListener(({ value }) => {
+      scaleVal.current = value;
+    });
+    const idX = translateX.addListener(({ value }) => {
+      txVal.current = value;
+    });
+    const idY = translateY.addListener(({ value }) => {
+      tyVal.current = value;
+    });
     return () => {
       scale.removeListener(idS);
       translateX.removeListener(idX);
@@ -439,8 +467,8 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
   }, []);
 
   const getBounds = (currScale: number) => {
-    const maxTx = Math.max(0, ((SCREEN_WIDTH * currScale) - SCREEN_WIDTH) / 2);
-    const maxTy = Math.max(0, ((SCREEN_HEIGHT * currScale) - SCREEN_HEIGHT) / 2);
+    const maxTx = Math.max(0, (SCREEN_WIDTH * currScale - SCREEN_WIDTH) / 2);
+    const maxTy = Math.max(0, (SCREEN_HEIGHT * currScale - SCREEN_HEIGHT) / 2);
     return { maxTx, maxTy };
   };
 
@@ -483,7 +511,10 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
     if (event.nativeEvent.state === State.BEGAN) {
       pinchStartScale.current = scaleVal.current;
       triggerHaptic('selection');
-    } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
+    } else if (
+      event.nativeEvent.state === State.END ||
+      event.nativeEvent.state === State.CANCELLED
+    ) {
       if (scaleVal.current < 1.05) {
         triggerHaptic('medium');
         Animated.parallel([
@@ -514,8 +545,18 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
     const { maxTx, maxTy } = getBounds(scaleVal.current);
     const rawX = panStartOffset.current.x + event.nativeEvent.translationX;
     const rawY = panStartOffset.current.y + event.nativeEvent.translationY;
-    const boundedX = rawX > maxTx ? maxTx + (rawX - maxTx) * 0.3 : (rawX < -maxTx ? -maxTx + (rawX + maxTx) * 0.3 : rawX);
-    const boundedY = rawY > maxTy ? maxTy + (rawY - maxTy) * 0.3 : (rawY < -maxTy ? -maxTy + (rawY + maxTy) * 0.3 : rawY);
+    const boundedX =
+      rawX > maxTx
+        ? maxTx + (rawX - maxTx) * 0.3
+        : rawX < -maxTx
+          ? -maxTx + (rawX + maxTx) * 0.3
+          : rawX;
+    const boundedY =
+      rawY > maxTy
+        ? maxTy + (rawY - maxTy) * 0.3
+        : rawY < -maxTy
+          ? -maxTy + (rawY + maxTy) * 0.3
+          : rawY;
     translateX.setValue(boundedX);
     translateY.setValue(boundedY);
   };
@@ -523,7 +564,10 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
   const onPanHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.BEGAN) {
       panStartOffset.current = { x: txVal.current, y: tyVal.current };
-    } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
+    } else if (
+      event.nativeEvent.state === State.END ||
+      event.nativeEvent.state === State.CANCELLED
+    ) {
       if (scaleVal.current <= 1.05) {
         Animated.parallel([
           Animated.spring(translateX, { toValue: 0, useNativeDriver: true }),
@@ -564,20 +608,12 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
           <Ionicons name="close" size={26} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.fullscreenResetBtn}
-          onPress={resetZoom}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.fullscreenResetBtn} onPress={resetZoom} activeOpacity={0.8}>
           <Ionicons name="refresh-outline" size={16} color="#FFFFFF" style={{ marginRight: 4 }} />
           <Text style={styles.fullscreenResetText}>Reset</Text>
         </TouchableOpacity>
 
-        <TapGestureHandler
-          ref={doubleTapRef}
-          onHandlerStateChange={onDoubleTap}
-          numberOfTaps={2}
-        >
+        <TapGestureHandler ref={doubleTapRef} onHandlerStateChange={onDoubleTap} numberOfTaps={2}>
           <View style={styles.fullscreenImageWrapper}>
             <PanGestureHandler
               ref={panRef}
@@ -601,11 +637,7 @@ const PinchableImageViewer: React.FC<PinchableImageViewerProps> = ({ uri, onClos
                       style={[
                         styles.fullscreenImage,
                         {
-                          transform: [
-                            { translateX },
-                            { translateY },
-                            { scale },
-                          ],
+                          transform: [{ translateX }, { translateY }, { scale }],
                         },
                       ]}
                       resizeMode="contain"
@@ -664,10 +696,10 @@ const SLASH_COMMANDS: SlashCommandDef[] = [
 /** Renders the Blinky mobile companion and coordinates its desktop connection. */
 export default function App() {
   const [fontsLoaded] = useFonts({
-    'Unigeo': require('./assets/fonts/unigeo.ttf'),
-    'TypoFormal': require('./assets/fonts/typo-formal.otf'),
-    'OkineSans': require('./assets/fonts/okine-regular.otf'),
-    'OkineSansMedium': require('./assets/fonts/okine-medium.otf'),
+    Unigeo: require('./assets/fonts/unigeo.ttf'),
+    TypoFormal: require('./assets/fonts/typo-formal.otf'),
+    OkineSans: require('./assets/fonts/okine-regular.otf'),
+    OkineSansMedium: require('./assets/fonts/okine-medium.otf'),
   });
 
   const [showSplash, setShowSplash] = useState(true);
@@ -736,8 +768,10 @@ export default function App() {
 
   const [queryText, setQueryText] = useState('');
   const [runningQuery, setRunningQuery] = useState('');
-  const [agentStatus, setAgentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
-  
+  const [agentStatus, setAgentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>(
+    'idle'
+  );
+
   // Custom message history state
   const [activeTab, setActiveTab] = useState<TabScreen>('Chat');
   const [messages, setMessages] = useState<Message[]>([
@@ -746,9 +780,9 @@ export default function App() {
       sender: 'blinky',
       text: 'Hello! I am Blinky. Ask me to do anything on your PC.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }
+    },
   ]);
-  
+
   const activeBlinkyMsgIdRef = useRef<string | null>(null);
   const activeBlinkySessionIdRef = useRef<string | null>(null);
   const currentSessionIdRef = useRef<string | null>(null);
@@ -863,8 +897,9 @@ export default function App() {
       if (data.success === false) {
         // ESP32 unreachable: revert the optimistic toggle and say why.
         // Success path (r/g/b present) still syncs the card below.
-        const err = data.error || 'ESP32 unreachable. Check it shares PC Wi-Fi and ESP32_HOST in .env.';
-        setIsLightOn(prev => !prev);
+        const err =
+          data.error || 'ESP32 unreachable. Check it shares PC Wi-Fi and ESP32_HOST in .env.';
+        setIsLightOn((prev) => !prev);
         triggerHaptic('heavy');
         setActionFeedback(`💡 Light failed: ${err}`);
         setTimeout(() => setActionFeedback(null), 6000);
@@ -886,10 +921,10 @@ export default function App() {
   useEffect(() => {
     if (!antigravityProgress) return;
     const detail = antigravityProgress.detail || `Executing ${antigravityProgress.tool}`;
-    setMessages(prev => {
+    setMessages((prev) => {
       const activeId = activeAntigravityMsgIdRef.current;
       if (!activeId) return prev;
-      return prev.map(m => {
+      return prev.map((m) => {
         if (m.id === activeId) {
           return {
             ...m,
@@ -897,7 +932,7 @@ export default function App() {
               percent: Math.min((m.progress?.percent || 15) + 12, 92),
               statusText: detail,
               duration: (m.progress?.duration || 0) + 1,
-            }
+            },
           };
         }
         return m;
@@ -910,11 +945,13 @@ export default function App() {
     if (!antigravityComplete) return;
     triggerHaptic('medium');
     const activeId = activeAntigravityMsgIdRef.current;
-    const outputText = antigravityComplete.output?.trim() || `Antigravity session complete (${antigravityComplete.reason}).`;
+    const outputText =
+      antigravityComplete.output?.trim() ||
+      `Antigravity session complete (${antigravityComplete.reason}).`;
 
-    setMessages(prev => {
-      if (activeId && prev.some(m => m.id === activeId)) {
-        return prev.map(m => {
+    setMessages((prev) => {
+      if (activeId && prev.some((m) => m.id === activeId)) {
+        return prev.map((m) => {
           if (m.id === activeId) {
             return {
               ...m,
@@ -932,7 +969,7 @@ export default function App() {
             sender: 'blinky',
             text: `⚡ Antigravity Session Output:\n\n${outputText}`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          }
+          },
         ];
       }
     });
@@ -959,7 +996,7 @@ export default function App() {
     activeBlinkyMsgIdRef.current = blinkyMsgId;
     activeBlinkySessionIdRef.current = currentSessionIdRef.current;
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: userMsgId,
@@ -976,8 +1013,8 @@ export default function App() {
           percent: 0,
           statusText: 'Taking PC screenshot...',
           duration: 0,
-        }
-      }
+        },
+      },
     ]);
 
     sendQuery(query, generateUuid());
@@ -1023,22 +1060,23 @@ export default function App() {
     let interval: any = null;
     if (agentStatus === 'processing') {
       interval = setInterval(() => {
-        setTimerSeconds(prev => {
+        setTimerSeconds((prev) => {
           const next = prev + 1;
           // Live update timer duration & smooth real progress percentage on the active message
           if (activeBlinkyMsgIdRef.current) {
-            setMessages(currentMessages =>
-              currentMessages.map(m => {
+            setMessages((currentMessages) =>
+              currentMessages.map((m) => {
                 if (m.id === activeBlinkyMsgIdRef.current) {
                   const currentPercent = m.progress?.percent || 15;
-                  const crawlPercent = currentPercent < 94 ? Math.min(94, currentPercent + 1) : currentPercent;
+                  const crawlPercent =
+                    currentPercent < 94 ? Math.min(94, currentPercent + 1) : currentPercent;
                   return {
                     ...m,
                     progress: {
                       ...m.progress!,
                       percent: crawlPercent,
                       duration: next,
-                    }
+                    },
                   };
                 }
                 return m;
@@ -1095,7 +1133,9 @@ export default function App() {
       const { status: respStatus, data, error } = latestResponse;
       const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const currentActiveId = activeBlinkyMsgIdRef.current;
-      const isMatchingSession = !activeBlinkySessionIdRef.current || activeBlinkySessionIdRef.current === currentSessionIdRef.current;
+      const isMatchingSession =
+        !activeBlinkySessionIdRef.current ||
+        activeBlinkySessionIdRef.current === currentSessionIdRef.current;
 
       if (!currentActiveId || !isMatchingSession) {
         if (respStatus === 'success' || respStatus === 'error') {
@@ -1108,72 +1148,81 @@ export default function App() {
 
       if (respStatus === 'processing') {
         setAgentStatus('processing');
-        
+
         // Update active blinky message
         if (currentActiveId) {
-          setMessages(prev => prev.map(m => {
-            if (m.id === currentActiveId) {
-              const prevMsg = m.progress?.statusText || '';
-              const newMsg = data?.is_chunk ? (prevMsg + (data?.message || '')) : (data?.message || 'Processing...');
-              
-              let dynamicPercent = 15;
-              if (data?.percent !== undefined) {
-                dynamicPercent = data.percent;
-              } else if (data?.confidence !== undefined && data.confidence > 0) {
-                dynamicPercent = data.confidence;
-              } else {
-                const currentPercent = m.progress?.percent || 15;
-                const lowerMsg = newMsg.toLowerCase();
-                if (lowerMsg.includes('analyzing') || lowerMsg.includes('speech')) {
-                  dynamicPercent = 15;
-                } else if (lowerMsg.includes('screenshot') || lowerMsg.includes('capturing')) {
-                  dynamicPercent = 50;
-                } else if (lowerMsg.includes('opening') || lowerMsg.includes('triggering')) {
-                  dynamicPercent = 60;
-                } else if (lowerMsg.includes('testing playwright')) {
-                  dynamicPercent = 55;
-                } else {
-                  dynamicPercent = Math.min(94, Math.max(currentPercent, Math.floor(15 + (timerSeconds * 8))));
-                }
-              }
+          setMessages((prev) =>
+            prev.map((m) => {
+              if (m.id === currentActiveId) {
+                const prevMsg = m.progress?.statusText || '';
+                const newMsg = data?.is_chunk
+                  ? prevMsg + (data?.message || '')
+                  : data?.message || 'Processing...';
 
-              return {
-                ...m,
-                text: "I'm on it. Locating the request...",
-                progress: {
-                  percent: dynamicPercent,
-                  statusText: newMsg,
-                  duration: timerSeconds,
+                let dynamicPercent = 15;
+                if (data?.percent !== undefined) {
+                  dynamicPercent = data.percent;
+                } else if (data?.confidence !== undefined && data.confidence > 0) {
+                  dynamicPercent = data.confidence;
+                } else {
+                  const currentPercent = m.progress?.percent || 15;
+                  const lowerMsg = newMsg.toLowerCase();
+                  if (lowerMsg.includes('analyzing') || lowerMsg.includes('speech')) {
+                    dynamicPercent = 15;
+                  } else if (lowerMsg.includes('screenshot') || lowerMsg.includes('capturing')) {
+                    dynamicPercent = 50;
+                  } else if (lowerMsg.includes('opening') || lowerMsg.includes('triggering')) {
+                    dynamicPercent = 60;
+                  } else if (lowerMsg.includes('testing playwright')) {
+                    dynamicPercent = 55;
+                  } else {
+                    dynamicPercent = Math.min(
+                      94,
+                      Math.max(currentPercent, Math.floor(15 + timerSeconds * 8))
+                    );
+                  }
                 }
-              };
-            }
-            return m;
-          }));
+
+                return {
+                  ...m,
+                  text: "I'm on it. Locating the request...",
+                  progress: {
+                    percent: dynamicPercent,
+                    statusText: newMsg,
+                    duration: timerSeconds,
+                  },
+                };
+              }
+              return m;
+            })
+          );
         }
       } else if (respStatus === 'success') {
         setAgentStatus('idle');
-        
+
         // Freeze active message at 100%
         if (currentActiveId) {
-          setMessages(prev => prev.map(m => {
-            if (m.id === currentActiveId) {
-              return {
-                ...m,
-                progress: {
-                  percent: 100,
-                  statusText: 'Action completed.',
-                  duration: m.progress?.duration || timerSeconds,
-                }
-              };
-            }
-            return m;
-          }));
+          setMessages((prev) =>
+            prev.map((m) => {
+              if (m.id === currentActiveId) {
+                return {
+                  ...m,
+                  progress: {
+                    percent: 100,
+                    statusText: 'Action completed.',
+                    duration: m.progress?.duration || timerSeconds,
+                  },
+                };
+              }
+              return m;
+            })
+          );
         }
         activeBlinkyMsgIdRef.current = null;
         activeBlinkySessionIdRef.current = null;
 
         // Append final response bubble
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             id: generateUuid(),
@@ -1182,38 +1231,40 @@ export default function App() {
             timestamp: currentTime,
             screenshot_b64: data?.screenshot_b64,
             steps: data?.steps,
-          }
+          },
         ]);
       } else if (respStatus === 'error') {
         setAgentStatus('error');
-        
+
         // Mark active message as failed
         if (currentActiveId) {
-          setMessages(prev => prev.map(m => {
-            if (m.id === currentActiveId) {
-              return {
-                ...m,
-                progress: {
-                  percent: m.progress?.percent || 0,
-                  statusText: error?.message || 'An error occurred during execution.',
-                  duration: m.progress?.duration || timerSeconds,
-                }
-              };
-            }
-            return m;
-          }));
+          setMessages((prev) =>
+            prev.map((m) => {
+              if (m.id === currentActiveId) {
+                return {
+                  ...m,
+                  progress: {
+                    percent: m.progress?.percent || 0,
+                    statusText: error?.message || 'An error occurred during execution.',
+                    duration: m.progress?.duration || timerSeconds,
+                  },
+                };
+              }
+              return m;
+            })
+          );
         }
         activeBlinkyMsgIdRef.current = null;
         activeBlinkySessionIdRef.current = null;
 
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             id: generateUuid(),
             sender: 'blinky',
             text: error?.message || 'An unknown error occurred.',
             timestamp: currentTime,
-          }
+          },
         ]);
       }
     }
@@ -1228,10 +1279,12 @@ export default function App() {
 
       let lastVolume: number | null = null;
 
-      VolumeManager.getVolume().then((val: any) => {
-        const vol = typeof val === 'object' ? val.volume : val;
-        lastVolume = vol;
-      }).catch(() => {});
+      VolumeManager.getVolume()
+        .then((val: any) => {
+          const vol = typeof val === 'object' ? val.volume : val;
+          lastVolume = vol;
+        })
+        .catch(() => {});
 
       const volumeListener = VolumeManager.addVolumeListener((result: any) => {
         const currentVolume = result.volume;
@@ -1263,12 +1316,12 @@ export default function App() {
   }, [isConnected, sendCommand]);
 
   const generateUuid = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   };
-
 
   const readUriAsBase64 = async (uri: string): Promise<string | null> => {
     try {
@@ -1295,7 +1348,12 @@ export default function App() {
       return false;
     }
 
-    if (currentSession && (currentSession.title === 'New Chat' || currentSession.title === 'Welcome Session' || currentSession.title === 'Current Session')) {
+    if (
+      currentSession &&
+      (currentSession.title === 'New Chat' ||
+        currentSession.title === 'Welcome Session' ||
+        currentSession.title === 'Current Session')
+    ) {
       const generated = generateSessionTitle(query || 'Attachment');
       setCurrentSession({ ...currentSession, title: generated });
     }
@@ -1305,7 +1363,7 @@ export default function App() {
       const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const userMsgId = generateUuid();
       const blinkyMsgId = generateUuid();
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { id: userMsgId, sender: 'user' as const, text: query, timestamp: currentTime },
         {
@@ -1313,7 +1371,11 @@ export default function App() {
           sender: 'blinky' as const,
           text: '🔍 Grounding in local documents with vector search...',
           timestamp: currentTime,
-          progress: { percent: 40, statusText: 'Synthesizing with verified citations...', duration: 0 },
+          progress: {
+            percent: 40,
+            statusText: 'Synthesizing with verified citations...',
+            duration: 0,
+          },
         },
       ]);
       setQueryText('');
@@ -1327,7 +1389,11 @@ export default function App() {
           if (!activeNb) {
             activeNb = await createMobileNotebook('My Documents');
           }
-          const { systemPrompt, userPrompt, matchCount } = buildMobileOkfContext(activeNb, query, true);
+          const { systemPrompt, userPrompt, matchCount } = buildMobileOkfContext(
+            activeNb,
+            query,
+            true
+          );
           const keys = await getSyncedApiKeys();
 
           let answer = '';
@@ -1362,26 +1428,44 @@ export default function App() {
               }
             );
             const data = await resp.json().catch(() => ({}));
-            answer = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated from Gemini.';
+            answer =
+              data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+              'No response generated from Gemini.';
           } else {
             // Forward to PC WebSocket tutor as grounded research query
             sendQuery(`[Grounded Research in "${activeNb.title}"]: ${query}`, generateUuid());
             return;
           }
 
-          setMessages(prev => prev.map(m => m.id === blinkyMsgId ? {
-            ...m,
-            text: answer + (matchCount > 0 ? `\n\n*(Grounded across ${matchCount} local document sources in "${activeNb.title}")*` : ''),
-            progress: undefined,
-          } : m));
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === blinkyMsgId
+                ? {
+                    ...m,
+                    text:
+                      answer +
+                      (matchCount > 0
+                        ? `\n\n*(Grounded across ${matchCount} local document sources in "${activeNb.title}")*`
+                        : ''),
+                    progress: undefined,
+                  }
+                : m
+            )
+          );
           setAgentStatus('success');
           triggerHaptic('medium');
         } catch (err: any) {
-          setMessages(prev => prev.map(m => m.id === blinkyMsgId ? {
-            ...m,
-            text: `⚠️ Error during grounded retrieval: ${err?.message || 'Network error'}`,
-            progress: undefined,
-          } : m));
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === blinkyMsgId
+                ? {
+                    ...m,
+                    text: `⚠️ Error during grounded retrieval: ${err?.message || 'Network error'}`,
+                    progress: undefined,
+                  }
+                : m
+            )
+          );
           setAgentStatus('error');
           triggerHaptic('heavy');
         }
@@ -1399,18 +1483,22 @@ export default function App() {
         if (attempt !== attachmentPlanningAttempt.current) return false;
       } catch (error) {
         if (attempt !== attachmentPlanningAttempt.current) return false;
-        Alert.alert('Attachment not sent', error instanceof Error ? error.message : 'Could not plan this attachment.');
+        Alert.alert(
+          'Attachment not sent',
+          error instanceof Error ? error.message : 'Could not plan this attachment.'
+        );
         setAgentStatus('error');
         return false;
       } finally {
-        if (attachmentPreparationAttempt.current === attempt) attachmentPreparationAttempt.current = null;
+        if (attachmentPreparationAttempt.current === attempt)
+          attachmentPreparationAttempt.current = null;
       }
       setAgentStatus('idle');
     }
     if (attachmentRoute === 'unsupported') {
       Alert.alert(
         'Attachment not sent',
-        'Chat analysis currently supports one image at a time. To transfer these files instead, ask me to put them in a PC folder, or send them without a prompt for Downloads/Blinky.',
+        'Chat analysis currently supports one image at a time. To transfer these files instead, ask me to put them in a PC folder, or send them without a prompt for Downloads/Blinky.'
       );
       return false;
     }
@@ -1425,40 +1513,61 @@ export default function App() {
       const blinkyMsgId = generateUuid();
       activeBlinkyMsgIdRef.current = blinkyMsgId;
       activeBlinkySessionIdRef.current = currentSessionIdRef.current;
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { id: userMsgId, sender: 'user' as const, text: explainQuery, timestamp: currentTime, attachedFiles },
         {
-          id: blinkyMsgId, sender: 'blinky' as const, text: "I'm on it. Analyzing your image...",
+          id: userMsgId,
+          sender: 'user' as const,
+          text: explainQuery,
           timestamp: currentTime,
-          progress: { percent: 20, statusText: 'Analyzing image with Gemini vision...', duration: 0 },
+          attachedFiles,
+        },
+        {
+          id: blinkyMsgId,
+          sender: 'blinky' as const,
+          text: "I'm on it. Analyzing your image...",
+          timestamp: currentTime,
+          progress: {
+            percent: 20,
+            statusText: 'Analyzing image with Gemini vision...',
+            duration: 0,
+          },
         },
       ]);
       setAgentStatus('processing');
       setTimerSeconds(0);
       triggerHaptic('medium');
-        try {
-          let b64: string | null = img.base64 || null;
-          if (!b64 && img.uri) b64 = await readUriAsBase64(img.uri);
-          if (attempt !== attachmentPlanningAttempt.current) return false;
-          if (!b64) throw new Error('Could not read this image. Please attach it again.');
-          const clean = b64.includes('base64,') ? b64.split('base64,')[1] : b64;
-          if (!sendQuery(explainQuery, generateUuid(), clean)) {
-            throw new Error('Could not send the image to Blinky. Check the PC connection.');
-          }
-          setQueryText('');
-          return true;
-        } catch (error) {
-          if (attempt !== attachmentPlanningAttempt.current) return false;
-          activeBlinkyMsgIdRef.current = null;
-          setAgentStatus('error');
-          setMessages(prev => prev.map(message => message.id === blinkyMsgId
-            ? { ...message, text: error instanceof Error ? error.message : 'Image analysis failed.', progress: undefined }
-            : message));
-          return false;
-        } finally {
-          if (attachmentPreparationAttempt.current === attempt) attachmentPreparationAttempt.current = null;
+      try {
+        let b64: string | null = img.base64 || null;
+        if (!b64 && img.uri) b64 = await readUriAsBase64(img.uri);
+        if (attempt !== attachmentPlanningAttempt.current) return false;
+        if (!b64) throw new Error('Could not read this image. Please attach it again.');
+        const clean = b64.includes('base64,') ? b64.split('base64,')[1] : b64;
+        if (!sendQuery(explainQuery, generateUuid(), clean)) {
+          throw new Error('Could not send the image to Blinky. Check the PC connection.');
         }
+        setQueryText('');
+        return true;
+      } catch (error) {
+        if (attempt !== attachmentPlanningAttempt.current) return false;
+        activeBlinkyMsgIdRef.current = null;
+        setAgentStatus('error');
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === blinkyMsgId
+              ? {
+                  ...message,
+                  text: error instanceof Error ? error.message : 'Image analysis failed.',
+                  progress: undefined,
+                }
+              : message
+          )
+        );
+        return false;
+      } finally {
+        if (attachmentPreparationAttempt.current === attempt)
+          attachmentPreparationAttempt.current = null;
+      }
     }
 
     // Blank prompts and explicit PC placement requests use the streaming
@@ -1470,7 +1579,7 @@ export default function App() {
         return false;
       }
       const instruction = extractTransferEdit(query);
-      const filesToSend: SelectedFile[] = attachedFiles.map(file => ({
+      const filesToSend: SelectedFile[] = attachedFiles.map((file) => ({
         uri: file.uri,
         name: file.name,
         size: file.size ? Math.round(file.size * 1024 * 1024) : undefined,
@@ -1482,11 +1591,19 @@ export default function App() {
       const statusMsgId = generateUuid();
       transferStatusMsgIdRef.current = statusMsgId;
 
-      const displayText = query || `Send ${attachedFiles.length} ${attachedFiles.length === 1 ? 'file' : 'files'} to PC`;
+      const displayText =
+        query ||
+        `Send ${attachedFiles.length} ${attachedFiles.length === 1 ? 'file' : 'files'} to PC`;
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { id: userMsgId, sender: 'user' as const, text: displayText, timestamp: currentTime, attachedFiles },
+        {
+          id: userMsgId,
+          sender: 'user' as const,
+          text: displayText,
+          timestamp: currentTime,
+          attachedFiles,
+        },
         {
           id: statusMsgId,
           sender: 'blinky' as const,
@@ -1514,11 +1631,14 @@ export default function App() {
         sendAntigravityPrompt(prompt);
         setAgentStatus('processing');
         setTimerSeconds(0);
-        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const currentTime = new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
         const agyMsgId = generateUuid();
         activeAntigravityMsgIdRef.current = agyMsgId;
 
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             id: generateUuid(),
@@ -1529,14 +1649,14 @@ export default function App() {
           {
             id: agyMsgId,
             sender: 'blinky',
-            text: "Antigravity session running on desktop...",
+            text: 'Antigravity session running on desktop...',
             timestamp: currentTime,
             progress: {
               percent: 10,
               statusText: 'Starting Antigravity agent...',
               duration: 0,
-            }
-          }
+            },
+          },
         ]);
         setQueryText('');
         triggerHaptic('medium');
@@ -1561,12 +1681,12 @@ export default function App() {
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMsgId = generateUuid();
     const blinkyMsgId = generateUuid();
-    
+
     // Save reference of the active Blinky card to update later
     activeBlinkyMsgIdRef.current = blinkyMsgId;
     activeBlinkySessionIdRef.current = currentSessionIdRef.current;
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: userMsgId,
@@ -1583,26 +1703,28 @@ export default function App() {
           percent: 0,
           statusText: 'Analyzing query...',
           duration: 0,
-        }
-      }
+        },
+      },
     ]);
 
     const success = sendQuery(query, generateUuid());
     if (!success) {
       setAgentStatus('error');
-      setMessages(prev => prev.map(m => {
-        if (m.id === blinkyMsgId) {
-          return {
-            ...m,
-            progress: {
-              percent: 0,
-              statusText: 'Failed to communicate with PC.',
-              duration: 0,
-            }
-          };
-        }
-        return m;
-      }));
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === blinkyMsgId) {
+            return {
+              ...m,
+              progress: {
+                percent: 0,
+                statusText: 'Failed to communicate with PC.',
+                duration: 0,
+              },
+            };
+          }
+          return m;
+        })
+      );
     }
     return true;
   };
@@ -1733,16 +1855,22 @@ export default function App() {
                 console.log('AssemblyAI transcript ID:', transcriptId);
 
                 for (let i = 0; i < 30; i++) {
-                  await new Promise(r => setTimeout(r, 600));
-                  const pollRes = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
-                    headers: { Authorization: assemblyaiApiKey },
-                  });
+                  await new Promise((r) => setTimeout(r, 600));
+                  const pollRes = await fetch(
+                    `https://api.assemblyai.com/v2/transcript/${transcriptId}`,
+                    {
+                      headers: { Authorization: assemblyaiApiKey },
+                    }
+                  );
                   if (pollRes.ok) {
                     const pollData = await pollRes.json();
                     console.log(`AssemblyAI poll ${i}: status = ${pollData.status}`);
                     if (pollData.status === 'completed') {
                       transcript = (pollData.text || '').trim();
-                      console.log('AssemblyAI transcription completed, text length:', transcript.length);
+                      console.log(
+                        'AssemblyAI transcription completed, text length:',
+                        transcript.length
+                      );
                       break;
                     } else if (pollData.status === 'error') {
                       console.warn('AssemblyAI transcription reported error:', pollData.error);
@@ -1752,7 +1880,11 @@ export default function App() {
                 }
               } else {
                 const errorText = await transcriptRes.text();
-                console.error('AssemblyAI transcript request failed:', transcriptRes.status, errorText);
+                console.error(
+                  'AssemblyAI transcript request failed:',
+                  transcriptRes.status,
+                  errorText
+                );
               }
             }
           } else {
@@ -1813,9 +1945,10 @@ export default function App() {
       }
 
       if (!transcript) {
-        const errorMsg = voiceProvider === 'assemblyai'
-          ? 'AssemblyAI transcription failed. Please check your API key configuration.'
-          : 'Sarvam transcription failed. Please check your API key configuration.';
+        const errorMsg =
+          voiceProvider === 'assemblyai'
+            ? 'AssemblyAI transcription failed. Please check your API key configuration.'
+            : 'Sarvam transcription failed. Please check your API key configuration.';
         console.error('STT failed:', errorMsg);
         throw new Error(errorMsg);
       }
@@ -1833,7 +1966,7 @@ export default function App() {
       activeBlinkyMsgIdRef.current = blinkyMsgId;
       activeBlinkySessionIdRef.current = currentSessionIdRef.current;
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: userMsgId,
@@ -1850,26 +1983,28 @@ export default function App() {
             percent: 0,
             statusText: 'Analyzing speech...',
             duration: 0,
-          }
-        }
+          },
+        },
       ]);
 
       const success = sendQuery(transcript, generateUuid());
       if (!success) {
         setAgentStatus('error');
-        setMessages(prev => prev.map(m => {
-          if (m.id === blinkyMsgId) {
-            return {
-              ...m,
-              progress: {
-                percent: 0,
-                statusText: 'Failed to communicate with PC.',
-                duration: 0,
-              }
-            };
-          }
-          return m;
-        }));
+        setMessages((prev) =>
+          prev.map((m) => {
+            if (m.id === blinkyMsgId) {
+              return {
+                ...m,
+                progress: {
+                  percent: 0,
+                  statusText: 'Failed to communicate with PC.',
+                  duration: 0,
+                },
+              };
+            }
+            return m;
+          })
+        );
       }
     } catch (err: any) {
       console.error('STT Voice error:', err);
@@ -1899,19 +2034,21 @@ export default function App() {
     if (!preparingAttachment) setQueryText('');
     const currentActiveId = activeBlinkyMsgIdRef.current;
     if (currentActiveId) {
-      setMessages(prev => prev.map(m => {
-        if (m.id === currentActiveId) {
-          return {
-            ...m,
-            progress: {
-              percent: m.progress?.percent || 0,
-              statusText: 'Stopped by user.',
-              duration: m.progress?.duration || timerSeconds,
-            }
-          };
-        }
-        return m;
-      }));
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === currentActiveId) {
+            return {
+              ...m,
+              progress: {
+                percent: m.progress?.percent || 0,
+                statusText: 'Stopped by user.',
+                duration: m.progress?.duration || timerSeconds,
+              },
+            };
+          }
+          return m;
+        })
+      );
     }
     activeBlinkyMsgIdRef.current = null;
     activeBlinkySessionIdRef.current = null;
@@ -1929,14 +2066,15 @@ export default function App() {
     /** Restores persisted connection and Wake-on-LAN settings on launch. */
     async function loadIp() {
       try {
-        const [savedIp, savedToken, savedPin, savedMac, savedWolIp, savedWorkstationPin] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEY),
-          readSavedCredential('remote_token', TOKEN_STORAGE_KEY),
-          readSavedCredential('certificate_pin', CERTIFICATE_PIN_STORAGE_KEY),
-          AsyncStorage.getItem(MAC_STORAGE_KEY),
-          AsyncStorage.getItem(WOL_BROADCAST_STORAGE_KEY),
-          AsyncStorage.getItem(WORKSTATION_PIN_STORAGE_KEY),
-        ]);
+        const [savedIp, savedToken, savedPin, savedMac, savedWolIp, savedWorkstationPin] =
+          await Promise.all([
+            AsyncStorage.getItem(STORAGE_KEY),
+            readSavedCredential('remote_token', TOKEN_STORAGE_KEY),
+            readSavedCredential('certificate_pin', CERTIFICATE_PIN_STORAGE_KEY),
+            AsyncStorage.getItem(MAC_STORAGE_KEY),
+            AsyncStorage.getItem(WOL_BROADCAST_STORAGE_KEY),
+            AsyncStorage.getItem(WORKSTATION_PIN_STORAGE_KEY),
+          ]);
         if (savedMac) setMacAddress(savedMac);
         if (savedWolIp) setWolBroadcastIp(savedWolIp);
         if (savedWorkstationPin) setWorkstationPin(savedWorkstationPin);
@@ -2038,7 +2176,8 @@ export default function App() {
   useEffect(() => {
     let active = true;
     if (status === 'disconnected' || status === 'error') {
-      const isAuthRejected = errorMsg?.toLowerCase().includes('rejected') || errorMsg?.toLowerCase().includes('expired');
+      const isAuthRejected =
+        errorMsg?.toLowerCase().includes('rejected') || errorMsg?.toLowerCase().includes('expired');
       if (isAuthRejected) {
         if (RELEASE_TRANSPORT) {
           handleUnlinkPc();
@@ -2130,7 +2269,10 @@ export default function App() {
   };
 
   const validateIp = (ip: string): boolean => {
-    const trimmed = ip.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '');
+    const trimmed = ip
+      .trim()
+      .replace(/^https?:\/\//i, '')
+      .replace(/^wss?:\/\//i, '');
     if (!trimmed) return false;
     const ipPattern = /^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+(:\d+)?$/;
     const ipv4Pattern = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:\d+)?$/;
@@ -2139,7 +2281,11 @@ export default function App() {
 
   const handleConnect = async () => {
     triggerHaptic('medium');
-    const cleanedIp = ipAddress.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
+    const cleanedIp = ipAddress
+      .trim()
+      .replace(/^https?:\/\//i, '')
+      .replace(/^wss?:\/\//i, '')
+      .replace(/\/+$/, '');
     if (!validateIp(cleanedIp)) {
       Alert.alert('Invalid Address', 'Please enter a valid IP address (e.g. 192.168.1.4).');
       return;
@@ -2156,11 +2302,23 @@ export default function App() {
   };
 
   /** One-scan connect from the PC app's "Connect Mobile" QR code. */
-  const handleQrConnect = async (qr: { ip: string; token?: string; pin?: string; mode?: string }) => {
+  const handleQrConnect = async (qr: {
+    ip: string;
+    token?: string;
+    pin?: string;
+    mode?: string;
+  }) => {
     triggerHaptic('medium');
-    const cleanedIp = qr.ip.trim().replace(/^https?:\/\//i, '').replace(/^wss?:\/\//i, '').replace(/\/+$/, '');
+    const cleanedIp = qr.ip
+      .trim()
+      .replace(/^https?:\/\//i, '')
+      .replace(/^wss?:\/\//i, '')
+      .replace(/\/+$/, '');
     if (!validateIp(cleanedIp)) {
-      Alert.alert('Invalid QR Code', 'This QR code does not contain a valid Blinky PC address. Scan the QR shown via the QR icon in the PC app header.');
+      Alert.alert(
+        'Invalid QR Code',
+        'This QR code does not contain a valid Blinky PC address. Scan the QR shown via the QR icon in the PC app header.'
+      );
       return;
     }
     const token = (qr.token || '').trim();
@@ -2212,9 +2370,13 @@ export default function App() {
 
         for (const subnet of subnetsToScan) {
           setDiscoveryProgress(`Scanning Wi-Fi subnet ${subnet}.x...`);
-          found = await scanSubnet(subnet, (msg) => {
-            setDiscoveryProgress(msg);
-          }, certificatePin || undefined);
+          found = await scanSubnet(
+            subnet,
+            (msg) => {
+              setDiscoveryProgress(msg);
+            },
+            certificatePin || undefined
+          );
           if (found) break;
         }
       }
@@ -2248,30 +2410,29 @@ export default function App() {
       return;
     }
     triggerHaptic('heavy');
-    Alert.alert(
-      `Confirm ${label}`,
-      `Are you sure you want to trigger "${label}" on your PC?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Confirm',
-          style: command === 'power_off' || command === 'restart' || command === 'hibernate' ? 'destructive' : 'default',
-          onPress: () => {
-            triggerHaptic('heavy');
-            const success = sendCommand(command);
-            if (success) {
-              if (command === 'lock') {
-                setIsWorkstationLocked(true);
-              }
-              setActionFeedback(`Command "${label}" dispatched!`);
-              setTimeout(() => setActionFeedback(null), 4000);
-            } else {
-              Alert.alert('Error', 'Failed to send command. Check link to PC.');
+    Alert.alert(`Confirm ${label}`, `Are you sure you want to trigger "${label}" on your PC?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        style:
+          command === 'power_off' || command === 'restart' || command === 'hibernate'
+            ? 'destructive'
+            : 'default',
+        onPress: () => {
+          triggerHaptic('heavy');
+          const success = sendCommand(command);
+          if (success) {
+            if (command === 'lock') {
+              setIsWorkstationLocked(true);
             }
-          },
+            setActionFeedback(`Command "${label}" dispatched!`);
+            setTimeout(() => setActionFeedback(null), 4000);
+          } else {
+            Alert.alert('Error', 'Failed to send command. Check link to PC.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   /** Unlocks the host workstation by waking displays, dismissing lock screen, and entering PIN or password. */
@@ -2325,7 +2486,7 @@ export default function App() {
 
   /** Sends a Wake-on-LAN request using the currently configured host settings. */
   const handleSendWakeOnLan = async () => {
-    const targetMac = (macAddress.trim() || systemInfo?.network?.mac_address?.trim() || '');
+    const targetMac = macAddress.trim() || systemInfo?.network?.mac_address?.trim() || '';
     if (!targetMac) {
       Alert.alert(
         'Missing MAC Address',
@@ -2381,616 +2542,685 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" />
-        <View style={styles.safeArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.keyboardView}
-          >
-          {/* Header */}
-          <BrandHeader
-            status={status}
-            isConnected={isConnected}
-            onPressConnection={() => setShowSettings(!showSettings)}
-            onPressHistory={() => {
-              void listSessions().then(setSessionsList);
-              setShowHistoryModal(true);
-            }}
-          />
-
-          {/* Session History Slide-Up Drawer */}
-          <SessionHistoryModal
-            visible={showHistoryModal}
-            onClose={() => setShowHistoryModal(false)}
-            sessions={sessionsList}
-            activeSessionId={currentSession?.id || ''}
-            onSelectSession={(sess) => {
-              activeBlinkyMsgIdRef.current = null;
-              activeBlinkySessionIdRef.current = null;
-              setAgentStatus('idle');
-              setCurrentSession(sess);
-              setMessages(sess.messages);
-              setChatMode(sess.mode === 'grounded' ? 'grounded' : 'autopilot');
-            }}
-            onNewSession={async () => {
-              activeBlinkyMsgIdRef.current = null;
-              activeBlinkySessionIdRef.current = null;
-              setAgentStatus('idle');
-              const fresh = await createNewSession(chatMode === 'grounded' ? 'grounded' : 'general');
-              setCurrentSession(fresh);
-              setMessages(fresh.messages);
-              const updated = await listSessions();
-              setSessionsList(updated);
-            }}
-            onDeleteSession={async (id) => {
-              activeBlinkyMsgIdRef.current = null;
-              activeBlinkySessionIdRef.current = null;
-              setAgentStatus('idle');
-              const next = await deleteSession(id);
-              setCurrentSession(next);
-              setMessages(next.messages);
-              const updated = await listSessions();
-              setSessionsList(updated);
-            }}
-            onClearAllSessions={async () => {
-              activeBlinkyMsgIdRef.current = null;
-              activeBlinkySessionIdRef.current = null;
-              setAgentStatus('idle');
-              const fresh = await clearAllSessions();
-              setCurrentSession(fresh);
-              setMessages(fresh.messages);
-              const updated = await listSessions();
-              setSessionsList(updated);
-            }}
-          />
-
-          {/* Settings modal extracted to SettingsModal.tsx */}
-
-          {/* Disconnected Alert Banner (if disconnected and settings not open) */}
-          {!isConnected && !showSettings && (
-            <TouchableOpacity
-              style={styles.disconnectedAlertBanner}
-              onPress={() => {
-                triggerHaptic('light');
-                setShowSettings(true);
-              }}
-              activeOpacity={0.8}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <StatusBar barStyle="light-content" />
+          <View style={styles.safeArea}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.keyboardView}
             >
-              <Ionicons name="wifi-outline" size={16} color="#EF4444" style={{ marginRight: 8 }} />
-              <Text style={styles.disconnectedAlertText}>
-                {status === 'connecting' ? `Connecting to ${ipAddress || 'PC'}...` : 'Not connected to PC. Tap to connect.'}
-              </Text>
-              <Ionicons name="chevron-forward" size={14} color="#8A86AA" />
-            </TouchableOpacity>
-          )}
+              {/* Header */}
+              <BrandHeader
+                status={status}
+                isConnected={isConnected}
+                onPressConnection={() => setShowSettings(!showSettings)}
+                onPressHistory={() => {
+                  void listSessions().then(setSessionsList);
+                  setShowHistoryModal(true);
+                }}
+              />
 
-          {actionFeedback && (
-            <View style={styles.feedbackBanner}>
-              <Text style={styles.feedbackBannerText}>{actionFeedback}</Text>
-            </View>
-          )}
+              {/* Session History Slide-Up Drawer */}
+              <SessionHistoryModal
+                visible={showHistoryModal}
+                onClose={() => setShowHistoryModal(false)}
+                sessions={sessionsList}
+                activeSessionId={currentSession?.id || ''}
+                onSelectSession={(sess) => {
+                  activeBlinkyMsgIdRef.current = null;
+                  activeBlinkySessionIdRef.current = null;
+                  setAgentStatus('idle');
+                  setCurrentSession(sess);
+                  setMessages(sess.messages);
+                  setChatMode(sess.mode === 'grounded' ? 'grounded' : 'autopilot');
+                }}
+                onNewSession={async () => {
+                  activeBlinkyMsgIdRef.current = null;
+                  activeBlinkySessionIdRef.current = null;
+                  setAgentStatus('idle');
+                  const fresh = await createNewSession(
+                    chatMode === 'grounded' ? 'grounded' : 'general'
+                  );
+                  setCurrentSession(fresh);
+                  setMessages(fresh.messages);
+                  const updated = await listSessions();
+                  setSessionsList(updated);
+                }}
+                onDeleteSession={async (id) => {
+                  activeBlinkyMsgIdRef.current = null;
+                  activeBlinkySessionIdRef.current = null;
+                  setAgentStatus('idle');
+                  const next = await deleteSession(id);
+                  setCurrentSession(next);
+                  setMessages(next.messages);
+                  const updated = await listSessions();
+                  setSessionsList(updated);
+                }}
+                onClearAllSessions={async () => {
+                  activeBlinkyMsgIdRef.current = null;
+                  activeBlinkySessionIdRef.current = null;
+                  setAgentStatus('idle');
+                  const fresh = await clearAllSessions();
+                  setCurrentSession(fresh);
+                  setMessages(fresh.messages);
+                  const updated = await listSessions();
+                  setSessionsList(updated);
+                }}
+              />
 
-          {/* Antigravity Session Complete Banner */}
-          {antigravityComplete && (
-            <View style={styles.antigravityCompleteBanner}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <Ionicons name="checkmark-done-circle" size={18} color="#10B981" style={{ marginRight: 8 }} />
-                <Text style={styles.antigravityCompleteText} numberOfLines={1}>
-                  Antigravity session complete ({antigravityComplete.reason})
-                </Text>
-              </View>
-              <TouchableOpacity onPress={dismissAntigravityComplete} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Ionicons name="close" size={16} color="#8A86AA" />
-              </TouchableOpacity>
-            </View>
-          )}
+              {/* Settings modal extracted to SettingsModal.tsx */}
 
-          {/* Antigravity Action Required Card */}
-          {antigravityApproval && (
-            <View style={styles.antigravityCard}>
-              <View style={styles.antigravityCardHeader}>
-                <View style={styles.antigravityBadge}>
-                  <Ionicons name="hardware-chip" size={13} color="#A78BFA" style={{ marginRight: 5 }} />
-                  <Text style={styles.antigravityBadgeText}>ANTIGRAVITY IDE</Text>
-                </View>
-                <Text style={styles.antigravityTimeText}>Approval Required</Text>
-              </View>
-              
-              <Text style={styles.antigravityToolTitle}>
-                Action: <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{antigravityApproval.tool}</Text>
-              </Text>
-
-              {antigravityApproval.args && (
-                <View style={styles.antigravityArgsContainer}>
-                  <Text style={styles.antigravityArgsText} numberOfLines={4}>
-                    {antigravityApproval.args.CommandLine
-                      ? `$ ${antigravityApproval.args.CommandLine}`
-                      : antigravityApproval.args.TargetFile
-                      ? `Target: ${antigravityApproval.args.TargetFile}`
-                      : antigravityApproval.args.questions
-                      ? `Q: ${JSON.stringify(antigravityApproval.args.questions)}`
-                      : JSON.stringify(antigravityApproval.args, null, 2)}
+              {/* Disconnected Alert Banner (if disconnected and settings not open) */}
+              {!isConnected && !showSettings && (
+                <TouchableOpacity
+                  style={styles.disconnectedAlertBanner}
+                  onPress={() => {
+                    triggerHaptic('light');
+                    setShowSettings(true);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons
+                    name="wifi-outline"
+                    size={16}
+                    color="#EF4444"
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text style={styles.disconnectedAlertText}>
+                    {status === 'connecting'
+                      ? `Connecting to ${ipAddress || 'PC'}...`
+                      : 'Not connected to PC. Tap to connect.'}
                   </Text>
+                  <Ionicons name="chevron-forward" size={14} color="#8A86AA" />
+                </TouchableOpacity>
+              )}
+
+              {actionFeedback && (
+                <View style={styles.feedbackBanner}>
+                  <Text style={styles.feedbackBannerText}>{actionFeedback}</Text>
                 </View>
               )}
 
-              <View style={styles.antigravityActionsRow}>
-                <TouchableOpacity
-                  style={[styles.antigravityBtn, styles.antigravityRejectBtn]}
-                  onPress={() => {
-                    triggerHaptic('heavy');
-                    sendAntigravityDecision(antigravityApproval.actionId, 'deny');
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons name="close-circle-outline" size={18} color="#EF4444" style={{ marginRight: 6 }} />
-                  <Text style={styles.antigravityRejectBtnText}>Reject</Text>
-                </TouchableOpacity>
+              {/* Antigravity Session Complete Banner */}
+              {antigravityComplete && (
+                <View style={styles.antigravityCompleteBanner}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                    <Ionicons
+                      name="checkmark-done-circle"
+                      size={18}
+                      color="#10B981"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.antigravityCompleteText} numberOfLines={1}>
+                      Antigravity session complete ({antigravityComplete.reason})
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={dismissAntigravityComplete}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="close" size={16} color="#8A86AA" />
+                  </TouchableOpacity>
+                </View>
+              )}
 
-                <TouchableOpacity
-                  style={[styles.antigravityBtn, styles.antigravityApproveBtn]}
-                  onPress={() => {
-                    triggerHaptic('medium');
-                    sendAntigravityDecision(antigravityApproval.actionId, 'allow');
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons name="checkmark-circle-outline" size={18} color="#10B981" style={{ marginRight: 6 }} />
-                  <Text style={styles.antigravityApproveBtnText}>Approve</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+              {/* Antigravity Action Required Card */}
+              {antigravityApproval && (
+                <View style={styles.antigravityCard}>
+                  <View style={styles.antigravityCardHeader}>
+                    <View style={styles.antigravityBadge}>
+                      <Ionicons
+                        name="hardware-chip"
+                        size={13}
+                        color="#A78BFA"
+                        style={{ marginRight: 5 }}
+                      />
+                      <Text style={styles.antigravityBadgeText}>ANTIGRAVITY IDE</Text>
+                    </View>
+                    <Text style={styles.antigravityTimeText}>Approval Required</Text>
+                  </View>
 
-          {/* TAB ROUTING */}
-          {activeTab === 'Chat' && (
-            <View style={{ flex: 1 }}>
-              {/* Main Messaging Feed */}
-              <ScrollView
-                ref={scrollViewRef}
-                style={{ flex: 1 }}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={[styles.chatScrollContent, { paddingBottom: 24 }]}
-                keyboardShouldPersistTaps="handled"
-              >
-                {messages.length <= 1 && (
-                  <ChatHome
-                    onQuickAction={(action) => {
-                      if (action === 'Screenshot') handleCaptureScreenshot();
-                      else if (action === 'Open app') setQueryText('Open ');
-                      else if (action === 'Run command') setQueryText('Run ');
-                    }}
+                  <Text style={styles.antigravityToolTitle}>
+                    Action:{' '}
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
+                      {antigravityApproval.tool}
+                    </Text>
+                  </Text>
+
+                  {antigravityApproval.args && (
+                    <View style={styles.antigravityArgsContainer}>
+                      <Text style={styles.antigravityArgsText} numberOfLines={4}>
+                        {antigravityApproval.args.CommandLine
+                          ? `$ ${antigravityApproval.args.CommandLine}`
+                          : antigravityApproval.args.TargetFile
+                            ? `Target: ${antigravityApproval.args.TargetFile}`
+                            : antigravityApproval.args.questions
+                              ? `Q: ${JSON.stringify(antigravityApproval.args.questions)}`
+                              : JSON.stringify(antigravityApproval.args, null, 2)}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View style={styles.antigravityActionsRow}>
+                    <TouchableOpacity
+                      style={[styles.antigravityBtn, styles.antigravityRejectBtn]}
+                      onPress={() => {
+                        triggerHaptic('heavy');
+                        sendAntigravityDecision(antigravityApproval.actionId, 'deny');
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="close-circle-outline"
+                        size={18}
+                        color="#EF4444"
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={styles.antigravityRejectBtnText}>Reject</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.antigravityBtn, styles.antigravityApproveBtn]}
+                      onPress={() => {
+                        triggerHaptic('medium');
+                        sendAntigravityDecision(antigravityApproval.actionId, 'allow');
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="checkmark-circle-outline"
+                        size={18}
+                        color="#10B981"
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={styles.antigravityApproveBtnText}>Approve</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+
+              {/* TAB ROUTING */}
+              {activeTab === 'Chat' && (
+                <View style={{ flex: 1 }}>
+                  {/* Main Messaging Feed */}
+                  <ScrollView
+                    ref={scrollViewRef}
+                    style={{ flex: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={[styles.chatScrollContent, { paddingBottom: 24 }]}
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {messages.length <= 1 && (
+                      <ChatHome
+                        onQuickAction={(action) => {
+                          if (action === 'Screenshot') handleCaptureScreenshot();
+                          else if (action === 'Open app') setQueryText('Open ');
+                          else if (action === 'Run command') setQueryText('Run ');
+                        }}
+                      />
+                    )}
+                    {messages.map((message) => (
+                      <MessageBubble
+                        key={message.id}
+                        message={message}
+                        formatTime={formatTime}
+                        onEnlargeScreenshot={(uri) => {
+                          triggerHaptic('light');
+                          setPreviewImageUri(uri);
+                        }}
+                      />
+                    ))}
+                  </ScrollView>
+
+                  {/* Slash Commands Dropdown Menu */}
+                  <SlashCommandMenu
+                    queryText={queryText}
+                    onSelectCommand={setQueryText}
+                    commands={SLASH_COMMANDS}
                   />
-                )}
-                {messages.map((message) => (
-                  <MessageBubble
-                    key={message.id}
-                    message={message}
-                    formatTime={formatTime}
-                    onEnlargeScreenshot={(uri) => {
+
+                  {/* Inline Grounding Mode Bar: PC Autopilot vs Grounded Knowledge */}
+                  <View style={styles.groundingModeBar}>
+                    <TouchableOpacity
+                      style={[
+                        styles.groundingPill,
+                        chatMode === 'autopilot' && styles.groundingPillActiveAutopilot,
+                      ]}
+                      onPress={() => {
+                        triggerHaptic('selection');
+                        setChatMode('autopilot');
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons
+                        name="desktop-outline"
+                        size={13}
+                        color={chatMode === 'autopilot' ? '#FF5A36' : '#8A86AA'}
+                      />
+                      <Text
+                        style={[
+                          styles.groundingPillText,
+                          chatMode === 'autopilot' && styles.groundingPillTextActiveAutopilot,
+                        ]}
+                      >
+                        PC Autopilot
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.groundingPill,
+                        chatMode === 'grounded' && styles.groundingPillActiveGrounded,
+                      ]}
+                      onPress={() => {
+                        triggerHaptic('selection');
+                        setChatMode('grounded');
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons
+                        name="book-outline"
+                        size={13}
+                        color={chatMode === 'grounded' ? '#A78BFA' : '#8A86AA'}
+                      />
+                      <Text
+                        style={[
+                          styles.groundingPillText,
+                          chatMode === 'grounded' && styles.groundingPillTextActiveGrounded,
+                        ]}
+                      >
+                        Grounded Knowledge
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Command Composer */}
+                  <CommandComposer
+                    queryText={queryText}
+                    setQueryText={setQueryText}
+                    onSubmit={handleQuery}
+                    onStop={handleStopQuery}
+                    status={agentStatus}
+                    isConnected={isConnected}
+                    onPeekImage={(uri) => {
                       triggerHaptic('light');
                       setPreviewImageUri(uri);
                     }}
+                    onCaptureScreenshot={handleCaptureScreenshot}
+                    isVoiceRecording={isVoiceRecording}
+                    isVoiceTranscribing={isVoiceTranscribing}
+                    onToggleVoice={toggleVoiceRecording}
+                    liveTranscript={liveTranscript || undefined}
                   />
-                ))}
-              </ScrollView>
+                </View>
+              )}
 
-              {/* Slash Commands Dropdown Menu */}
-              <SlashCommandMenu
-                queryText={queryText}
-                onSelectCommand={setQueryText}
-                commands={SLASH_COMMANDS}
-              />
-
-              {/* Inline Grounding Mode Bar: PC Autopilot vs Grounded Knowledge */}
-              <View style={styles.groundingModeBar}>
-                <TouchableOpacity
-                  style={[
-                    styles.groundingPill,
-                    chatMode === 'autopilot' && styles.groundingPillActiveAutopilot,
-                  ]}
-                  onPress={() => {
-                    triggerHaptic('selection');
-                    setChatMode('autopilot');
+              {activeTab === 'Actions' && (
+                <ActionsScreen
+                  isConnected={isConnected}
+                  isLightOn={isLightOn}
+                  onExecuteAction={(cmd) => {
+                    // Instant path: raw command goes straight to the Rust
+                    // fast handler (keypress / process spawn / ESP32 sidecar).
+                    // Only screenshot uses the chat/tutor pipeline.
+                    if (cmd === 'screenshot') {
+                      setActiveTab('Chat');
+                      handleCaptureScreenshot();
+                      return;
+                    }
+                    sendCommand(cmd);
+                    if (cmd === 'toggle_lights') {
+                      // Optimistic flip; corrected by light_event from PC.
+                      setIsLightOn((prev) => !prev);
+                    }
                   }}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name="desktop-outline"
-                    size={13}
-                    color={chatMode === 'autopilot' ? '#FF5A36' : '#8A86AA'}
-                  />
-                  <Text
-                    style={[
-                      styles.groundingPillText,
-                      chatMode === 'autopilot' && styles.groundingPillTextActiveAutopilot,
-                    ]}
-                  >
-                    PC Autopilot
-                  </Text>
-                </TouchableOpacity>
+                />
+              )}
 
-                <TouchableOpacity
-                  style={[
-                    styles.groundingPill,
-                    chatMode === 'grounded' && styles.groundingPillActiveGrounded,
-                  ]}
-                  onPress={() => {
-                    triggerHaptic('selection');
-                    setChatMode('grounded');
+              {activeTab === 'PC' && (
+                <SystemScreen
+                  systemInfo={systemInfo}
+                  isConnected={isConnected}
+                  onPowerAction={(action) => {
+                    sendCommand(action);
+                    setActionFeedback(`Power command dispatched: ${action}`);
+                    setTimeout(() => setActionFeedback(null), 2500);
                   }}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name="book-outline"
-                    size={13}
-                    color={chatMode === 'grounded' ? '#A78BFA' : '#8A86AA'}
-                  />
-                  <Text
-                    style={[
-                      styles.groundingPillText,
-                      chatMode === 'grounded' && styles.groundingPillTextActiveGrounded,
-                    ]}
-                  >
-                    Grounded Knowledge
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  onWakePc={onWakePcPressed}
+                  isSendingWol={isSendingWol}
+                  isWorkstationLocked={isWorkstationLocked}
+                  onRefresh={fetchSystemInfo}
+                  isLocked={!isPcUnlocked}
+                  onUnlockPress={handleUnlockPcPress}
+                  onPromoCodePress={() => setShowPromoModal(true)}
+                  onRestorePress={handleRestorePurchasesPress}
+                  isRestoring={isRestoringPurchases}
+                />
+              )}
 
-              {/* Command Composer */}
-              <CommandComposer
-                queryText={queryText}
-                setQueryText={setQueryText}
-                onSubmit={handleQuery}
-                onStop={handleStopQuery}
-                status={agentStatus}
+              {activeTab === 'Files' && (
+                <FilesScreen
+                  isConnected={isConnected}
+                  quickAccessFolders={quickAccessFolders}
+                  currentDirectory={currentDirectory}
+                  recentFiles={recentFiles}
+                  searchResults={fsSearchResults}
+                  isLoading={fsLoading}
+                  fsError={fsError}
+                  fsFileData={fsFileData}
+                  onFetchQuickAccess={fetchQuickAccess}
+                  onListDirectory={listDirectory}
+                  onFetchRecentFiles={fetchRecentFiles}
+                  onSearch={searchFiles}
+                  onOpenFileOnPC={openFileOnPC}
+                  onOpenFileOnMobile={readFileForMobile}
+                  onClearFsFileData={clearFsFileData}
+                  onResetDirectory={resetDirectory}
+                  onPreviewImage={setPreviewImageUri}
+                  onAskBlinky={(file) => {
+                    setActiveTab('Chat');
+                    setQueryText(`Can you examine this file on my PC: "${file.path}"?`);
+                  }}
+                />
+              )}
+
+              <SettingsModal
+                visible={showSettings && !showSplash}
+                onClose={() => setShowSettings(false)}
                 isConnected={isConnected}
-                onPeekImage={(uri) => {
-                  triggerHaptic('light');
-                  setPreviewImageUri(uri);
-                }}
-                onCaptureScreenshot={handleCaptureScreenshot}
-                isVoiceRecording={isVoiceRecording}
-                isVoiceTranscribing={isVoiceTranscribing}
-                onToggleVoice={toggleVoiceRecording}
-                liveTranscript={liveTranscript || undefined}
+                status={status}
+                ipAddress={ipAddress}
+                setIpAddress={setIpAddress}
+                remoteToken={remoteToken}
+                setRemoteToken={setRemoteToken}
+                certificatePin={certificatePin}
+                setCertificatePin={setCertificatePin}
+                workstationPin={workstationPin}
+                setWorkstationPin={setWorkstationPin}
+                macAddress={macAddress}
+                setMacAddress={setMacAddress}
+                systemInfo={systemInfo}
+                isDiscovering={isDiscovering}
+                handleConnect={handleConnect}
+                handleAutoDiscover={handleAutoDiscover}
+                handleQrConnect={handleQrConnect}
+                disconnect={disconnect}
+                onUnlink={handleUnlinkPc}
+                discoveryProgress={discoveryProgress}
+                errorMsg={errorMsg}
+                RELEASE_TRANSPORT={RELEASE_TRANSPORT}
+                WORKSTATION_PIN_STORAGE_KEY={WORKSTATION_PIN_STORAGE_KEY}
               />
-            </View>
-          )}
 
-          {activeTab === 'Actions' && (
-            <ActionsScreen 
-              isConnected={isConnected}
-              isLightOn={isLightOn}
-              onExecuteAction={(cmd) => {
-                // Instant path: raw command goes straight to the Rust
-                // fast handler (keypress / process spawn / ESP32 sidecar).
-                // Only screenshot uses the chat/tutor pipeline.
-                if (cmd === 'screenshot') {
-                  setActiveTab('Chat');
-                  handleCaptureScreenshot();
-                  return;
-                }
-                sendCommand(cmd);
-                if (cmd === 'toggle_lights') {
-                  // Optimistic flip; corrected by light_event from PC.
-                  setIsLightOn(prev => !prev);
-                }
-              }}
-            />
-          )}
-
-
-          {activeTab === 'PC' && (
-            <SystemScreen 
-              systemInfo={systemInfo}
-              isConnected={isConnected}
-              onPowerAction={(action) => {
-                sendCommand(action);
-                setActionFeedback(`Power command dispatched: ${action}`);
-                setTimeout(() => setActionFeedback(null), 2500);
-              }}
-              onWakePc={onWakePcPressed}
-              isSendingWol={isSendingWol}
-              isWorkstationLocked={isWorkstationLocked}
-              onRefresh={fetchSystemInfo}
-              isLocked={!isPcUnlocked}
-              onUnlockPress={handleUnlockPcPress}
-              onPromoCodePress={() => setShowPromoModal(true)}
-              onRestorePress={handleRestorePurchasesPress}
-              isRestoring={isRestoringPurchases}
-            />
-          )}
-
-          {activeTab === 'Files' && (
-            <FilesScreen
-              isConnected={isConnected}
-              quickAccessFolders={quickAccessFolders}
-              currentDirectory={currentDirectory}
-              recentFiles={recentFiles}
-              searchResults={fsSearchResults}
-              isLoading={fsLoading}
-              fsError={fsError}
-              fsFileData={fsFileData}
-              onFetchQuickAccess={fetchQuickAccess}
-              onListDirectory={listDirectory}
-              onFetchRecentFiles={fetchRecentFiles}
-              onSearch={searchFiles}
-              onOpenFileOnPC={openFileOnPC}
-              onOpenFileOnMobile={readFileForMobile}
-              onClearFsFileData={clearFsFileData}
-              onResetDirectory={resetDirectory}
-              onPreviewImage={setPreviewImageUri}
-              onAskBlinky={(file) => {
-                setActiveTab('Chat');
-                setQueryText(`Can you examine this file on my PC: "${file.path}"?`);
-              }}
-            />
-          )}
-
-          <SettingsModal 
-            visible={showSettings && !showSplash}
-            onClose={() => setShowSettings(false)}
-            isConnected={isConnected}
-            status={status}
-            ipAddress={ipAddress}
-            setIpAddress={setIpAddress}
-            remoteToken={remoteToken}
-            setRemoteToken={setRemoteToken}
-            certificatePin={certificatePin}
-            setCertificatePin={setCertificatePin}
-            workstationPin={workstationPin}
-            setWorkstationPin={setWorkstationPin}
-            macAddress={macAddress}
-            setMacAddress={setMacAddress}
-            systemInfo={systemInfo}
-            isDiscovering={isDiscovering}
-            handleConnect={handleConnect}
-            handleAutoDiscover={handleAutoDiscover}
-            handleQrConnect={handleQrConnect}
-            disconnect={disconnect}
-            onUnlink={handleUnlinkPc}
-            discoveryProgress={discoveryProgress}
-            errorMsg={errorMsg}
-            RELEASE_TRANSPORT={RELEASE_TRANSPORT}
-            WORKSTATION_PIN_STORAGE_KEY={WORKSTATION_PIN_STORAGE_KEY}
-          />
-
-          {/* Windows PIN / Password Entry Modal */}
-          <Modal
-            visible={showPinPromptModal}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => {
-              setShowPinPromptModal(false);
-              setInputPin('');
-            }}
-          >
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.75)', justifyContent: 'center', alignItems: 'center', padding: 24 }}
-            >
-              <View
-                style={{
-                  width: '100%',
-                  maxWidth: 380,
-                  backgroundColor: '#161426',
-                  borderRadius: 24,
-                  padding: 24,
-                  borderWidth: 1,
-                  borderColor: 'rgba(255, 90, 54, 0.3)',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 12 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 24,
-                  elevation: 10,
+              {/* Windows PIN / Password Entry Modal */}
+              <Modal
+                visible={showPinPromptModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => {
+                  setShowPinPromptModal(false);
+                  setInputPin('');
                 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                  <View
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 14,
-                      backgroundColor: 'rgba(255, 90, 54, 0.15)',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginRight: 14,
-                    }}
-                  >
-                    <Ionicons name="key" size={22} color="#FF5A36" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF' }}>
-                      Unlock Workstation
-                    </Text>
-                    <Text style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.5)' }}>
-                      Windows Password or PIN
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 16, lineHeight: 18 }}>
-                  Enter your Windows lockscreen PIN or password to unlock your host workstation automatically.
-                </Text>
-
-                <View
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    flexDirection: 'row',
+                    flex: 1,
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    paddingHorizontal: 16,
-                    marginBottom: 16,
+                    padding: 24,
                   }}
                 >
-                  <Ionicons name="lock-closed" size={18} color="#FF5A36" style={{ marginRight: 10 }} />
-                  <TextInput
-                    style={{ height: 48, flex: 1, color: '#FFFFFF', fontSize: 15 }}
-                    placeholder="Enter Windows PIN or password"
-                    placeholderTextColor="rgba(255, 255, 255, 0.35)"
-                    value={inputPin}
-                    onChangeText={setInputPin}
-                    secureTextEntry
-                    autoFocus
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onSubmitEditing={submitPinAndUnlock}
-                  />
-                </View>
-
-                <TouchableOpacity
-                  style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}
-                  onPress={() => setRememberPin(!rememberPin)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name={rememberPin ? 'checkbox' : 'square-outline'}
-                    size={20}
-                    color={rememberPin ? '#FF5A36' : 'rgba(255, 255, 255, 0.4)'}
-                    style={{ marginRight: 8 }}
-                  />
-                  <Text style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.8)', fontWeight: '500' }}>
-                    Remember for future Wake PC taps
-                  </Text>
-                </TouchableOpacity>
-
-                <View style={{ flexDirection: 'row', gap: 12 }}>
-                  <TouchableOpacity
+                  <View
                     style={{
-                      flex: 1,
-                      height: 46,
-                      borderRadius: 14,
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      width: '100%',
+                      maxWidth: 380,
+                      backgroundColor: '#161426',
+                      borderRadius: 24,
+                      padding: 24,
+                      borderWidth: 1,
+                      borderColor: 'rgba(255, 90, 54, 0.3)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 12 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 24,
+                      elevation: 10,
                     }}
-                    onPress={() => {
-                      setShowPinPromptModal(false);
-                      setInputPin('');
-                    }}
-                    activeOpacity={0.7}
                   >
-                    <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 14, fontWeight: '700' }}>
-                      Cancel
-                    </Text>
-                  </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                      <View
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: 14,
+                          backgroundColor: 'rgba(255, 90, 54, 0.15)',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: 14,
+                        }}
+                      >
+                        <Ionicons name="key" size={22} color="#FF5A36" />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF' }}>
+                          Unlock Workstation
+                        </Text>
+                        <Text style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.5)' }}>
+                          Windows Password or PIN
+                        </Text>
+                      </View>
+                    </View>
 
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      height: 46,
-                      borderRadius: 14,
-                      backgroundColor: '#FF5A36',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    onPress={submitPinAndUnlock}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '800' }}>
-                      Unlock PC
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        marginBottom: 16,
+                        lineHeight: 18,
+                      }}
+                    >
+                      Enter your Windows lockscreen PIN or password to unlock your host workstation
+                      automatically.
                     </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </KeyboardAvoidingView>
-          </Modal>
 
-          {/* Fullscreen Image Preview Modal with Pinch to Zoom */}
-          <Modal
-            visible={!!previewImageUri}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => setPreviewImageUri(null)}
-          >
-            {previewImageUri && (
-              <PinchableImageViewer
-                uri={previewImageUri}
-                onClose={() => setPreviewImageUri(null)}
+                    <View
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingHorizontal: 16,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <Ionicons
+                        name="lock-closed"
+                        size={18}
+                        color="#FF5A36"
+                        style={{ marginRight: 10 }}
+                      />
+                      <TextInput
+                        style={{ height: 48, flex: 1, color: '#FFFFFF', fontSize: 15 }}
+                        placeholder="Enter Windows PIN or password"
+                        placeholderTextColor="rgba(255, 255, 255, 0.35)"
+                        value={inputPin}
+                        onChangeText={setInputPin}
+                        secureTextEntry
+                        autoFocus
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onSubmitEditing={submitPinAndUnlock}
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}
+                      onPress={() => setRememberPin(!rememberPin)}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons
+                        name={rememberPin ? 'checkbox' : 'square-outline'}
+                        size={20}
+                        color={rememberPin ? '#FF5A36' : 'rgba(255, 255, 255, 0.4)'}
+                        style={{ marginRight: 8 }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          color: 'rgba(255, 255, 255, 0.8)',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Remember for future Wake PC taps
+                      </Text>
+                    </TouchableOpacity>
+
+                    <View style={{ flexDirection: 'row', gap: 12 }}>
+                      <TouchableOpacity
+                        style={{
+                          flex: 1,
+                          height: 46,
+                          borderRadius: 14,
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                        onPress={() => {
+                          setShowPinPromptModal(false);
+                          setInputPin('');
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: 14,
+                            fontWeight: '700',
+                          }}
+                        >
+                          Cancel
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={{
+                          flex: 1,
+                          height: 46,
+                          borderRadius: 14,
+                          backgroundColor: '#FF5A36',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                        onPress={submitPinAndUnlock}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '800' }}>
+                          Unlock PC
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </KeyboardAvoidingView>
+              </Modal>
+
+              {/* Fullscreen Image Preview Modal with Pinch to Zoom */}
+              <Modal
+                visible={!!previewImageUri}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setPreviewImageUri(null)}
+              >
+                {previewImageUri && (
+                  <PinchableImageViewer
+                    uri={previewImageUri}
+                    onClose={() => setPreviewImageUri(null)}
+                  />
+                )}
+              </Modal>
+              <FileTransferPanel
+                ref={fileTransferPanelRef}
+                visible={false}
+                connected={isConnected}
+                hostAddress={ipAddress}
+                releaseTransport={RELEASE_TRANSPORT}
+                certificatePin={certificatePin}
+                fileTransferMessage={fileTransferMessage}
+                sendMessage={sendFileTransferMessage}
+                getNativeModule={getFileTransferModule}
+                onClose={() => {}}
+                onTransferStatusChange={(status) => {
+                  const msgId = transferStatusMsgIdRef.current;
+                  if (!msgId) return;
+                  setMessages((prev) =>
+                    prev.map((m) => {
+                      if (m.id !== msgId) return m;
+                      return {
+                        ...m,
+                        text: status ? `📤 ${status}` : m.text,
+                        progress: status
+                          ? { percent: 50, statusText: status, duration: 0 }
+                          : m.progress,
+                      };
+                    })
+                  );
+                }}
+                onTransferDone={(success, message) => {
+                  const msgId = transferStatusMsgIdRef.current;
+                  transferStatusMsgIdRef.current = null;
+                  if (!msgId) return;
+                  setMessages((prev) =>
+                    prev.map((m) => {
+                      if (m.id !== msgId) return m;
+                      return {
+                        ...m,
+                        text: message,
+                        progress: undefined,
+                      };
+                    })
+                  );
+                }}
               />
-            )}
-          </Modal>
-          <FileTransferPanel
-            ref={fileTransferPanelRef}
-            visible={false}
-            connected={isConnected}
-            hostAddress={ipAddress}
-            releaseTransport={RELEASE_TRANSPORT}
-            certificatePin={certificatePin}
-            fileTransferMessage={fileTransferMessage}
-            sendMessage={sendFileTransferMessage}
-            getNativeModule={getFileTransferModule}
-            onClose={() => {}}
-            onTransferStatusChange={(status) => {
-              const msgId = transferStatusMsgIdRef.current;
-              if (!msgId) return;
-              setMessages(prev => prev.map(m => {
-                if (m.id !== msgId) return m;
-                return {
-                  ...m,
-                  text: status ? `📤 ${status}` : m.text,
-                  progress: status
-                    ? { percent: 50, statusText: status, duration: 0 }
-                    : m.progress,
-                };
-              }));
-            }}
-            onTransferDone={(success, message) => {
-              const msgId = transferStatusMsgIdRef.current;
-              transferStatusMsgIdRef.current = null;
-              if (!msgId) return;
-              setMessages(prev => prev.map(m => {
-                if (m.id !== msgId) return m;
-                return {
-                  ...m,
-                  text: message,
-                  progress: undefined,
-                };
-              }));
-            }}
-          />
-          <PromoCodeModal
-            visible={showPromoModal}
-            onClose={() => setShowPromoModal(false)}
-            onSuccess={() => {
-              setIsPcUnlocked(true);
-            }}
-          />
-        </KeyboardAvoidingView>
-        <BottomNavigation
-          activeTab={activeTab}
-          isPcLocked={!isPcUnlocked}
-          onTabChange={(tab) => {
-            if (tab === 'Files') {
-              resetDirectory();
-            }
-            setActiveTab(tab);
-          }}
-        />
-      </View>
-      {showSplash && (
-        <SplashScreen
-          onDismiss={() => {
-            setShowSplash(false);
-            if (RELEASE_TRANSPORT) {
-              if (!remoteToken || !certificatePin) {
-                setShowSettings(true);
-              }
-            } else {
-              if (!isConnected && status !== 'connecting') {
-                setShowSettings(true);
-              }
-            }
-          }}
-        />
-      )}
-      </View>
-    </GestureHandlerRootView>
+              <PromoCodeModal
+                visible={showPromoModal}
+                onClose={() => setShowPromoModal(false)}
+                onSuccess={() => {
+                  setIsPcUnlocked(true);
+                }}
+              />
+            </KeyboardAvoidingView>
+            <BottomNavigation
+              activeTab={activeTab}
+              isPcLocked={!isPcUnlocked}
+              onTabChange={(tab) => {
+                if (tab === 'Files') {
+                  resetDirectory();
+                }
+                setActiveTab(tab);
+              }}
+            />
+          </View>
+          {showSplash && (
+            <SplashScreen
+              onDismiss={() => {
+                setShowSplash(false);
+                if (RELEASE_TRANSPORT) {
+                  if (!remoteToken || !certificatePin) {
+                    setShowSettings(true);
+                  }
+                } else {
+                  if (!isConnected && status !== 'connecting') {
+                    setShowSettings(true);
+                  }
+                }
+              }}
+            />
+          )}
+        </View>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
@@ -3001,7 +3231,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) : 44,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 44,
   },
   keyboardView: {
     flex: 1,

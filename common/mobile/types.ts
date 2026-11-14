@@ -24,4 +24,3 @@ export interface Message {
   attachedFiles?: AttachedFile[];
   steps?: any[];
 }
-

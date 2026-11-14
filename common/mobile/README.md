@@ -9,11 +9,13 @@ This directory contains the React Native Expo mobile application that connects t
 ## Setup and Installation
 
 1. Open your terminal and navigate to the mobile directory from the repository root:
+
    ```bash
    cd common/mobile
    ```
 
 2. Install the locked dependencies:
+
    ```bash
    bun install --frozen-lockfile
    ```
@@ -57,8 +59,8 @@ show the manual form directly.
 
 1. Make sure Blinky is running on your desktop PC (`bun run dev`).
 2. Obtain your computer's local IP address.
-   * **Linux**: Run `ip route get 1.1.1.1 | awk '{print $7}'` in terminal.
-   * **Windows**: Run `ipconfig` in Command Prompt and check your IPv4 address under your wireless adapter.
+   - **Linux**: Run `ip route get 1.1.1.1 | awk '{print $7}'` in terminal.
+   - **Windows**: Run `ipconfig` in Command Prompt and check your IPv4 address under your wireless adapter.
 3. Switch to the **Manual** tab, input your PC's IP address (e.g., `192.168.1.15`).
    Release builds also need the remote token and certificate pin (shown in the PC app).
 4. Tap **Establish Link** to connect.

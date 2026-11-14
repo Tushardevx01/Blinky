@@ -80,8 +80,8 @@ export function Overlay() {
   useEffect(() => {
     void getCursorPosition().then((pos) => {
       if (pos.x !== 0 || pos.y !== 0) {
-        const cssX = (pos.x / pixelRatio) - offsetsRef.current.x;
-        const cssY = (pos.y / pixelRatio) - offsetsRef.current.y;
+        const cssX = pos.x / pixelRatio - offsetsRef.current.x;
+        const cssY = pos.y / pixelRatio - offsetsRef.current.y;
         currentPosRef.current = { x: cssX, y: cssY };
         if (cursorRef.current) {
           cursorRef.current.style.transform = `translate3d(${cssX}px, ${cssY}px, 0)`;
@@ -123,7 +123,10 @@ export function Overlay() {
     const unlistenVad = listen<{ volume: number }>('blinky://vad-update', (event) => {
       if (glowContainerRef.current) {
         const volume = event.payload.volume;
-        glowContainerRef.current.style.setProperty('--vad-opacity', volume > 0 ? (0.2 + volume * 0.8).toString() : '0');
+        glowContainerRef.current.style.setProperty(
+          '--vad-opacity',
+          volume > 0 ? (0.2 + volume * 0.8).toString() : '0'
+        );
         glowContainerRef.current.style.setProperty('--glow-scale', (1 + volume * 0.2).toString());
         glowContainerRef.current.style.setProperty('--glow-speed', `${4 - volume * 2.5}s`);
       }
@@ -144,124 +147,133 @@ export function Overlay() {
       }
     });
 
-    const unlistenVis = listen<{ visible: boolean }>('blinky://agent-cursor-visibility', (event) => {
-      setAgentCursorVisible(event.payload.visible);
-      if (event.payload.visible) {
-        if (cursorRef.current) {
-          cursorRef.current.style.opacity = '1';
-        }
-      } else {
-        isAgentActingRef.current = false;
-        if (!isAgentModeActiveRef.current && !isVoiceActiveRef.current && cursorRef.current) {
-          cursorRef.current.style.opacity = '0';
+    const unlistenVis = listen<{ visible: boolean }>(
+      'blinky://agent-cursor-visibility',
+      (event) => {
+        setAgentCursorVisible(event.payload.visible);
+        if (event.payload.visible) {
+          if (cursorRef.current) {
+            cursorRef.current.style.opacity = '1';
+          }
+        } else {
+          isAgentActingRef.current = false;
+          if (!isAgentModeActiveRef.current && !isVoiceActiveRef.current && cursorRef.current) {
+            cursorRef.current.style.opacity = '0';
+          }
         }
       }
-    });
+    );
 
     const COMPANION_OFFSET_X = 16;
     const COMPANION_OFFSET_Y = 16;
     const nativeCursorPos = { x: 0, y: 0 };
 
-    const unlistenNativeMove = listen<{ x: number, y: number }>('blinky://native-cursor-move', (event) => {
-      const cssX = (event.payload.x / pixelRatio) - offsetsRef.current.x;
-      const cssY = (event.payload.y / pixelRatio) - offsetsRef.current.y;
-      
-      const companionX = cssX + COMPANION_OFFSET_X;
-      const companionY = cssY + COMPANION_OFFSET_Y;
+    const unlistenNativeMove = listen<{ x: number; y: number }>(
+      'blinky://native-cursor-move',
+      (event) => {
+        const cssX = event.payload.x / pixelRatio - offsetsRef.current.x;
+        const cssY = event.payload.y / pixelRatio - offsetsRef.current.y;
 
-      nativeCursorPos.x = companionX;
-      nativeCursorPos.y = companionY;
+        const companionX = cssX + COMPANION_OFFSET_X;
+        const companionY = cssY + COMPANION_OFFSET_Y;
 
-      // When AI cursor is NOT in the middle of executing an action, it floats beside the user's native cursor
-      if (cursorRef.current && !isAgentActingRef.current) {
-        currentPosRef.current = { x: companionX, y: companionY };
-        cursorRef.current.style.transform = `translate3d(${companionX}px, ${companionY}px, 0)`;
-        if (agentCursorVisible || isAgentModeActiveRef.current || isVoiceActiveRef.current) {
-          cursorRef.current.style.opacity = '1';
+        nativeCursorPos.x = companionX;
+        nativeCursorPos.y = companionY;
+
+        // When AI cursor is NOT in the middle of executing an action, it floats beside the user's native cursor
+        if (cursorRef.current && !isAgentActingRef.current) {
+          currentPosRef.current = { x: companionX, y: companionY };
+          cursorRef.current.style.transform = `translate3d(${companionX}px, ${companionY}px, 0)`;
+          if (agentCursorVisible || isAgentModeActiveRef.current || isVoiceActiveRef.current) {
+            cursorRef.current.style.opacity = '1';
+          }
         }
       }
-    });
+    );
 
-    const unlistenAgentMove = listen<{ x: number, y: number, instruction?: string }>('blinky://agent-cursor-move', (event) => {
-      if (actingTimeoutRef.current) {
-        clearTimeout(actingTimeoutRef.current);
-        actingTimeoutRef.current = null;
-      }
-      if (hideVoiceTimeoutRef.current) {
-        clearTimeout(hideVoiceTimeoutRef.current);
-        hideVoiceTimeoutRef.current = null;
-      }
-      if (activeGlideAnimRef.current) {
-        activeGlideAnimRef.current.cancel();
-        activeGlideAnimRef.current = null;
-      }
-
-      isAgentActingRef.current = true;
-
-      const startCssX = currentPosRef.current.x;
-      const startCssY = currentPosRef.current.y;
-      let targetCssX = (event.payload.x / pixelRatio) - offsetsRef.current.x;
-      let targetCssY = (event.payload.y / pixelRatio) - offsetsRef.current.y;
-
-      const hasExplicitCoords =
-        typeof event.payload.x === 'number' &&
-        !isNaN(event.payload.x) &&
-        typeof event.payload.y === 'number' &&
-        !isNaN(event.payload.y);
-
-      // Only fall back to highlight frame center if no explicit coordinates were given
-      if (!hasExplicitCoords && framesRef.current && framesRef.current.length > 0) {
-        const frame = framesRef.current[0];
-        targetCssX = frame.left + frame.width / 2;
-        targetCssY = frame.top + frame.height / 2;
-      }
-
-      const el = cursorRef.current;
-      if (el) {
-        // Place AI cursor at start position and make visible
-        el.style.transform = `translate3d(${startCssX}px, ${startCssY}px, 0)`;
-        el.style.opacity = '1';
-        setAgentCursorVisible(true);
-
-        // Hardware GPU glide animation from start to target
-        const anim = el.animate(
-          [
-            { transform: `translate3d(${startCssX}px, ${startCssY}px, 0)` },
-            { transform: `translate3d(${targetCssX}px, ${targetCssY}px, 0)` }
-          ],
-          {
-            duration: 220,
-            easing: 'cubic-bezier(0.2, 0.85, 0.25, 1)',
-            fill: 'forwards'
-          }
-        );
-        activeGlideAnimRef.current = anim;
-
-        anim.onfinish = () => {
-          el.style.transform = `translate3d(${targetCssX}px, ${targetCssY}px, 0)`;
-          currentPosRef.current = { x: targetCssX, y: targetCssY };
-          try {
-            anim.cancel();
-          } catch {}
+    const unlistenAgentMove = listen<{ x: number; y: number; instruction?: string }>(
+      'blinky://agent-cursor-move',
+      (event) => {
+        if (actingTimeoutRef.current) {
+          clearTimeout(actingTimeoutRef.current);
+          actingTimeoutRef.current = null;
+        }
+        if (hideVoiceTimeoutRef.current) {
+          clearTimeout(hideVoiceTimeoutRef.current);
+          hideVoiceTimeoutRef.current = null;
+        }
+        if (activeGlideAnimRef.current) {
+          activeGlideAnimRef.current.cancel();
           activeGlideAnimRef.current = null;
-
-          // Trigger click ripple ring
-          setIsClicking(true);
-          setTimeout(() => setIsClicking(false), 350);
-        };
-      }
-
-      // Safety fallback timeout in case of unexpected backend crash (20 seconds)
-      actingTimeoutRef.current = setTimeout(() => {
-        isAgentActingRef.current = false;
-        if (!isAgentModeActiveRef.current && !isVoiceActiveRef.current) {
-          setAgentCursorVisible(false);
-          if (cursorRef.current) {
-            cursorRef.current.style.opacity = '0';
-          }
         }
-      }, 20000);
-    });
+
+        isAgentActingRef.current = true;
+
+        const startCssX = currentPosRef.current.x;
+        const startCssY = currentPosRef.current.y;
+        let targetCssX = event.payload.x / pixelRatio - offsetsRef.current.x;
+        let targetCssY = event.payload.y / pixelRatio - offsetsRef.current.y;
+
+        const hasExplicitCoords =
+          typeof event.payload.x === 'number' &&
+          !isNaN(event.payload.x) &&
+          typeof event.payload.y === 'number' &&
+          !isNaN(event.payload.y);
+
+        // Only fall back to highlight frame center if no explicit coordinates were given
+        if (!hasExplicitCoords && framesRef.current && framesRef.current.length > 0) {
+          const frame = framesRef.current[0];
+          targetCssX = frame.left + frame.width / 2;
+          targetCssY = frame.top + frame.height / 2;
+        }
+
+        const el = cursorRef.current;
+        if (el) {
+          // Place AI cursor at start position and make visible
+          el.style.transform = `translate3d(${startCssX}px, ${startCssY}px, 0)`;
+          el.style.opacity = '1';
+          setAgentCursorVisible(true);
+
+          // Hardware GPU glide animation from start to target
+          const anim = el.animate(
+            [
+              { transform: `translate3d(${startCssX}px, ${startCssY}px, 0)` },
+              { transform: `translate3d(${targetCssX}px, ${targetCssY}px, 0)` },
+            ],
+            {
+              duration: 220,
+              easing: 'cubic-bezier(0.2, 0.85, 0.25, 1)',
+              fill: 'forwards',
+            }
+          );
+          activeGlideAnimRef.current = anim;
+
+          anim.onfinish = () => {
+            el.style.transform = `translate3d(${targetCssX}px, ${targetCssY}px, 0)`;
+            currentPosRef.current = { x: targetCssX, y: targetCssY };
+            try {
+              anim.cancel();
+            } catch {}
+            activeGlideAnimRef.current = null;
+
+            // Trigger click ripple ring
+            setIsClicking(true);
+            setTimeout(() => setIsClicking(false), 350);
+          };
+        }
+
+        // Safety fallback timeout in case of unexpected backend crash (20 seconds)
+        actingTimeoutRef.current = setTimeout(() => {
+          isAgentActingRef.current = false;
+          if (!isAgentModeActiveRef.current && !isVoiceActiveRef.current) {
+            setAgentCursorVisible(false);
+            if (cursorRef.current) {
+              cursorRef.current.style.opacity = '0';
+            }
+          }
+        }, 20000);
+      }
+    );
 
     const unlistenAgentDone = listen('blinky://agent-cursor-done', () => {
       if (actingTimeoutRef.current) {
@@ -342,7 +354,6 @@ export function Overlay() {
     };
   }, [pixelRatio]);
 
-
   useEffect(() => {
     let timeoutId: any = null;
 
@@ -370,7 +381,6 @@ export function Overlay() {
     };
   }, []);
 
-
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
   const screenshotWidth = result?.screenshot?.width || viewportWidth * pixelRatio;
@@ -383,19 +393,25 @@ export function Overlay() {
 
   useEffect(() => {
     if (!result) return;
-    void logDebugMessage(JSON.stringify({
-      type: 'overlay_render',
-      viewportWidth,
-      viewportHeight,
-      devicePixelRatio: window.devicePixelRatio,
-      pixelRatio,
-      screenshotWidth,
-      screenshotHeight,
-      scaleX,
-      scaleY,
-      offsets,
-      steps: result?.steps,
-    }, null, 2));
+    void logDebugMessage(
+      JSON.stringify(
+        {
+          type: 'overlay_render',
+          viewportWidth,
+          viewportHeight,
+          devicePixelRatio: window.devicePixelRatio,
+          pixelRatio,
+          screenshotWidth,
+          screenshotHeight,
+          scaleX,
+          scaleY,
+          offsets,
+          steps: result?.steps,
+        },
+        null,
+        2
+      )
+    );
   }, [result, scaleX, scaleY, viewportWidth, viewportHeight, offsets]);
 
   const frames = useMemo<HighlightFrame[]>(() => {
@@ -409,10 +425,10 @@ export function Overlay() {
 
           const scaledW = match.width * scaleX;
           const scaledH = match.height * scaleY;
-          
+
           const textStr = match.text ? String(match.text).trim() : '';
           const controlType = String(match.control_type || '').toLowerCase();
-          const isIcon = 
+          const isIcon =
             match.control_type === 'Image' ||
             (scaledW <= 40 && scaledH <= 40) ||
             (scaledW <= 48 && scaledH <= 48 && textStr.length <= 1);
@@ -426,12 +442,11 @@ export function Overlay() {
             scaledH <= 80;
           const useIconFrame = isIcon || isWindowsSidebarIcon;
 
-          const paddingX = useIconFrame ? 4 : 20; 
-          const paddingY = useIconFrame ? 4 : 8;  
+          const paddingX = useIconFrame ? 4 : 20;
+          const paddingY = useIconFrame ? 4 : 8;
 
           const rawLeft = Math.round(match.x * scaleX) - Math.round(paddingX / 2) - offsets.x;
           let rawTop = Math.round(match.y * scaleY) - Math.round(paddingY / 2) - offsets.y;
-
 
           const rawWidth = Math.max(8, Math.round(match.width * scaleX)) + paddingX;
           const rawHeight = Math.max(8, Math.round(match.height * scaleY)) + paddingY;
@@ -447,8 +462,8 @@ export function Overlay() {
           const isDesktopIcon =
             (match as unknown as Record<string, unknown>).shell_region === 'desktop' ||
             matchSource === 'icon';
-          const MAX_BOX_WIDTH = isDesktopIcon ? 130 : (useIconFrame ? 100 : 140);
-          const MAX_BOX_HEIGHT = isDesktopIcon ? 170 : (useIconFrame ? 40 : 44);
+          const MAX_BOX_WIDTH = isDesktopIcon ? 130 : useIconFrame ? 100 : 140;
+          const MAX_BOX_HEIGHT = isDesktopIcon ? 170 : useIconFrame ? 40 : 44;
 
           // Enforce a minimum size of 36px for all highlights to ensure they are easily visible,
           // particularly for small icons and dots!
@@ -480,9 +495,9 @@ export function Overlay() {
             // Fit the width comfortably by estimating character length
             const textLength = match.text ? String(match.text).length : 8;
             const estimatedWidth = 24 + textLength * 7.2 + 28;
-            
+
             displayWidth = Math.min(rawWidth, Math.max(55, Math.round(estimatedWidth)));
-            
+
             // Wide elements: align to the left (shifted 20px right to cover text comfortably)
             displayLeft = rawLeft + 20;
           } else {
@@ -496,23 +511,25 @@ export function Overlay() {
             displayWidth,
             displayHeight,
             viewportWidth,
-            viewportHeight,
+            viewportHeight
           );
 
-          void logDebugMessage(JSON.stringify({
-            type: 'frame_math',
-            target: step.target_text,
-            matchX: match.x,
-            matchY: match.y,
-            scaleX,
-            scaleY,
-            offsets,
-            rawLeft,
-            rawTop,
-            displayLeft,
-            displayTop,
-            clamped,
-          }));
+          void logDebugMessage(
+            JSON.stringify({
+              type: 'frame_math',
+              target: step.target_text,
+              matchX: match.x,
+              matchY: match.y,
+              scaleX,
+              scaleY,
+              offsets,
+              rawLeft,
+              rawTop,
+              displayLeft,
+              displayTop,
+              clamped,
+            })
+          );
 
           return {
             key,
@@ -540,7 +557,9 @@ export function Overlay() {
       setIsClicking(true);
       setTimeout(() => setIsClicking(false), 300);
 
-      const clickedFrame = frames.find((frame) => containsClick(frame, event.payload, scaleX, scaleY));
+      const clickedFrame = frames.find((frame) =>
+        containsClick(frame, event.payload, scaleX, scaleY)
+      );
       if (!clickedFrame) return;
 
       // User clicked the specific highlighted button: return AI cursor back to native cursor
@@ -570,7 +589,7 @@ export function Overlay() {
         <div className="fullscreen-edge-lighting-gradient" />
       </div>
 
-      <div 
+      <div
         ref={cursorRef}
         className="agent-cursor-wrapper"
         style={{
@@ -579,8 +598,15 @@ export function Overlay() {
         }}
       >
         {isClicking && <div className="agent-cursor-click-ring" />}
-        <svg className="agent-cursor" viewBox="0 0 24 24" width="28" height="28" fill="var(--accent-strong)" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87c.45 0 .67-.54.35-.85L6.35 2.86a.5.5 0 0 0-.85.35Z"/>
+        <svg
+          className="agent-cursor"
+          viewBox="0 0 24 24"
+          width="28"
+          height="28"
+          fill="var(--accent-strong)"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87c.45 0 .67-.54.35-.85L6.35 2.86a.5.5 0 0 0-.85.35Z" />
         </svg>
         {isVoiceActive && (
           <div className="agent-visualizer">
@@ -590,8 +616,6 @@ export function Overlay() {
           </div>
         )}
       </div>
-
-
 
       {frames.map((frame) => {
         if (dismissedKeys.has(frame.key)) return null;
@@ -614,7 +638,14 @@ export function Overlay() {
   );
 }
 
-function clampFrame(left: number, top: number, width: number, height: number, viewportWidth: number, viewportHeight: number) {
+function clampFrame(
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  viewportWidth: number,
+  viewportHeight: number
+) {
   const frameMargin = 0;
   const pulseInset = 6;
   const clampedWidth = Math.min(width, Math.max(8, viewportWidth - pulseInset * 2));
@@ -651,6 +682,6 @@ function containsClick(frame: HighlightFrame, click: GlobalClick, scaleX: number
       x >= frame.left - clickTolerance &&
       x <= frame.left + frame.width + clickTolerance &&
       y >= frame.top - clickTolerance &&
-      y <= frame.top + frame.height + clickTolerance,
+      y <= frame.top + frame.height + clickTolerance
   );
 }

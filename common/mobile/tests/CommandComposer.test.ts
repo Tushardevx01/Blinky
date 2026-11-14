@@ -5,7 +5,11 @@ import { fileURLToPath } from 'node:url';
 // those module mocks cannot replace the WebSocket hook suite's React mock.
 test('composer offers four chat attachments without a separate transfer action', () => {
   const run = Bun.spawnSync({
-    cmd: [process.execPath, 'test', fileURLToPath(new URL('./CommandComposer.case.tsx', import.meta.url))],
+    cmd: [
+      process.execPath,
+      'test',
+      fileURLToPath(new URL('./CommandComposer.case.tsx', import.meta.url)),
+    ],
     stdout: 'pipe',
     stderr: 'pipe',
   });

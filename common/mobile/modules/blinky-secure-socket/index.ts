@@ -45,12 +45,13 @@ export type SecureSocketEvent = {
   total?: number;
 };
 
-export type SecureSocketEventName = 'onOpen' | 'onMessage' | 'onClose' | 'onError' | 'onTransferProgress';
+export type SecureSocketEventName =
+  'onOpen' | 'onMessage' | 'onClose' | 'onError' | 'onTransferProgress';
 
 type NativeSecureSocketModule = NativeSecureSocketFunctions & {
   addListener<EventName extends SecureSocketEventName>(
     eventName: EventName,
-    listener: (event: SecureSocketEvent) => void,
+    listener: (event: SecureSocketEvent) => void
   ): EventSubscription;
 };
 
@@ -84,14 +85,20 @@ function sha256Pure(bytes: Uint8Array): string {
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
   ];
-  let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
-  let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+  let h0 = 0x6a09e667,
+    h1 = 0xbb67ae85,
+    h2 = 0x3c6ef372,
+    h3 = 0xa54ff53a;
+  let h4 = 0x510e527f,
+    h5 = 0x9b05688c,
+    h6 = 0x1f83d9ab,
+    h7 = 0x5be0cd19;
 
   const len = bytes.length;
   const bitLenHi = Math.floor(len / 0x20000000);
   const bitLenLo = (len * 8) >>> 0;
 
-  const padLen = (len % 64 < 56) ? (56 - (len % 64)) : (120 - (len % 64));
+  const padLen = len % 64 < 56 ? 56 - (len % 64) : 120 - (len % 64);
   const totalLen = len + padLen + 8;
   const padded = new Uint8Array(totalLen);
   padded.set(bytes, 0);
@@ -114,12 +121,19 @@ function sha256Pure(bytes: Uint8Array): string {
       w[t] = (((w[t - 16] + s0) >>> 0) + ((w[t - 7] + s1) >>> 0)) >>> 0;
     }
 
-    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    let a = h0,
+      b = h1,
+      c = h2,
+      d = h3,
+      e = h4,
+      f = h5,
+      g = h6,
+      h = h7;
 
     for (let t = 0; t < 64; t++) {
       const s1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
-      const ch = (e & f) ^ ((~e) & g);
-      const temp1 = (((h + s1) >>> 0) + (((ch + K[t]) >>> 0) + w[t]) >>> 0) >>> 0;
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = ((((h + s1) >>> 0) + (((ch + K[t]) >>> 0) + w[t])) >>> 0) >>> 0;
       const s0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
       const maj = (a & b) ^ (a & c) ^ (b & c);
       const temp2 = (s0 + maj) >>> 0;
@@ -145,7 +159,9 @@ function sha256Pure(bytes: Uint8Array): string {
   }
 
   const toHex = (n: number) => (n >>> 0).toString(16).padStart(8, '0');
-  return toHex(h0) + toHex(h1) + toHex(h2) + toHex(h3) + toHex(h4) + toHex(h5) + toHex(h6) + toHex(h7);
+  return (
+    toHex(h0) + toHex(h1) + toHex(h2) + toHex(h3) + toHex(h4) + toHex(h5) + toHex(h6) + toHex(h7)
+  );
 }
 
 async function computeSha256(buffer: ArrayBuffer): Promise<string> {
@@ -191,17 +207,21 @@ async function readUriAsArrayBuffer(uri: string): Promise<ArrayBuffer> {
 
 function getNative(): NativeSecureSocketModule {
   if (!NativeModule) {
-    throw new Error("Cannot find native module 'BlinkySecureSocket'. It is not available in Expo Go; please use the installed Blinky APK or development build.");
+    throw new Error(
+      "Cannot find native module 'BlinkySecureSocket'. It is not available in Expo Go; please use the installed Blinky APK or development build."
+    );
   }
   return NativeModule;
 }
 
 export const connect = (id: string, url: string, pin: string) => getNative().connect(id, url, pin);
 export const sendText = (id: string, data: string) => getNative().sendText(id, data);
-export const sendBinary = (id: string, base64Data: string) => getNative().sendBinary(id, base64Data);
+export const sendBinary = (id: string, base64Data: string) =>
+  getNative().sendBinary(id, base64Data);
 export const close = (id: string) => getNative().close(id);
 export const getSecureValue = (key: string) => getNative().getSecureValue(key);
-export const setSecureValue = (key: string, value: string) => getNative().setSecureValue(key, value);
+export const setSecureValue = (key: string, value: string) =>
+  getNative().setSecureValue(key, value);
 export const deleteSecureValue = (key: string) => getNative().deleteSecureValue(key);
 
 export const hashFile = async (uri: string): Promise<{ size: number; sha256: string }> => {
@@ -229,7 +249,10 @@ export const downloadFile = async (
     return NativeModule.downloadFile(options);
   }
 
-  const safeFilename = (options.filename || 'blinky-download.bin').replace(/[\\/:*?"<>|\x00-\x1F]/g, '_');
+  const safeFilename = (options.filename || 'blinky-download.bin').replace(
+    /[\\/:*?"<>|\x00-\x1F]/g,
+    '_'
+  );
 
   // Method 1: Modern expo-file-system File & Directory API
   try {
@@ -242,7 +265,7 @@ export const downloadFile = async (
       const destFile = new File(destDir, safeFilename);
       const downloaded = await File.downloadFileAsync(options.url, destFile, {
         headers: {
-          'Authorization': `Bearer ${options.token}`,
+          Authorization: `Bearer ${options.token}`,
         },
         idempotent: true,
       });
@@ -270,7 +293,7 @@ export const downloadFile = async (
       const targetUri = `${targetDir}${safeFilename}`;
       const downloadResult = await FileSystem.downloadAsync(options.url, targetUri, {
         headers: {
-          'Authorization': `Bearer ${options.token}`,
+          Authorization: `Bearer ${options.token}`,
         },
       });
 
@@ -288,7 +311,7 @@ export const downloadFile = async (
   // Method 3: Standard fetch blob URL
   const res = await fetch(options.url, {
     headers: {
-      'Authorization': `Bearer ${options.token}`,
+      Authorization: `Bearer ${options.token}`,
     },
   });
   if (!res.ok) {
@@ -306,7 +329,7 @@ export const downloadFile = async (
 
 export function addListener(
   name: SecureSocketEventName,
-  listener: (event: SecureSocketEvent) => void,
+  listener: (event: SecureSocketEvent) => void
 ): EventSubscription {
   if (NativeModule) {
     return NativeModule.addListener(name, listener);

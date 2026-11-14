@@ -19,24 +19,53 @@ export function ChatHome({ onQuickAction }: ChatHomeProps) {
       <Text style={styles.brandTitle}>
         I'm <Text style={styles.brandHighlight}>Blinky.</Text>
       </Text>
-      
-      <Text style={styles.subtitle}>
-        Control your PC, just a message away.
-      </Text>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Open app')} activeOpacity={0.7}>
-          <Ionicons name="play-circle-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
+      <Text style={styles.subtitle}>Control your PC, just a message away.</Text>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.actionsRow}
+      >
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onQuickAction('Open app')}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="play-circle-outline"
+            size={18}
+            color={colors.textPrimary}
+            style={styles.actionIcon}
+          />
           <Text style={styles.actionText}>Open app</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Run command')} activeOpacity={0.7}>
-          <Ionicons name="terminal-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onQuickAction('Run command')}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="terminal-outline"
+            size={18}
+            color={colors.textPrimary}
+            style={styles.actionIcon}
+          />
           <Text style={styles.actionText}>Run command</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onQuickAction('Screenshot')} activeOpacity={0.7}>
-          <Ionicons name="scan-outline" size={18} color={colors.textPrimary} style={styles.actionIcon} />
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onQuickAction('Screenshot')}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="scan-outline"
+            size={18}
+            color={colors.textPrimary}
+            style={styles.actionIcon}
+          />
           <Text style={styles.actionText}>Screenshot</Text>
         </TouchableOpacity>
       </ScrollView>

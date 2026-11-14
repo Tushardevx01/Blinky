@@ -36,18 +36,18 @@ Pair on normal Wi-Fi using the PC's current LAN IP, the configured token, and th
 
 ## Recorded verification
 
-| Check | Result on 2026-09-08 | Evidence boundary |
-|---|---|---|
-| Mobile Bun tests | 11 passed | Real hook with mocked React/native events/timers, plus error-state helper |
-| Mobile TypeScript | Passed | Compile-time contracts |
-| Frontend Bun tests | 66 passed | Includes 9 mocked native speech lifecycle tests |
-| Frontend production build | Passed | TypeScript + Vite |
-| Rust release tests | 25 passed | Includes real loopback pinned TLS/WebSocket exchange, wrong-pin rejection, identity permissions |
-| Android pin tests | 4 passed | Matching/mismatching/malformed/missing pin/certificate data |
-| Android secure-socket lint | Passed | Module lint only |
-| Android release APK | Built | Release vital lint passed; not full app lint |
-| Linux optimized executable | Built | No-bundle build; not installer verification |
-| iOS module discovery | Passed | Autolinking only, not Xcode compilation or device validation |
+| Check                      | Result on 2026-09-08 | Evidence boundary                                                                               |
+| -------------------------- | -------------------- | ----------------------------------------------------------------------------------------------- |
+| Mobile Bun tests           | 11 passed            | Real hook with mocked React/native events/timers, plus error-state helper                       |
+| Mobile TypeScript          | Passed               | Compile-time contracts                                                                          |
+| Frontend Bun tests         | 66 passed            | Includes 9 mocked native speech lifecycle tests                                                 |
+| Frontend production build  | Passed               | TypeScript + Vite                                                                               |
+| Rust release tests         | 25 passed            | Includes real loopback pinned TLS/WebSocket exchange, wrong-pin rejection, identity permissions |
+| Android pin tests          | 4 passed             | Matching/mismatching/malformed/missing pin/certificate data                                     |
+| Android secure-socket lint | Passed               | Module lint only                                                                                |
+| Android release APK        | Built                | Release vital lint passed; not full app lint                                                    |
+| Linux optimized executable | Built                | No-bundle build; not installer verification                                                     |
+| iOS module discovery       | Passed               | Autolinking only, not Xcode compilation or device validation                                    |
 
 APK SHA-256 (rechecked 2026-09-10):
 

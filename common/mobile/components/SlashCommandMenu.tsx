@@ -25,11 +25,12 @@ export function SlashCommandMenu({ queryText, onSelectCommand, commands }: Slash
   if (!showSlashMenu) return null;
 
   const slashFilter = queryText.toLowerCase().replace('/', '');
-  const filteredCommands = commands.filter(cmd =>
-    !slashFilter ||
-    cmd.id.includes(slashFilter) ||
-    cmd.title.toLowerCase().includes(slashFilter) ||
-    cmd.badge.toLowerCase().includes(slashFilter)
+  const filteredCommands = commands.filter(
+    (cmd) =>
+      !slashFilter ||
+      cmd.id.includes(slashFilter) ||
+      cmd.title.toLowerCase().includes(slashFilter) ||
+      cmd.badge.toLowerCase().includes(slashFilter)
   );
 
   if (filteredCommands.length === 0) return null;
@@ -39,10 +40,7 @@ export function SlashCommandMenu({ queryText, onSelectCommand, commands }: Slash
       {filteredCommands.map((cmd, idx) => (
         <TouchableOpacity
           key={cmd.id}
-          style={[
-            styles.menuItem,
-            idx < filteredCommands.length - 1 && styles.menuItemBorder
-          ]}
+          style={[styles.menuItem, idx < filteredCommands.length - 1 && styles.menuItemBorder]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             onSelectCommand(cmd.prefix);
@@ -54,7 +52,9 @@ export function SlashCommandMenu({ queryText, onSelectCommand, commands }: Slash
           </View>
           <View style={styles.content}>
             <Text style={styles.title}>{cmd.title}</Text>
-            <Text style={styles.description} numberOfLines={1}>{cmd.description}</Text>
+            <Text style={styles.description} numberOfLines={1}>
+              {cmd.description}
+            </Text>
           </View>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{cmd.badge}</Text>

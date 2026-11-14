@@ -15,12 +15,12 @@ It does not call `run_tutor` directly, does not render desktop overlay highlight
 
 ## 2. Main Files
 
-| File | Role |
-| :--- | :--- |
-| `common/mobile/App.tsx` | Main UI, connection form, query card, power controls, response rendering. |
-| `common/mobile/usePCWebSocket.ts` | WebSocket lifecycle hook and message send helpers. |
-| `common/mobile/package.json` | Expo 54 / React Native 0.81 app dependencies and scripts. |
-| `common/mobile/AGENTS.md` | Requires checking exact Expo versioned docs before code edits. |
+| File                              | Role                                                                      |
+| :-------------------------------- | :------------------------------------------------------------------------ |
+| `common/mobile/App.tsx`           | Main UI, connection form, query card, power controls, response rendering. |
+| `common/mobile/usePCWebSocket.ts` | WebSocket lifecycle hook and message send helpers.                        |
+| `common/mobile/package.json`      | Expo 54 / React Native 0.81 app dependencies and scripts.                 |
+| `common/mobile/AGENTS.md`         | Requires checking exact Expo versioned docs before code edits.            |
 
 ## 3. Connection Flow
 

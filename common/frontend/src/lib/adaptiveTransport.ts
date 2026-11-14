@@ -73,7 +73,9 @@ export class AdaptiveTransportManager {
     // Check if WebTransport is supported by browser environment
     const hasWebTransport = typeof (window as any).WebTransport !== 'undefined';
     if (!hasWebTransport) {
-      console.warn("WebTransport is not supported by this browser client. Defaulting to WebSockets.");
+      console.warn(
+        'WebTransport is not supported by this browser client. Defaulting to WebSockets.'
+      );
       await this.switchToWebSocket();
       this.isChecking = false;
       return;
@@ -104,7 +106,7 @@ export class AdaptiveTransportManager {
       this.currentType = 'WEBTRANSPORT';
       this.onStateChange('WEBTRANSPORT');
     } catch (e) {
-      console.error("WebTransport connection failed, falling back to WebSockets.", e);
+      console.error('WebTransport connection failed, falling back to WebSockets.', e);
       await this.switchToWebSocket();
     }
   }
@@ -141,6 +143,6 @@ export class AdaptiveTransportManager {
 
   private handleDisconnect() {
     this.cleanupActiveConnection();
-    console.warn("Client network is offline.");
+    console.warn('Client network is offline.');
   }
 }

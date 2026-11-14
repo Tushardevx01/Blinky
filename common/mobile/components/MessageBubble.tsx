@@ -14,7 +14,8 @@ interface MessageBubbleProps {
 
 export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: MessageBubbleProps) {
   const isUser = message.sender === 'user';
-  const attachedFiles = message.attachedFiles || (message.attachedFile ? [message.attachedFile] : []);
+  const attachedFiles =
+    message.attachedFiles || (message.attachedFile ? [message.attachedFile] : []);
 
   return (
     <View style={isUser ? styles.userRow : styles.blinkyRow}>
@@ -30,7 +31,9 @@ export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: Mess
           <TouchableOpacity
             key={`${attachedFile.uri}-${index}`}
             style={styles.attachedCard}
-            activeOpacity={attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image') ? 0.8 : 1}
+            activeOpacity={
+              attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image') ? 0.8 : 1
+            }
             onPress={() => {
               if (attachedFile.type === 'image' || attachedFile.mimeType?.startsWith('image')) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -42,18 +45,33 @@ export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: Mess
               <View style={styles.attachedImageContainer}>
                 <Image source={{ uri: attachedFile.uri }} style={styles.attachedImage} />
                 <View style={styles.attachedImageOverlay}>
-                  <Ionicons name="expand-outline" size={12} color="#FFFFFF" style={{ marginRight: 4 }} />
+                  <Ionicons
+                    name="expand-outline"
+                    size={12}
+                    color="#FFFFFF"
+                    style={{ marginRight: 4 }}
+                  />
                   <Text style={styles.attachedImageText}>Tap to peek</Text>
                 </View>
               </View>
             ) : (
               <View style={styles.attachedFileRow}>
-                <Ionicons name="document-text" size={18} color={isUser ? "#FFFFFF" : colors.accent} style={{ marginRight: 6 }} />
-                <Text style={[styles.attachedFileName, isUser && { color: "#FFFFFF" }]} numberOfLines={1}>
+                <Ionicons
+                  name="document-text"
+                  size={18}
+                  color={isUser ? '#FFFFFF' : colors.accent}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  style={[styles.attachedFileName, isUser && { color: '#FFFFFF' }]}
+                  numberOfLines={1}
+                >
                   {attachedFile.name}
                 </Text>
                 {attachedFile.size ? (
-                  <Text style={[styles.attachedFileSize, isUser && { color: "rgba(255,255,255,0.7)" }]}>
+                  <Text
+                    style={[styles.attachedFileSize, isUser && { color: 'rgba(255,255,255,0.7)' }]}
+                  >
                     ({attachedFile.size} MB)
                   </Text>
                 ) : null}
@@ -82,7 +100,12 @@ export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: Mess
             </View>
 
             <View style={styles.timerRow}>
-              <Ionicons name="time-outline" size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
+              <Ionicons
+                name="time-outline"
+                size={14}
+                color={colors.textSecondary}
+                style={{ marginRight: 6 }}
+              />
               <Text style={styles.timerText}>{formatTime(message.progress.duration)}</Text>
             </View>
           </View>
@@ -103,7 +126,12 @@ export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: Mess
               style={styles.screenshot}
             />
             <View style={styles.enlargeBadge}>
-              <Ionicons name="expand-outline" size={12} color={colors.textPrimary} style={{ marginRight: 4 }} />
+              <Ionicons
+                name="expand-outline"
+                size={12}
+                color={colors.textPrimary}
+                style={{ marginRight: 4 }}
+              />
               <Text style={styles.enlargeText}>Tap to enlarge</Text>
             </View>
           </TouchableOpacity>
@@ -133,7 +161,14 @@ export function MessageBubble({ message, formatTime, onEnlargeScreenshot }: Mess
 
       <View style={isUser ? styles.userMeta : styles.blinkyMeta}>
         <Text style={styles.timestamp}>{message.timestamp}</Text>
-        {isUser && <Ionicons name="checkmark-done" size={14} color={colors.accent} style={{ marginLeft: 4 }} />}
+        {isUser && (
+          <Ionicons
+            name="checkmark-done"
+            size={14}
+            color={colors.accent}
+            style={{ marginLeft: 4 }}
+          />
+        )}
       </View>
     </View>
   );

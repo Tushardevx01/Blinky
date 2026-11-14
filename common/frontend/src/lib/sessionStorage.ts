@@ -18,7 +18,10 @@ const PC_ACTIVE_SESSION_ID_KEY = 'blinky_pc_active_session_id';
 
 export function generatePcSessionTitle(prompt: string): string {
   if (!prompt || !prompt.trim()) return 'New Conversation';
-  const clean = prompt.trim().replace(/^[\/#!?]+/, '').trim();
+  const clean = prompt
+    .trim()
+    .replace(/^[\/#!?]+/, '')
+    .trim();
   const words = clean.split(/\s+/);
   if (words.length <= 5) {
     return clean.charAt(0).toUpperCase() + clean.slice(1);
@@ -55,7 +58,12 @@ export function listPcChatSessions(): PcChatSession[] {
         id: s.id,
         title: typeof s.title === 'string' ? s.title : 'New Conversation',
         createdAt: typeof s.createdAt === 'number' ? s.createdAt : Date.now(),
-        updatedAt: typeof s.updatedAt === 'number' ? s.updatedAt : (typeof s.createdAt === 'number' ? s.createdAt : Date.now()),
+        updatedAt:
+          typeof s.updatedAt === 'number'
+            ? s.updatedAt
+            : typeof s.createdAt === 'number'
+              ? s.createdAt
+              : Date.now(),
         messages: validMessages,
       });
     }

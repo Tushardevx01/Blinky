@@ -119,7 +119,11 @@ export function SettingsModal(props: SettingsModalProps) {
     if (!props.visible) return;
     const subscription = Keyboard.addListener('keyboardDidShow', () => {
       if (focusedInput.current != null) {
-        scrollRef.current?.scrollResponderScrollNativeHandleToKeyboard(focusedInput.current, 24, true);
+        scrollRef.current?.scrollResponderScrollNativeHandleToKeyboard(
+          focusedInput.current,
+          24,
+          true
+        );
       }
     });
     return () => subscription.remove();
@@ -143,12 +147,16 @@ export function SettingsModal(props: SettingsModalProps) {
     // The Metro bundler QR (exp://...) loads the app via Expo Go — it is not
     // a PC-link code. Point this out explicitly: the two QRs get mixed up.
     if (/^exp:\/\//i.test(trimmed)) {
-      setQrError('That is the Expo loader code (for opening this app in Expo Go), not the PC link code. First open the app with Expo Go, then scan the QR shown in the Blinky PC app header (QR icon) here.');
+      setQrError(
+        'That is the Expo loader code (for opening this app in Expo Go), not the PC link code. First open the app with Expo Go, then scan the QR shown in the Blinky PC app header (QR icon) here.'
+      );
       return;
     }
     const parsed = parsePairingQr(data);
     if (!parsed) {
-      setQrError('That is not a Blinky pairing code. Open the Blinky PC app, tap the QR icon in the header, and scan that code.');
+      setQrError(
+        'That is not a Blinky pairing code. Open the Blinky PC app, tap the QR icon in the header, and scan that code.'
+      );
       return;
     }
     setQrError(null);
@@ -162,7 +170,12 @@ export function SettingsModal(props: SettingsModalProps) {
   };
 
   return (
-    <Modal visible={props.visible} animationType="fade" transparent={true} onRequestClose={handleDismiss}>
+    <Modal
+      visible={props.visible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={handleDismiss}
+    >
       <KeyboardAvoidingView behavior="padding" style={styles.modalOverlay}>
         <Animated.View
           style={[
@@ -176,7 +189,7 @@ export function SettingsModal(props: SettingsModalProps) {
           <View {...panResponder.panHandlers} style={styles.sheetHandleContainer}>
             <View style={styles.handleBar} />
           </View>
-          
+
           <View style={styles.connectionHeaderRow}>
             <Text style={styles.connectionTitle}>
               {props.RELEASE_TRANSPORT ? 'PC Link & Settings' : 'Local Link Setup'}
@@ -185,7 +198,7 @@ export function SettingsModal(props: SettingsModalProps) {
               <Ionicons name="close" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
-          
+
           <ScrollView
             ref={scrollRef}
             style={styles.scrollContent}
@@ -206,11 +219,18 @@ export function SettingsModal(props: SettingsModalProps) {
                         <View style={{ flex: 1 }}>
                           <Text style={styles.connectedCardTitle}>Linked to Host PC</Text>
                           <Text style={styles.connectedCardSubtitle}>
-                            {props.ipAddress ? `Host: ${props.ipAddress}` : 'Connected via Secure TLS'}
+                            {props.ipAddress
+                              ? `Host: ${props.ipAddress}`
+                              : 'Connected via Secure TLS'}
                           </Text>
                         </View>
                         <View style={styles.secureBadge}>
-                          <Ionicons name="shield-checkmark" size={12} color={colors.success} style={{ marginRight: 3 }} />
+                          <Ionicons
+                            name="shield-checkmark"
+                            size={12}
+                            color={colors.success}
+                            style={{ marginRight: 3 }}
+                          />
                           <Text style={styles.secureBadgeText}>TLS PINNED</Text>
                         </View>
                       </View>
@@ -224,30 +244,55 @@ export function SettingsModal(props: SettingsModalProps) {
                           }}
                           activeOpacity={0.8}
                         >
-                          <Ionicons name="power-outline" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                          <Ionicons
+                            name="power-outline"
+                            size={14}
+                            color={colors.textSecondary}
+                            style={{ marginRight: 4 }}
+                          />
                           <Text style={styles.smallBtnText}>Disconnect</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          style={[styles.smallBtn, { backgroundColor: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.3)', borderWidth: 1 }]}
+                          style={[
+                            styles.smallBtn,
+                            {
+                              backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: 'rgba(239, 68, 68, 0.3)',
+                              borderWidth: 1,
+                            },
+                          ]}
                           onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                             props.onUnlink?.();
                           }}
                           activeOpacity={0.8}
                         >
-                          <Ionicons name="trash-outline" size={14} color={colors.danger} style={{ marginRight: 4 }} />
-                          <Text style={[styles.smallBtnText, { color: colors.danger }]}>Unlink PC</Text>
+                          <Ionicons
+                            name="trash-outline"
+                            size={14}
+                            color={colors.danger}
+                            style={{ marginRight: 4 }}
+                          />
+                          <Text style={[styles.smallBtnText, { color: colors.danger }]}>
+                            Unlink PC
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     </View>
                   </View>
                 ) : props.status === 'connecting' ? (
                   <View style={styles.progressCard}>
-                    <ActivityIndicator size="small" color={colors.accent} style={{ marginRight: 10 }} />
+                    <ActivityIndicator
+                      size="small"
+                      color={colors.accent}
+                      style={{ marginRight: 10 }}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.progressTitle}>Connecting to PC...</Text>
-                      <Text style={styles.progressSubtitle}>{props.ipAddress || 'Authenticating secure session'}</Text>
+                      <Text style={styles.progressSubtitle}>
+                        {props.ipAddress || 'Authenticating secure session'}
+                      </Text>
                     </View>
                     <TouchableOpacity
                       style={styles.cancelLinkBtn}
@@ -263,11 +308,17 @@ export function SettingsModal(props: SettingsModalProps) {
                   <View>
                     <View style={styles.reconnectingCard}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                        <Ionicons name="sync-outline" size={18} color={colors.warning} style={{ marginRight: 8 }} />
+                        <Ionicons
+                          name="sync-outline"
+                          size={18}
+                          color={colors.warning}
+                          style={{ marginRight: 8 }}
+                        />
                         <Text style={styles.reconnectingTitle}>Disconnected from PC</Text>
                       </View>
                       <Text style={styles.reconnectingDesc}>
-                        Saved credentials for {props.ipAddress || 'your PC'} are active. Blinky will auto-reconnect once the desktop app is online.
+                        Saved credentials for {props.ipAddress || 'your PC'} are active. Blinky will
+                        auto-reconnect once the desktop app is online.
                       </Text>
 
                       <View style={styles.reconnectingActionsRow}>
@@ -279,12 +330,20 @@ export function SettingsModal(props: SettingsModalProps) {
                           }}
                           activeOpacity={0.8}
                         >
-                          <Ionicons name="qr-code-outline" size={16} color={colors.white} style={{ marginRight: 6 }} />
+                          <Ionicons
+                            name="qr-code-outline"
+                            size={16}
+                            color={colors.white}
+                            style={{ marginRight: 6 }}
+                          />
                           <Text style={styles.btnText}>Scan New QR Code</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          style={[styles.actionBtn, { backgroundColor: colors.surfaceElevated, paddingHorizontal: 14 }]}
+                          style={[
+                            styles.actionBtn,
+                            { backgroundColor: colors.surfaceElevated, paddingHorizontal: 14 },
+                          ]}
                           onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                             props.onUnlink?.();
@@ -298,7 +357,12 @@ export function SettingsModal(props: SettingsModalProps) {
 
                     {props.errorMsg ? (
                       <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle-outline" size={16} color={colors.danger} style={{ marginRight: 6 }} />
+                        <Ionicons
+                          name="alert-circle-outline"
+                          size={16}
+                          color={colors.danger}
+                          style={{ marginRight: 6 }}
+                        />
                         <Text style={styles.errorText}>{props.errorMsg}</Text>
                       </View>
                     ) : null}
@@ -306,27 +370,46 @@ export function SettingsModal(props: SettingsModalProps) {
                 ) : (
                   <View>
                     <Text style={styles.connectionSubtitle}>
-                      Point your camera at the QR code shown in Blinky on your PC (tap the QR icon in the desktop toolbar) to link this device.
+                      Point your camera at the QR code shown in Blinky on your PC (tap the QR icon
+                      in the desktop toolbar) to link this device.
                     </Text>
                     <QrScanner onScanned={handleQrScanned} scanActive={props.visible} />
                     {showRescanScanner && isPaired && (
                       <TouchableOpacity
-                        style={[styles.smallBtn, { marginTop: 12, alignSelf: 'center', backgroundColor: colors.surface }]}
+                        style={[
+                          styles.smallBtn,
+                          { marginTop: 12, alignSelf: 'center', backgroundColor: colors.surface },
+                        ]}
                         onPress={() => setShowRescanScanner(false)}
                       >
-                        <Ionicons name="arrow-back" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Ionicons
+                          name="arrow-back"
+                          size={14}
+                          color={colors.textSecondary}
+                          style={{ marginRight: 4 }}
+                        />
                         <Text style={styles.smallBtnText}>Cancel & Use Saved PC</Text>
                       </TouchableOpacity>
                     )}
                     {qrError ? (
                       <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle-outline" size={16} color={colors.danger} style={{ marginRight: 6 }} />
+                        <Ionicons
+                          name="alert-circle-outline"
+                          size={16}
+                          color={colors.danger}
+                          style={{ marginRight: 6 }}
+                        />
                         <Text style={styles.errorText}>{qrError}</Text>
                       </View>
                     ) : null}
                     {props.errorMsg ? (
                       <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle-outline" size={16} color={colors.danger} style={{ marginRight: 6 }} />
+                        <Ionicons
+                          name="alert-circle-outline"
+                          size={16}
+                          color={colors.danger}
+                          style={{ marginRight: 6 }}
+                        />
                         <Text style={styles.errorText}>{props.errorMsg}</Text>
                       </View>
                     ) : null}
@@ -337,7 +420,8 @@ export function SettingsModal(props: SettingsModalProps) {
               // ================= DEBUG MODE: MANUAL & AUTO-DISCOVER TABS =================
               <View>
                 <Text style={styles.connectionSubtitle}>
-                  Enter your PC's IP or tap "Auto-Discover" to automatically locate and connect to Blinky over LAN.
+                  Enter your PC's IP or tap "Auto-Discover" to automatically locate and connect to
+                  Blinky over LAN.
                 </Text>
 
                 <View style={styles.tabRow}>
@@ -355,7 +439,9 @@ export function SettingsModal(props: SettingsModalProps) {
                       color={linkTab === 'qr' ? colors.white : colors.textSecondary}
                       style={{ marginRight: 6 }}
                     />
-                    <Text style={[styles.tabText, linkTab === 'qr' && styles.tabTextActive]}>QR</Text>
+                    <Text style={[styles.tabText, linkTab === 'qr' && styles.tabTextActive]}>
+                      QR
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.tab, linkTab === 'manual' && styles.tabActive]}
@@ -371,7 +457,9 @@ export function SettingsModal(props: SettingsModalProps) {
                       color={linkTab === 'manual' ? colors.white : colors.textSecondary}
                       style={{ marginRight: 6 }}
                     />
-                    <Text style={[styles.tabText, linkTab === 'manual' && styles.tabTextActive]}>Manual</Text>
+                    <Text style={[styles.tabText, linkTab === 'manual' && styles.tabTextActive]}>
+                      Manual
+                    </Text>
                   </TouchableOpacity>
                 </View>
 
@@ -380,12 +468,17 @@ export function SettingsModal(props: SettingsModalProps) {
                     <View style={styles.connectedNote}>
                       <Ionicons name="checkmark-circle-outline" size={20} color={colors.success} />
                       <Text style={styles.connectedNoteText}>
-                        Connected{props.ipAddress ? ` to ${props.ipAddress}` : ''}. Disconnect to pair a different PC.
+                        Connected{props.ipAddress ? ` to ${props.ipAddress}` : ''}. Disconnect to
+                        pair a different PC.
                       </Text>
                     </View>
                   ) : props.status === 'connecting' ? (
                     <View style={styles.progressContainer}>
-                      <ActivityIndicator size="small" color={colors.accent} style={{ marginRight: 8 }} />
+                      <ActivityIndicator
+                        size="small"
+                        color={colors.accent}
+                        style={{ marginRight: 8 }}
+                      />
                       <Text style={styles.progressText}>Connecting...</Text>
                     </View>
                   ) : (
@@ -406,7 +499,12 @@ export function SettingsModal(props: SettingsModalProps) {
                 ) : (
                   <View>
                     <View style={styles.inputWrapper}>
-                      <Ionicons name="link-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
+                      <Ionicons
+                        name="link-outline"
+                        size={20}
+                        color={colors.textSecondary}
+                        style={styles.inputIcon}
+                      />
                       <TextInput
                         style={[styles.input, props.isConnected && styles.inputDisabled]}
                         placeholder="Enter PC IP (e.g. 100.122.62.2)"
@@ -425,7 +523,14 @@ export function SettingsModal(props: SettingsModalProps) {
                       {props.status !== 'connected' && props.status !== 'connecting' ? (
                         <>
                           <TouchableOpacity
-                            style={[styles.actionBtn, { backgroundColor: props.isDiscovering ? colors.surfacePressed : colors.accent }]}
+                            style={[
+                              styles.actionBtn,
+                              {
+                                backgroundColor: props.isDiscovering
+                                  ? colors.surfacePressed
+                                  : colors.accent,
+                              },
+                            ]}
                             onPress={props.handleConnect}
                             activeOpacity={0.8}
                             disabled={props.isDiscovering}
@@ -433,7 +538,14 @@ export function SettingsModal(props: SettingsModalProps) {
                             <Text style={styles.btnText}>Establish Link</Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            style={[styles.actionBtn, { backgroundColor: props.isDiscovering ? colors.surfacePressed : colors.surfaceElevated }]}
+                            style={[
+                              styles.actionBtn,
+                              {
+                                backgroundColor: props.isDiscovering
+                                  ? colors.surfacePressed
+                                  : colors.surfaceElevated,
+                              },
+                            ]}
                             onPress={props.handleAutoDiscover}
                             activeOpacity={0.8}
                             disabled={props.isDiscovering}
@@ -443,7 +555,10 @@ export function SettingsModal(props: SettingsModalProps) {
                         </>
                       ) : (
                         <TouchableOpacity
-                          style={[styles.actionBtn, { backgroundColor: colors.danger, width: '100%' }]}
+                          style={[
+                            styles.actionBtn,
+                            { backgroundColor: colors.danger, width: '100%' },
+                          ]}
                           onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                             props.disconnect();
@@ -451,7 +566,9 @@ export function SettingsModal(props: SettingsModalProps) {
                           activeOpacity={0.8}
                         >
                           <Text style={styles.btnText}>
-                            {props.status === 'connecting' ? 'Cancel Connection' : 'Disconnect Link'}
+                            {props.status === 'connecting'
+                              ? 'Cancel Connection'
+                              : 'Disconnect Link'}
                           </Text>
                         </TouchableOpacity>
                       )}
@@ -459,7 +576,11 @@ export function SettingsModal(props: SettingsModalProps) {
 
                     {props.discoveryProgress ? (
                       <View style={styles.progressContainer}>
-                        <ActivityIndicator size="small" color={colors.accent} style={{ marginRight: 8 }} />
+                        <ActivityIndicator
+                          size="small"
+                          color={colors.accent}
+                          style={{ marginRight: 8 }}
+                        />
                         <Text style={styles.progressText}>{props.discoveryProgress}</Text>
                       </View>
                     ) : null}
@@ -478,7 +599,12 @@ export function SettingsModal(props: SettingsModalProps) {
             <View style={styles.sectionDivider} />
             <Text style={styles.sectionHeader}>WORKSTATION AUTO-UNLOCK</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="lock-open-outline" size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <Ionicons
+                name="lock-open-outline"
+                size={20}
+                color={colors.textSecondary}
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 placeholder="Windows Lockscreen Password or PIN"
@@ -518,10 +644,15 @@ export function SettingsModal(props: SettingsModalProps) {
                 ) : null}
               </View>
               <View style={styles.inputWrapper}>
-                <Ionicons name="hardware-chip-outline" size={18} color={colors.textSecondary} style={styles.inputIcon} />
+                <Ionicons
+                  name="hardware-chip-outline"
+                  size={18}
+                  color={colors.textSecondary}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
-                  placeholder={props.systemInfo?.network?.mac_address || "e.g. 68:c6:ac:a2:d2:30"}
+                  placeholder={props.systemInfo?.network?.mac_address || 'e.g. 68:c6:ac:a2:d2:30'}
                   placeholderTextColor={colors.textMuted}
                   value={props.macAddress}
                   onFocus={handleInputFocus}

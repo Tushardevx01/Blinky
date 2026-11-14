@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license = { :type => 'MIT', :file => '../../../LICENSE' }
   s.author = 'Blinky contributors'
   s.homepage = 'https://github.com/KingSahil/Blinky'
-  s.source = { :git => 'https://github.com/KingSahil/Blinky.git' }
+  s.source = { :git => 'https://github.com/Tushardevx01/Blinky.git' }
   s.platforms = { :ios => '15.1' }
   s.swift_version = '5.9'
   s.static_framework = true

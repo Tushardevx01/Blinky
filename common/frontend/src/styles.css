@@ -3,7 +3,7 @@
 :root {
   color: #f6eef0;
   background: transparent;
-  font-family: "Space Grotesk", "Unbounded", sans-serif;
+  font-family: 'Space Grotesk', 'Unbounded', sans-serif;
   font-synthesis: none;
   text-rendering: geometricPrecision;
   --bg-0: #0b0a0d;
@@ -90,7 +90,10 @@ button {
     radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 42%),
     linear-gradient(transparent 49%, rgba(255, 255, 255, 0.03) 50%, transparent 51%),
     linear-gradient(90deg, transparent 49%, rgba(255, 255, 255, 0.03) 50%, transparent 51%);
-  background-size: 240px 240px, 120px 120px, 120px 120px;
+  background-size:
+    240px 240px,
+    120px 120px,
+    120px 120px;
   opacity: 0.25;
   pointer-events: none;
   z-index: 0;
@@ -128,7 +131,7 @@ button {
   place-items: center;
   border-radius: 12px;
   background: linear-gradient(145deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -142,10 +145,10 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .brand h1 {
@@ -157,7 +160,7 @@ h3 {
 .brand span,
 .chat-header p,
 .preview-meta small {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -182,7 +185,6 @@ h3 {
 .app-workspace.settings-closed {
   grid-template-columns: 220px minmax(420px, 1fr) 0px;
 }
-
 
 .side-rail,
 .settings-rail,
@@ -215,13 +217,13 @@ h3 {
   gap: 10px;
   justify-content: center;
   border-radius: 12px;
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 13px;
   font-weight: 700;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -242,7 +244,7 @@ h3 {
 
 .status-tile span {
   display: block;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 11px;
   letter-spacing: -0.01em;
@@ -251,7 +253,7 @@ h3 {
 .status-tile strong {
   display: block;
   margin-top: 8px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   line-height: 16px;
@@ -273,7 +275,11 @@ h3 {
   min-width: 0;
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease, border-width 0.4s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.4s ease,
+    border-width 0.4s ease;
 }
 
 .window-controls {
@@ -291,7 +297,9 @@ h3 {
   border-radius: 8px;
   display: grid;
   place-items: center;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .window-control-btn:hover {
@@ -300,7 +308,7 @@ h3 {
 }
 
 .window-control-btn.close-btn:hover {
-  background: #FF2E63;
+  background: #ff2e63;
   color: #fff;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.5);
 }
@@ -340,12 +348,15 @@ h3 {
   border-radius: 12px;
   background: var(--bg-1);
   border: 1px solid transparent;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .nav-item svg {
@@ -374,7 +385,7 @@ h3 {
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
   color: var(--text-strong);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .user-card strong {
@@ -420,7 +431,7 @@ h3 {
   gap: 10px;
   max-width: 360px;
   color: var(--text-strong);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   animation: riseIn 0.6s ease-out both;
 }
 
@@ -453,7 +464,7 @@ h3 {
   border-radius: 14px;
   padding: 0;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -462,7 +473,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -480,7 +491,7 @@ h3 {
 }
 
 .settings-section h3 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   font-size: 13px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -501,7 +512,7 @@ h3 {
   border-radius: 14px;
   border: 1px solid var(--panel-border);
   background: var(--bg-1);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
@@ -534,7 +545,7 @@ h3 {
   border-radius: 14px;
   border: 1px solid var(--panel-border);
   background: var(--bg-1);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
@@ -547,7 +558,9 @@ h3 {
   background: var(--panel-border);
   border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .toggle::after {
@@ -558,8 +571,10 @@ h3 {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #FFFFFF;
-  transition: transform 0.2s ease, background 0.2s ease;
+  background: #ffffff;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .toggle.on {
@@ -570,7 +585,7 @@ h3 {
 
 .toggle.on::after {
   transform: translateX(18px);
-  background: #090D16;
+  background: #090d16;
 }
 
 .shortcut-row {
@@ -584,7 +599,7 @@ h3 {
   border-radius: 10px;
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -594,7 +609,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -623,16 +638,16 @@ h3 {
 .chat-header h2,
 .preview-header h2,
 .settings-header h2 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 18px;
   line-height: 24px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .settings-header p {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -646,7 +661,7 @@ h3 {
   border-radius: 999px;
   background: rgba(255, 110, 95, 0.2);
   color: #ff8b6a;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 700;
   box-shadow: 0 0 10px rgba(255, 139, 106, 0.3);
@@ -663,7 +678,7 @@ h3 {
   grid-template-columns: 42px 1fr;
   gap: 10px;
   margin: 14px 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .message.student {
@@ -674,7 +689,7 @@ h3 {
   grid-column: 2;
   grid-row: 1;
   background: rgba(59, 130, 246, 0.2);
-  color: #3B82F6;
+  color: #3b82f6;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
@@ -683,7 +698,7 @@ h3 {
   justify-self: end;
   background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .avatar {
@@ -693,7 +708,7 @@ h3 {
   place-items: center;
   border-radius: 12px;
   background: rgba(16, 185, 129, 0.2);
-  color: #34D399;
+  color: #34d399;
   font-size: 11px;
   font-weight: 800;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
@@ -705,7 +720,7 @@ h3 {
   border-radius: 16px;
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
-  color: #FFFFFF;
+  color: #ffffff;
   line-height: 1.45;
 }
 
@@ -720,7 +735,7 @@ h3 {
   list-style: none;
   padding: 0;
   margin: 12px 0 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .steps li {
@@ -744,20 +759,20 @@ h3 {
   opacity: 0.72;
 }
 
-.steps li.guide-step-completed>span {
+.steps li.guide-step-completed > span {
   background: rgba(16, 185, 129, 0.1);
-  color: #10B981;
+  color: #10b981;
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.steps li>span {
+.steps li > span {
   width: 26px;
   height: 26px;
   display: grid;
   place-items: center;
   border-radius: 9px;
   background: rgba(16, 185, 129, 0.2);
-  color: #34D399;
+  color: #34d399;
   font-size: 12px;
   font-weight: 800;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
@@ -776,7 +791,7 @@ h3 {
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .composer input,
@@ -787,7 +802,7 @@ h3 {
   outline: 0;
   background: transparent;
   color: var(--text-strong);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .composer input::placeholder,
@@ -803,8 +818,8 @@ h3 {
   border-radius: 12px;
   padding: 0 15px;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  color: #090d16;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-weight: 800;
@@ -830,9 +845,9 @@ h3 {
   padding: 10px 12px;
   border-radius: 12px;
   background: rgba(255, 46, 99, 0.2);
-  border: 1px solid #FF2E63;
-  color: #FFFFFF;
-  font-family: "Space Grotesk", sans-serif;
+  border: 1px solid #ff2e63;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
 }
@@ -843,8 +858,8 @@ h3 {
 }
 
 .preview-header span {
-  color: #34D399;
-  font-family: "Space Grotesk", sans-serif;
+  color: #34d399;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 800;
   text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
@@ -885,11 +900,11 @@ h3 {
   position: absolute;
   min-height: 28px;
   padding: 6px 9px;
-  border: 1px solid #10B981;
+  border: 1px solid #10b981;
   background: rgba(16, 185, 129, 0.15);
   border-radius: 9px;
-  color: #34D399;
-  font-family: "Space Grotesk", sans-serif;
+  color: #34d399;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
   white-space: nowrap;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
@@ -897,7 +912,7 @@ h3 {
 
 .preview-meta {
   padding: 16px 18px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .preview-meta span {
@@ -967,7 +982,7 @@ h3 {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   color: var(--text-strong);
   font-weight: 500;
@@ -1097,7 +1112,9 @@ h3 {
 .command-input:focus-within {
   border-color: rgba(255, 120, 105, 0.8);
   background: var(--bg-1);
-  box-shadow: 0 0 12px rgba(255, 120, 105, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 0 12px rgba(255, 120, 105, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .command-input-actions {
@@ -1117,7 +1134,7 @@ h3 {
 
 .command-input textarea {
   width: 100%;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 15px;
   letter-spacing: 0.01em;
   border: none !important;
@@ -1163,8 +1180,8 @@ h3 {
 
 .command-send.stopping {
   background: rgba(255, 46, 99, 0.25);
-  border-color: #FF2E63;
-  color: #FF2E63;
+  border-color: #ff2e63;
+  color: #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
 }
 
@@ -1184,7 +1201,7 @@ h3 {
   display: flex;
   justify-content: center;
   gap: 4px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 13px;
   text-align: center;
@@ -1194,7 +1211,7 @@ h3 {
 .command-status {
   width: 100%;
   display: block;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 14px;
   line-height: 1.62;
@@ -1204,14 +1221,14 @@ h3 {
   padding: 0;
 }
 
-.command-status>*:first-child,
+.command-status > *:first-child,
 .command-status p:first-child,
 .command-status ul:first-child,
 .command-status ol:first-child {
   margin-top: 0;
 }
 
-.command-status>*:last-child,
+.command-status > *:last-child,
 .command-status p:last-child,
 .command-status ul:last-child,
 .command-status ol:last-child {
@@ -1227,10 +1244,10 @@ h3 {
 .command-status h3,
 .command-status h4 {
   margin: 16px 0 8px;
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 750;
   line-height: 1.25;
 }
@@ -1261,12 +1278,12 @@ h3 {
   padding-left: 2px;
 }
 
-.command-status li>p {
+.command-status li > p {
   margin: 4px 0;
 }
 
 .command-status strong {
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 750;
 }
 
@@ -1355,7 +1372,7 @@ h3 {
 
 .target-frame {
   position: absolute;
-  border: 3px solid #10B981;
+  border: 3px solid #10b981;
   border-radius: 8px;
   background: transparent !important;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important;
@@ -1378,10 +1395,9 @@ h3 {
 }
 
 @keyframes borderPulse {
-
   0%,
   100% {
-    border-color: #10B981;
+    border-color: #10b981;
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   }
 
@@ -1392,7 +1408,6 @@ h3 {
 }
 
 @keyframes slowPulse {
-
   0%,
   100% {
     transform: translateY(0) scale(1);
@@ -1436,7 +1451,6 @@ h3 {
 }
 
 @media (max-width: 1050px) {
-
   .workspace,
   .settings-workspace,
   .app-workspace {
@@ -1457,7 +1471,6 @@ h3 {
 }
 
 @media (max-width: 760px) {
-
   .workspace,
   .settings-workspace,
   .app-workspace {
@@ -1507,11 +1520,13 @@ h3 {
   background: rgba(14, 11, 10, 0.98);
   border: 1px solid rgba(255, 90, 54, 0.3);
   border-radius: 20px;
-  box-shadow: 0 30px 65px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 90, 54, 0.15);
+  box-shadow:
+    0 30px 65px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(255, 90, 54, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   animation: scaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1531,7 +1546,7 @@ h3 {
 }
 
 .settings-modal-header-left h3 {
-  font-family: "Astonpoliz", "Okine Sans", sans-serif;
+  font-family: 'Astonpoliz', 'Okine Sans', sans-serif;
   font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -1584,7 +1599,7 @@ h3 {
   border-radius: 10px;
   background: transparent;
   border: 1px solid transparent;
-  font-family: "Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 12.5px;
   font-weight: 500;
   color: #9ca3af;
@@ -1650,7 +1665,7 @@ h3 {
 }
 
 .settings-section-title {
-  font-family: "Astonpoliz", "Okine Sans", sans-serif;
+  font-family: 'Astonpoliz', 'Okine Sans', sans-serif;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1841,7 +1856,7 @@ h3 {
   border-radius: 9px;
   padding: 8px 12px;
   color: #f8fafc;
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 12px;
   outline: none;
   transition: all 0.18s ease;
@@ -1855,7 +1870,7 @@ h3 {
 
 .settings-text-input::placeholder {
   color: #64748b;
-  font-family: "Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .settings-help-text {
@@ -1885,7 +1900,7 @@ h3 {
 }
 
 .settings-model-name {
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 12px;
   font-weight: 600;
   color: #f1f5f9;
@@ -1908,7 +1923,7 @@ h3 {
   background: rgba(255, 90, 54, 0.15);
   border: 1px solid rgba(255, 90, 54, 0.35);
   color: #ff8b6a;
-  font-family: "Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
@@ -1950,7 +1965,7 @@ h3 {
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .settings-ping-chip.success {
@@ -2071,7 +2086,7 @@ h3 {
   font-size: 11.5px;
   font-weight: 600;
   color: #f1f5f9;
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2097,7 +2112,9 @@ h3 {
   flex-direction: column;
   gap: 10px;
   z-index: 100;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.65),
+    0 0 1px rgba(255, 255, 255, 0.1);
   animation: slideDownIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -2256,7 +2273,7 @@ h3 {
   gap: 6px;
   padding: 7px 10px;
   border-radius: 8px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -2289,7 +2306,7 @@ h3 {
 .voice-mode-btn {
   padding: 5px 8px;
   font-size: 10.5px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 500;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -2332,7 +2349,7 @@ h3 {
 }
 
 .dropdown-section h4 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   font-size: 11px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2353,7 +2370,7 @@ h3 {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid transparent;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 12px;
   font-weight: 500;
@@ -2430,7 +2447,7 @@ h3 {
   background: rgba(18, 18, 22, 0.95);
   backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-strong);
@@ -2448,7 +2465,7 @@ h3 {
   background: linear-gradient(135deg, rgba(255, 110, 95, 0.2), rgba(255, 139, 106, 0.05));
   border: 1px solid #ff6e5f;
   color: #ff8b6a;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 0 15px rgba(255, 139, 106, 0.3);
@@ -2522,7 +2539,7 @@ h3 {
 }
 
 .command-status .markdown-h1 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: #ffffff;
@@ -2533,7 +2550,7 @@ h3 {
 }
 
 .command-status .markdown-h2 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   font-size: 16px;
   font-weight: 600;
   color: #ff8b6a;
@@ -2542,7 +2559,7 @@ h3 {
 }
 
 .command-status .markdown-h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 14.5px;
   font-weight: 600;
   color: #93c5fd;
@@ -2605,7 +2622,7 @@ h3 {
   border-collapse: collapse;
   text-align: left;
   font-size: 13px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .markdown-thead {
@@ -2682,7 +2699,7 @@ h3 {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #38bdf8;
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 0.88em;
   font-weight: 500;
 }
@@ -2697,7 +2714,7 @@ h3 {
 }
 
 .markdown-code-block {
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 12.5px;
   color: #38bdf8;
   line-height: 1.5;
@@ -2733,7 +2750,7 @@ h3 {
 }
 
 .command-steps-panel h3 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   font-size: 12px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2748,8 +2765,8 @@ h3 {
   border-radius: 6px;
   background: rgba(59, 130, 246, 0.2);
   border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #3B82F6;
-  font-family: "Space Grotesk", sans-serif;
+  color: #3b82f6;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
 }
 
@@ -2790,7 +2807,7 @@ h3 {
   border-radius: 10px;
   background: var(--bg-0);
   border: 1px solid var(--panel-border);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 12px;
   outline: none;
@@ -2832,8 +2849,8 @@ h3 {
 
 .command-mic-btn.recording {
   background: rgba(255, 46, 99, 0.2);
-  border-color: #FF2E63;
-  color: #FF2E63;
+  border-color: #ff2e63;
+  color: #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
   animation: micPulse 1.5s infinite;
 }
@@ -2842,8 +2859,8 @@ h3 {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #FF2E63;
-  box-shadow: 0 0 10px #FF2E63;
+  background: #ff2e63;
+  box-shadow: 0 0 10px #ff2e63;
   display: inline-block;
   animation: beaconPulse 1.2s infinite alternate;
 }
@@ -2880,8 +2897,8 @@ h3 {
 
 .command-speak-btn.speaking {
   background: rgba(16, 185, 129, 0.2);
-  border-color: #10B981;
-  color: #34D399;
+  border-color: #10b981;
+  color: #34d399;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   animation: speakWobble 0.3s infinite alternate;
 }
@@ -2915,12 +2932,11 @@ h3 {
 
 .command-readaloud-btn.speaking {
   background: rgba(16, 185, 129, 0.2);
-  border-color: #10B981;
-  color: #34D399;
+  border-color: #10b981;
+  color: #34d399;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   animation: speakWobble 0.3s infinite alternate;
 }
-
 
 @keyframes micPulse {
   0% {
@@ -2950,7 +2966,7 @@ h3 {
 
 @keyframes speakWobble {
   from {
-    transform: scale(1.0);
+    transform: scale(1);
   }
 
   to {
@@ -2998,15 +3014,15 @@ h3 {
 
 .command-websearch-btn.active {
   background: rgba(59, 130, 246, 0.2);
-  border-color: #3B82F6;
-  color: #3B82F6;
+  border-color: #3b82f6;
+  color: #3b82f6;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
 }
 
 .command-agent-btn.active {
   background: rgba(255, 107, 0, 0.2);
-  border-color: #FF6B00;
-  color: #FF6B00;
+  border-color: #ff6b00;
+  color: #ff6b00;
   box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
 }
 
@@ -3037,7 +3053,11 @@ h3 {
   line-height: 1;
   text-decoration: none;
   vertical-align: baseline;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .command-status a.citation-link:hover {
@@ -3098,8 +3118,13 @@ h3 {
 
 .word-node {
   display: inline;
-  font-family: "Space Grotesk", sans-serif;
-  transition: opacity 0.25s ease, color 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  font-family: 'Space Grotesk', sans-serif;
+  transition:
+    opacity 0.25s ease,
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .word-node.unspoken-word {
@@ -3140,7 +3165,7 @@ h3 {
 }
 
 .wa-indicator-dot.connected {
-  background-color: #10B981;
+  background-color: #10b981;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
 }
 
@@ -3172,7 +3197,7 @@ h3 {
   flex-direction: column;
   gap: 16px;
   z-index: 1001;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3185,7 +3210,7 @@ h3 {
 }
 
 .wa-modal-header h3 {
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 14px;
@@ -3201,7 +3226,9 @@ h3 {
   border-radius: 6px;
   display: grid;
   place-items: center;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .wa-modal-close:hover {
@@ -3261,8 +3288,8 @@ h3 {
 
 .wa-btn-connect {
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
-  font-family: "Unbounded", "Space Grotesk", sans-serif;
+  color: #090d16;
+  font-family: 'Unbounded', 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-weight: 700;
@@ -3295,7 +3322,7 @@ h3 {
   gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #34D399;
+  color: #34d399;
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.3);
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
@@ -3333,9 +3360,9 @@ h3 {
 
 .wa-error-msg {
   font-size: 12px;
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(255, 46, 99, 0.2);
-  border: 1px solid #FF2E63;
+  border: 1px solid #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.35);
   padding: 8px;
   border-radius: 8px;
@@ -3395,23 +3422,27 @@ h3 {
 .siri-edge-lighting-gradient {
   position: absolute;
   inset: -50%;
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      #ff6e5f 60deg,
-      #d946ef 120deg,
-      transparent 180deg,
-      #ff3366 240deg,
-      #ff8b6a 300deg,
-      transparent 360deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #ff6e5f 60deg,
+    #d946ef 120deg,
+    transparent 180deg,
+    #ff3366 240deg,
+    #ff8b6a 300deg,
+    transparent 360deg
+  );
   filter: blur(20px);
   transform: scale(var(--glow-scale, 1));
   animation: spin var(--glow-speed, 4s) linear infinite;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
   will-change: transform, filter;
 }
 
 .siri-edge-lighting-gradient::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 15%;
   background: var(--bg-1);
@@ -3452,19 +3483,23 @@ h3 {
   position: absolute;
   /* Make it larger than the screen so the conic center doesn't show */
   inset: -20%;
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      #ff6e5f 60deg,
-      #d946ef 120deg,
-      transparent 180deg,
-      #ff3366 240deg,
-      #ff8b6a 300deg,
-      transparent 360deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #ff6e5f 60deg,
+    #d946ef 120deg,
+    transparent 180deg,
+    #ff3366 240deg,
+    #ff8b6a 300deg,
+    transparent 360deg
+  );
   filter: blur(40px);
   /* Reduced blur for a sharper edge glow */
   transform: scale(var(--glow-scale, 1));
   animation: spin var(--glow-speed, 4s) linear infinite;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
   will-change: transform, filter;
 }
 
@@ -3513,13 +3548,13 @@ h3 {
 }
 
 .agent-cursor {
-  filter: drop-shadow(0px 3px 10px rgba(255, 139, 106, 0.5)) drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0px 3px 10px rgba(255, 139, 106, 0.5))
+    drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.6));
   transform-origin: top left;
   animation: cursorBob 2s ease-in-out infinite;
 }
 
 @keyframes cursorBob {
-
   0%,
   100% {
     transform: scale(1) translate(0, 0);
@@ -3584,9 +3619,6 @@ h3 {
   }
 }
 
-
-
-
 /* ==========================================================================
    Media Attachment & Drag-and-Drop Dropzone
    ========================================================================== */
@@ -3607,7 +3639,9 @@ h3 {
   z-index: 99;
   pointer-events: none;
   animation: dropzonePulse 1.5s ease-in-out infinite alternate;
-  box-shadow: 0 0 30px rgba(255, 139, 106, 0.25), inset 0 0 20px rgba(255, 139, 106, 0.15);
+  box-shadow:
+    0 0 30px rgba(255, 139, 106, 0.25),
+    inset 0 0 20px rgba(255, 139, 106, 0.15);
 }
 
 @keyframes dropzonePulse {
@@ -3630,7 +3664,7 @@ h3 {
 }
 
 .command-dropzone-text {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: #fff;
@@ -3656,7 +3690,7 @@ h3 {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
   color: var(--text-strong, #f3f4f6);
   max-width: 220px;
@@ -4096,9 +4130,15 @@ body.route-notebook {
   font-weight: 700;
 }
 
-.bubble-text h1 { font-size: 16px; }
-.bubble-text h2 { font-size: 14.5px; }
-.bubble-text h3 { font-size: 13.5px; }
+.bubble-text h1 {
+  font-size: 16px;
+}
+.bubble-text h2 {
+  font-size: 14.5px;
+}
+.bubble-text h3 {
+  font-size: 13.5px;
+}
 
 .bubble-text p {
   margin: 0 0 10px 0;
@@ -4259,7 +4299,8 @@ body.route-notebook {
 :root {
   color: #f6eef0;
   background: transparent;
-  font-family: "Okine Sans", "MADE Okine Sans", "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family:
+    'Okine Sans', 'MADE Okine Sans', 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-synthesis: none;
   text-rendering: geometricPrecision;
   --bg-0: #0b0a0d;
@@ -4346,7 +4387,10 @@ button {
     radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 42%),
     linear-gradient(transparent 49%, rgba(255, 255, 255, 0.03) 50%, transparent 51%),
     linear-gradient(90deg, transparent 49%, rgba(255, 255, 255, 0.03) 50%, transparent 51%);
-  background-size: 240px 240px, 120px 120px, 120px 120px;
+  background-size:
+    240px 240px,
+    120px 120px,
+    120px 120px;
   opacity: 0.25;
   pointer-events: none;
   z-index: 0;
@@ -4384,7 +4428,7 @@ button {
   place-items: center;
   border-radius: 12px;
   background: linear-gradient(145deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -4398,10 +4442,10 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .brand h1 {
@@ -4413,7 +4457,7 @@ h3 {
 .brand span,
 .chat-header p,
 .preview-meta small {
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -4438,7 +4482,6 @@ h3 {
 .app-workspace.settings-closed {
   grid-template-columns: 220px minmax(420px, 1fr) 0px;
 }
-
 
 .side-rail,
 .settings-rail,
@@ -4471,13 +4514,13 @@ h3 {
   gap: 10px;
   justify-content: center;
   border-radius: 12px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 13px;
   font-weight: 700;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -4498,7 +4541,7 @@ h3 {
 
 .status-tile span {
   display: block;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 11px;
   letter-spacing: -0.01em;
@@ -4507,7 +4550,7 @@ h3 {
 .status-tile strong {
   display: block;
   margin-top: 8px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   line-height: 16px;
@@ -4529,7 +4572,11 @@ h3 {
   min-width: 0;
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease, border-width 0.4s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.4s ease,
+    border-width 0.4s ease;
 }
 
 .window-controls {
@@ -4547,7 +4594,9 @@ h3 {
   border-radius: 8px;
   display: grid;
   place-items: center;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .window-control-btn:hover {
@@ -4556,7 +4605,7 @@ h3 {
 }
 
 .window-control-btn.close-btn:hover {
-  background: #FF2E63;
+  background: #ff2e63;
   color: #fff;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.5);
 }
@@ -4596,12 +4645,15 @@ h3 {
   border-radius: 12px;
   background: var(--bg-1);
   border: 1px solid transparent;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .nav-item svg {
@@ -4630,7 +4682,7 @@ h3 {
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
   color: var(--text-strong);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .user-card strong {
@@ -4676,7 +4728,7 @@ h3 {
   gap: 10px;
   max-width: 360px;
   color: var(--text-strong);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   animation: riseIn 0.6s ease-out both;
 }
 
@@ -4709,7 +4761,7 @@ h3 {
   border-radius: 14px;
   padding: 0;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
+  color: #090d16;
   box-shadow: 0 0 20px rgba(255, 139, 106, 0.4);
 }
 
@@ -4718,7 +4770,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -4736,7 +4788,7 @@ h3 {
 }
 
 .settings-section h3 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   font-size: 13px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -4757,7 +4809,7 @@ h3 {
   border-radius: 14px;
   border: 1px solid var(--panel-border);
   background: var(--bg-1);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
@@ -4790,7 +4842,7 @@ h3 {
   border-radius: 14px;
   border: 1px solid var(--panel-border);
   background: var(--bg-1);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 600;
@@ -4803,7 +4855,9 @@ h3 {
   background: var(--panel-border);
   border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .toggle::after {
@@ -4814,8 +4868,10 @@ h3 {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #FFFFFF;
-  transition: transform 0.2s ease, background 0.2s ease;
+  background: #ffffff;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .toggle.on {
@@ -4826,7 +4882,7 @@ h3 {
 
 .toggle.on::after {
   transform: translateX(18px);
-  background: #090D16;
+  background: #090d16;
 }
 
 .shortcut-row {
@@ -4840,7 +4896,7 @@ h3 {
   border-radius: 10px;
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -4850,7 +4906,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -4879,16 +4935,16 @@ h3 {
 .chat-header h2,
 .preview-header h2,
 .settings-header h2 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 18px;
   line-height: 24px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .settings-header p {
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: -0.01em;
@@ -4902,7 +4958,7 @@ h3 {
   border-radius: 999px;
   background: rgba(255, 110, 95, 0.2);
   color: #ff8b6a;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 700;
   box-shadow: 0 0 10px rgba(255, 139, 106, 0.3);
@@ -4919,7 +4975,7 @@ h3 {
   grid-template-columns: 42px 1fr;
   gap: 10px;
   margin: 14px 0;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .message.student {
@@ -4930,7 +4986,7 @@ h3 {
   grid-column: 2;
   grid-row: 1;
   background: rgba(59, 130, 246, 0.2);
-  color: #3B82F6;
+  color: #3b82f6;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
@@ -4939,7 +4995,7 @@ h3 {
   justify-self: end;
   background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .avatar {
@@ -4949,7 +5005,7 @@ h3 {
   place-items: center;
   border-radius: 12px;
   background: rgba(16, 185, 129, 0.2);
-  color: #34D399;
+  color: #34d399;
   font-size: 11px;
   font-weight: 800;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
@@ -4961,7 +5017,7 @@ h3 {
   border-radius: 16px;
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
-  color: #FFFFFF;
+  color: #ffffff;
   line-height: 1.45;
 }
 
@@ -4976,7 +5032,7 @@ h3 {
   list-style: none;
   padding: 0;
   margin: 12px 0 0;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .steps li {
@@ -5000,20 +5056,20 @@ h3 {
   opacity: 0.72;
 }
 
-.steps li.guide-step-completed>span {
+.steps li.guide-step-completed > span {
   background: rgba(16, 185, 129, 0.1);
-  color: #10B981;
+  color: #10b981;
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.steps li>span {
+.steps li > span {
   width: 26px;
   height: 26px;
   display: grid;
   place-items: center;
   border-radius: 9px;
   background: rgba(16, 185, 129, 0.2);
-  color: #34D399;
+  color: #34d399;
   font-size: 12px;
   font-weight: 800;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
@@ -5032,7 +5088,7 @@ h3 {
   background: var(--bg-1);
   border: 1px solid var(--panel-border);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .composer input,
@@ -5043,7 +5099,7 @@ h3 {
   outline: 0;
   background: transparent;
   color: var(--text-strong);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .composer input::placeholder,
@@ -5059,8 +5115,8 @@ h3 {
   border-radius: 12px;
   padding: 0 15px;
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  color: #090d16;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-weight: 800;
@@ -5086,9 +5142,9 @@ h3 {
   padding: 10px 12px;
   border-radius: 12px;
   background: rgba(255, 46, 99, 0.2);
-  border: 1px solid #FF2E63;
-  color: #FFFFFF;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  border: 1px solid #ff2e63;
+  color: #ffffff;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 13px;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
 }
@@ -5099,8 +5155,8 @@ h3 {
 }
 
 .preview-header span {
-  color: #34D399;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  color: #34d399;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 800;
   text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
@@ -5141,11 +5197,11 @@ h3 {
   position: absolute;
   min-height: 28px;
   padding: 6px 9px;
-  border: 1px solid #10B981;
+  border: 1px solid #10b981;
   background: rgba(16, 185, 129, 0.15);
   border-radius: 9px;
-  color: #34D399;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  color: #34d399;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 11px;
   white-space: nowrap;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
@@ -5153,7 +5209,7 @@ h3 {
 
 .preview-meta {
   padding: 16px 18px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .preview-meta span {
@@ -5223,7 +5279,7 @@ h3 {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 13px;
   color: var(--text-strong);
   font-weight: 500;
@@ -5353,7 +5409,9 @@ h3 {
 .command-input:focus-within {
   border-color: rgba(255, 120, 105, 0.8);
   background: var(--bg-1);
-  box-shadow: 0 0 12px rgba(255, 120, 105, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 0 12px rgba(255, 120, 105, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .command-input-actions {
@@ -5373,7 +5431,7 @@ h3 {
 
 .command-input textarea {
   width: 100%;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 15px;
   letter-spacing: 0.01em;
   border: none !important;
@@ -5419,8 +5477,8 @@ h3 {
 
 .command-send.stopping {
   background: rgba(255, 46, 99, 0.25);
-  border-color: #FF2E63;
-  color: #FF2E63;
+  border-color: #ff2e63;
+  color: #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
 }
 
@@ -5440,7 +5498,7 @@ h3 {
   display: flex;
   justify-content: center;
   gap: 4px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-muted);
   font-size: 13px;
   text-align: center;
@@ -5450,7 +5508,7 @@ h3 {
 .command-status {
   width: 100%;
   display: block;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 14px;
   line-height: 1.62;
@@ -5460,14 +5518,14 @@ h3 {
   padding: 0;
 }
 
-.command-status>*:first-child,
+.command-status > *:first-child,
 .command-status p:first-child,
 .command-status ul:first-child,
 .command-status ol:first-child {
   margin-top: 0;
 }
 
-.command-status>*:last-child,
+.command-status > *:last-child,
 .command-status p:last-child,
 .command-status ul:last-child,
 .command-status ol:last-child {
@@ -5483,10 +5541,10 @@ h3 {
 .command-status h3,
 .command-status h4 {
   margin: 16px 0 8px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 750;
   line-height: 1.25;
 }
@@ -5517,12 +5575,12 @@ h3 {
   padding-left: 2px;
 }
 
-.command-status li>p {
+.command-status li > p {
   margin: 4px 0;
 }
 
 .command-status strong {
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 750;
 }
 
@@ -5611,7 +5669,7 @@ h3 {
 
 .target-frame {
   position: absolute;
-  border: 3px solid #10B981;
+  border: 3px solid #10b981;
   border-radius: 8px;
   background: transparent !important;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important;
@@ -5634,10 +5692,9 @@ h3 {
 }
 
 @keyframes borderPulse {
-
   0%,
   100% {
-    border-color: #10B981;
+    border-color: #10b981;
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   }
 
@@ -5648,7 +5705,6 @@ h3 {
 }
 
 @keyframes slowPulse {
-
   0%,
   100% {
     transform: translateY(0) scale(1);
@@ -5692,7 +5748,6 @@ h3 {
 }
 
 @media (max-width: 1050px) {
-
   .workspace,
   .settings-workspace,
   .app-workspace {
@@ -5713,7 +5768,6 @@ h3 {
 }
 
 @media (max-width: 760px) {
-
   .workspace,
   .settings-workspace,
   .app-workspace {
@@ -5757,7 +5811,9 @@ h3 {
   flex-direction: column;
   gap: 14px;
   z-index: 100;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.65),
+    0 0 1px rgba(255, 255, 255, 0.1);
   animation: slideDownIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -5796,7 +5852,7 @@ h3 {
   gap: 6px;
   padding: 7px 10px;
   border-radius: 8px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -5829,7 +5885,7 @@ h3 {
 .voice-mode-btn {
   padding: 5px 8px;
   font-size: 10.5px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-weight: 500;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -5872,7 +5928,7 @@ h3 {
 }
 
 .dropdown-section h4 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   font-size: 11px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -5893,7 +5949,7 @@ h3 {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid transparent;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 12px;
   font-weight: 500;
@@ -5970,7 +6026,7 @@ h3 {
   background: rgba(18, 18, 22, 0.95);
   backdrop-filter: blur(16px);
   border: 1px solid var(--panel-border);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-strong);
@@ -5988,7 +6044,7 @@ h3 {
   background: linear-gradient(135deg, rgba(255, 110, 95, 0.2), rgba(255, 139, 106, 0.05));
   border: 1px solid #ff6e5f;
   color: #ff8b6a;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 0 15px rgba(255, 139, 106, 0.3);
@@ -6062,7 +6118,7 @@ h3 {
 }
 
 .command-status .markdown-h1 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: #ffffff;
@@ -6073,7 +6129,7 @@ h3 {
 }
 
 .command-status .markdown-h2 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   font-size: 16px;
   font-weight: 600;
   color: #ff8b6a;
@@ -6082,7 +6138,7 @@ h3 {
 }
 
 .command-status .markdown-h3 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 14.5px;
   font-weight: 600;
   color: #93c5fd;
@@ -6145,7 +6201,7 @@ h3 {
   border-collapse: collapse;
   text-align: left;
   font-size: 13px;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
 }
 
 .markdown-thead {
@@ -6222,7 +6278,7 @@ h3 {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #38bdf8;
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 0.88em;
   font-weight: 500;
 }
@@ -6237,7 +6293,7 @@ h3 {
 }
 
 .markdown-code-block {
-  font-family: "JetBrains Mono", Consolas, monospace;
+  font-family: 'JetBrains Mono', Consolas, monospace;
   font-size: 12.5px;
   color: #38bdf8;
   line-height: 1.5;
@@ -6273,7 +6329,7 @@ h3 {
 }
 
 .command-steps-panel h3 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   font-size: 12px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -6288,8 +6344,8 @@ h3 {
   border-radius: 6px;
   background: rgba(59, 130, 246, 0.2);
   border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #3B82F6;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  color: #3b82f6;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 11px;
 }
 
@@ -6330,7 +6386,7 @@ h3 {
   border-radius: 10px;
   background: var(--bg-0);
   border: 1px solid var(--panel-border);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   color: var(--text-strong);
   font-size: 12px;
   outline: none;
@@ -6372,8 +6428,8 @@ h3 {
 
 .command-mic-btn.recording {
   background: rgba(255, 46, 99, 0.2);
-  border-color: #FF2E63;
-  color: #FF2E63;
+  border-color: #ff2e63;
+  color: #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.4);
   animation: micPulse 1.5s infinite;
 }
@@ -6382,8 +6438,8 @@ h3 {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #FF2E63;
-  box-shadow: 0 0 10px #FF2E63;
+  background: #ff2e63;
+  box-shadow: 0 0 10px #ff2e63;
   display: inline-block;
   animation: beaconPulse 1.2s infinite alternate;
 }
@@ -6420,8 +6476,8 @@ h3 {
 
 .command-speak-btn.speaking {
   background: rgba(16, 185, 129, 0.2);
-  border-color: #10B981;
-  color: #34D399;
+  border-color: #10b981;
+  color: #34d399;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   animation: speakWobble 0.3s infinite alternate;
 }
@@ -6455,12 +6511,11 @@ h3 {
 
 .command-readaloud-btn.speaking {
   background: rgba(16, 185, 129, 0.2);
-  border-color: #10B981;
-  color: #34D399;
+  border-color: #10b981;
+  color: #34d399;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
   animation: speakWobble 0.3s infinite alternate;
 }
-
 
 @keyframes micPulse {
   0% {
@@ -6490,7 +6545,7 @@ h3 {
 
 @keyframes speakWobble {
   from {
-    transform: scale(1.0);
+    transform: scale(1);
   }
 
   to {
@@ -6538,15 +6593,15 @@ h3 {
 
 .command-websearch-btn.active {
   background: rgba(59, 130, 246, 0.2);
-  border-color: #3B82F6;
-  color: #3B82F6;
+  border-color: #3b82f6;
+  color: #3b82f6;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
 }
 
 .command-agent-btn.active {
   background: rgba(255, 107, 0, 0.2);
-  border-color: #FF6B00;
-  color: #FF6B00;
+  border-color: #ff6b00;
+  color: #ff6b00;
   box-shadow: 0 0 8px rgba(255, 107, 0, 0.2);
 }
 
@@ -6577,7 +6632,11 @@ h3 {
   line-height: 1;
   text-decoration: none;
   vertical-align: baseline;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .command-status a.citation-link:hover {
@@ -6638,8 +6697,13 @@ h3 {
 
 .word-node {
   display: inline;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
-  transition: opacity 0.25s ease, color 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
+  transition:
+    opacity 0.25s ease,
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .word-node.unspoken-word {
@@ -6680,7 +6744,7 @@ h3 {
 }
 
 .wa-indicator-dot.connected {
-  background-color: #10B981;
+  background-color: #10b981;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
 }
 
@@ -6712,7 +6776,7 @@ h3 {
   flex-direction: column;
   gap: 16px;
   z-index: 1001;
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -6725,7 +6789,7 @@ h3 {
 }
 
 .wa-modal-header h3 {
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 14px;
@@ -6741,7 +6805,9 @@ h3 {
   border-radius: 6px;
   display: grid;
   place-items: center;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .wa-modal-close:hover {
@@ -6801,8 +6867,8 @@ h3 {
 
 .wa-btn-connect {
   background: linear-gradient(135deg, #ff6e5f, #ff8b6a);
-  color: #090D16;
-  font-family: "Okine Sans", "MADE Okine Sans", "Unbounded", sans-serif;
+  color: #090d16;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Unbounded', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-weight: 700;
@@ -6835,7 +6901,7 @@ h3 {
   gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #34D399;
+  color: #34d399;
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.3);
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
@@ -6873,9 +6939,9 @@ h3 {
 
 .wa-error-msg {
   font-size: 12px;
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(255, 46, 99, 0.2);
-  border: 1px solid #FF2E63;
+  border: 1px solid #ff2e63;
   box-shadow: 0 0 15px rgba(255, 46, 99, 0.35);
   padding: 8px;
   border-radius: 8px;
@@ -6957,23 +7023,27 @@ h3 {
 .siri-edge-lighting-gradient {
   position: absolute;
   inset: -50%;
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      #ff6e5f 60deg,
-      #d946ef 120deg,
-      transparent 180deg,
-      #ff3366 240deg,
-      #ff8b6a 300deg,
-      transparent 360deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #ff6e5f 60deg,
+    #d946ef 120deg,
+    transparent 180deg,
+    #ff3366 240deg,
+    #ff8b6a 300deg,
+    transparent 360deg
+  );
   filter: blur(20px);
   transform: scale(var(--glow-scale, 1));
   animation: spin var(--glow-speed, 4s) linear infinite;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
   will-change: transform, filter;
 }
 
 .siri-edge-lighting-gradient::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 15%;
   background: var(--bg-1);
@@ -7014,19 +7084,23 @@ h3 {
   position: absolute;
   /* Make it larger than the screen so the conic center doesn't show */
   inset: -20%;
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      #ff6e5f 60deg,
-      #d946ef 120deg,
-      transparent 180deg,
-      #ff3366 240deg,
-      #ff8b6a 300deg,
-      transparent 360deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #ff6e5f 60deg,
+    #d946ef 120deg,
+    transparent 180deg,
+    #ff3366 240deg,
+    #ff8b6a 300deg,
+    transparent 360deg
+  );
   filter: blur(40px);
   /* Reduced blur for a sharper edge glow */
   transform: scale(var(--glow-scale, 1));
   animation: spin var(--glow-speed, 4s) linear infinite;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
   will-change: transform, filter;
 }
 
@@ -7075,13 +7149,13 @@ h3 {
 }
 
 .agent-cursor {
-  filter: drop-shadow(0px 3px 10px rgba(255, 139, 106, 0.5)) drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0px 3px 10px rgba(255, 139, 106, 0.5))
+    drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.6));
   transform-origin: top left;
   animation: cursorBob 2s ease-in-out infinite;
 }
 
 @keyframes cursorBob {
-
   0%,
   100% {
     transform: scale(1) translate(0, 0);
@@ -7146,9 +7220,6 @@ h3 {
   }
 }
 
-
-
-
 /* ==========================================================================
    Media Attachment & Drag-and-Drop Dropzone
    ========================================================================== */
@@ -7169,7 +7240,9 @@ h3 {
   z-index: 99;
   pointer-events: none;
   animation: dropzonePulse 1.5s ease-in-out infinite alternate;
-  box-shadow: 0 0 30px rgba(255, 139, 106, 0.25), inset 0 0 20px rgba(255, 139, 106, 0.15);
+  box-shadow:
+    0 0 30px rgba(255, 139, 106, 0.25),
+    inset 0 0 20px rgba(255, 139, 106, 0.15);
 }
 
 @keyframes dropzonePulse {
@@ -7192,7 +7265,7 @@ h3 {
 }
 
 .command-dropzone-text {
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: #fff;
@@ -7218,7 +7291,7 @@ h3 {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  font-family: "Okine Sans", "MADE Okine Sans", "Space Grotesk", sans-serif;
+  font-family: 'Okine Sans', 'MADE Okine Sans', 'Space Grotesk', sans-serif;
   font-size: 11px;
   color: var(--text-strong, #f3f4f6);
   max-width: 220px;
@@ -7310,7 +7383,7 @@ h3 {
 }
 /* NOTEBOOK REDESIGN */
 .notebook-standalone {
-  background: #100C0B !important;
+  background: #100c0b !important;
   color: #fff;
   font-family: inherit;
   overflow: hidden;
@@ -7347,11 +7420,11 @@ h3 {
 }
 
 .notebook-badge-red {
-  background: #FF5A00;
+  background: #ff5a00;
   color: #fff;
   padding: 4px 12px;
   border-radius: 20px;
-  font-family: "Astonpoliz", sans-serif;
+  font-family: 'Astonpoliz', sans-serif;
   font-size: 11px;
   font-weight: 400;
   text-transform: uppercase;
@@ -7414,7 +7487,7 @@ h3 {
   margin-bottom: 24px;
 }
 .col-header-flex h3 {
-  font-family: "Astonpoliz", sans-serif;
+  font-family: 'Astonpoliz', sans-serif;
   font-size: 15px;
   font-weight: 400;
   letter-spacing: 0.5px;
@@ -7427,7 +7500,7 @@ h3 {
   align-items: center;
   gap: 6px;
   background: transparent;
-  color: #FF5A00;
+  color: #ff5a00;
   border: 1px solid rgba(255, 90, 0, 0.4);
   padding: 6px 12px;
   border-radius: 20px;
@@ -7482,7 +7555,9 @@ h3 {
   height: 80px;
   margin-bottom: 24px;
 }
-.icon-back, .icon-mid, .icon-front {
+.icon-back,
+.icon-mid,
+.icon-front {
   position: absolute;
   color: rgba(255, 255, 255, 0.1);
 }
@@ -7509,7 +7584,7 @@ h3 {
   position: absolute;
   bottom: -4px;
   right: -4px;
-  background: #FF5A00;
+  background: #ff5a00;
   color: #fff;
   border-radius: 50%;
   width: 24px;
@@ -7517,7 +7592,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #100C0B;
+  border: 2px solid #100c0b;
 }
 .empty-sources p {
   color: rgba(255, 255, 255, 0.5);
@@ -7582,14 +7657,14 @@ h3 {
   color: rgba(255, 255, 255, 0.3);
 }
 .welcome-content h2 {
-  font-family: "Astonpoliz", sans-serif;
+  font-family: 'Astonpoliz', sans-serif;
   font-size: 20px;
   font-weight: 400;
   margin: 0 0 12px 0;
   color: #fff;
 }
 .welcome-content .highlight {
-  color: #FF5A00;
+  color: #ff5a00;
 }
 .welcome-content p {
   font-size: 14px;
@@ -7644,10 +7719,18 @@ h3 {
   opacity: 0.15;
   border-radius: 12px 0 0 12px;
 }
-.ac-exec::before { background: linear-gradient(90deg, #FF5A00, transparent); }
-.ac-faq::before { background: linear-gradient(90deg, #ec4899, transparent); }
-.ac-study::before { background: linear-gradient(90deg, #3b82f6, transparent); }
-.ac-action::before { background: linear-gradient(90deg, #22c55e, transparent); }
+.ac-exec::before {
+  background: linear-gradient(90deg, #ff5a00, transparent);
+}
+.ac-faq::before {
+  background: linear-gradient(90deg, #ec4899, transparent);
+}
+.ac-study::before {
+  background: linear-gradient(90deg, #3b82f6, transparent);
+}
+.ac-action::before {
+  background: linear-gradient(90deg, #22c55e, transparent);
+}
 .ac-icon {
   width: 32px;
   height: 32px;
@@ -7658,10 +7741,22 @@ h3 {
   position: relative;
   z-index: 1;
 }
-.ac-exec .ac-icon { background: rgba(255, 90, 0, 0.15); color: #FF5A00; }
-.ac-faq .ac-icon { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
-.ac-study .ac-icon { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.ac-action .ac-icon { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.ac-exec .ac-icon {
+  background: rgba(255, 90, 0, 0.15);
+  color: #ff5a00;
+}
+.ac-faq .ac-icon {
+  background: rgba(236, 72, 153, 0.15);
+  color: #ec4899;
+}
+.ac-study .ac-icon {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+.ac-action .ac-icon {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
 .ac-text {
   flex: 1;
   position: relative;
@@ -7698,7 +7793,7 @@ h3 {
   background: rgba(30, 24, 22, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 32px;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
@@ -7707,7 +7802,7 @@ h3 {
   position: relative;
 }
 .composer-wrapper.expanded {
-  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   padding-bottom: 8px;
 }
 .composer-row {
@@ -7726,12 +7821,12 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: all 0.2s;
 }
 .composer-btn-icon:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 .composer-input-container {
@@ -7757,7 +7852,7 @@ h3 {
   left: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   pointer-events: none;
   font-size: 15px;
   z-index: 1;
@@ -7779,7 +7874,7 @@ h3 {
   }
 }
 .composer-send {
-  background: #FF5A00;
+  background: #ff5a00;
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -7792,7 +7887,7 @@ h3 {
   transition: all 0.2s;
 }
 .composer-send:hover {
-  background: #FF722A;
+  background: #ff722a;
 }
 .composer-expanded-controls {
   display: flex;
@@ -7821,7 +7916,7 @@ h3 {
   font-size: 13px;
   font-weight: 500;
   border: 1px solid transparent;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
   cursor: pointer;
   transition: all 0.2s;
@@ -7829,13 +7924,13 @@ h3 {
   overflow: hidden;
 }
 .composer-toggle-btn:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 .composer-toggle-btn.active {
   background: rgba(255, 90, 0, 0.1);
   border-color: rgba(255, 90, 0, 0.3);
-  color: #FF5A00;
+  color: #ff5a00;
 }
 .composer-toggle-btn.active svg {
-  color: #FF5A00;
+  color: #ff5a00;
 }

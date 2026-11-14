@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface MarkdownRendererProps {
@@ -20,13 +13,40 @@ function parseLatexToUnicode(tex: string): string {
 
   // Greek letters
   const greek: Record<string, string> = {
-    '\\alpha': 'α', '\\beta': 'β', '\\gamma': 'γ', '\\delta': 'δ', '\\epsilon': 'ε',
-    '\\zeta': 'ζ', '\\eta': 'η', '\\theta': 'θ', '\\iota': 'ι', '\\kappa': 'κ',
-    '\\lambda': 'λ', '\\mu': 'μ', '\\nu': 'ν', '\\xi': 'ξ', '\\pi': 'π',
-    '\\rho': 'ρ', '\\sigma': 'σ', '\\tau': 'τ', '\\upsilon': 'υ', '\\phi': 'φ',
-    '\\chi': 'χ', '\\psi': 'ψ', '\\omega': 'ω',
-    '\\Gamma': 'Γ', '\\Delta': 'Δ', '\\Theta': 'Θ', '\\Lambda': 'Λ', '\\Xi': 'Ξ',
-    '\\Pi': 'Π', '\\Sigma': 'Σ', '\\Upsilon': 'Υ', '\\Phi': 'Φ', '\\Psi': 'Ψ', '\\Omega': 'Ω',
+    '\\alpha': 'α',
+    '\\beta': 'β',
+    '\\gamma': 'γ',
+    '\\delta': 'δ',
+    '\\epsilon': 'ε',
+    '\\zeta': 'ζ',
+    '\\eta': 'η',
+    '\\theta': 'θ',
+    '\\iota': 'ι',
+    '\\kappa': 'κ',
+    '\\lambda': 'λ',
+    '\\mu': 'μ',
+    '\\nu': 'ν',
+    '\\xi': 'ξ',
+    '\\pi': 'π',
+    '\\rho': 'ρ',
+    '\\sigma': 'σ',
+    '\\tau': 'τ',
+    '\\upsilon': 'υ',
+    '\\phi': 'φ',
+    '\\chi': 'χ',
+    '\\psi': 'ψ',
+    '\\omega': 'ω',
+    '\\Gamma': 'Γ',
+    '\\Delta': 'Δ',
+    '\\Theta': 'Θ',
+    '\\Lambda': 'Λ',
+    '\\Xi': 'Ξ',
+    '\\Pi': 'Π',
+    '\\Sigma': 'Σ',
+    '\\Upsilon': 'Υ',
+    '\\Phi': 'Φ',
+    '\\Psi': 'Ψ',
+    '\\Omega': 'Ω',
   };
   for (const [cmd, sym] of Object.entries(greek)) {
     res = res.replaceAll(cmd, sym);
@@ -34,14 +54,38 @@ function parseLatexToUnicode(tex: string): string {
 
   // Math operators and relations
   const ops: Record<string, string> = {
-    '\\pm': '±', '\\times': '×', '\\div': '÷', '\\cdot': '·',
-    '\\leq': '≤', '\\geq': '≥', '\\neq': '≠', '\\approx': '≈',
-    '\\equiv': '≡', '\\infty': '∞', '\\in': '∈', '\\notin': '∉',
-    '\\subset': '⊂', '\\subseteq': '⊆', '\\cup': '∪', '\\cap': '∩',
-    '\\rightarrow': '→', '\\leftarrow': '←', '\\Rightarrow': '⇒', '\\Leftarrow': '⇐',
-    '\\Leftrightarrow': '⇔', '\\forall': '∀', '\\exists': '∃', '\\nabla': '∇',
-    '\\partial': '∂', '\\sum': '∑', '\\prod': '∏', '\\int': '∫',
-    '\\circ': '°', '\\degree': '°', '\\dots': '…', '\\cdots': '⋯',
+    '\\pm': '±',
+    '\\times': '×',
+    '\\div': '÷',
+    '\\cdot': '·',
+    '\\leq': '≤',
+    '\\geq': '≥',
+    '\\neq': '≠',
+    '\\approx': '≈',
+    '\\equiv': '≡',
+    '\\infty': '∞',
+    '\\in': '∈',
+    '\\notin': '∉',
+    '\\subset': '⊂',
+    '\\subseteq': '⊆',
+    '\\cup': '∪',
+    '\\cap': '∩',
+    '\\rightarrow': '→',
+    '\\leftarrow': '←',
+    '\\Rightarrow': '⇒',
+    '\\Leftarrow': '⇐',
+    '\\Leftrightarrow': '⇔',
+    '\\forall': '∀',
+    '\\exists': '∃',
+    '\\nabla': '∇',
+    '\\partial': '∂',
+    '\\sum': '∑',
+    '\\prod': '∏',
+    '\\int': '∫',
+    '\\circ': '°',
+    '\\degree': '°',
+    '\\dots': '…',
+    '\\cdots': '⋯',
   };
   for (const [cmd, sym] of Object.entries(ops)) {
     res = res.replaceAll(cmd, sym);
@@ -55,26 +99,66 @@ function parseLatexToUnicode(tex: string): string {
 
   // Superscripts and subscripts
   const supers: Record<string, string> = {
-    '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
-    '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-    '+': '⁺', '-': '⁻', '=': '⁼', '(': '⁽', ')': '⁾',
-    'n': 'ⁿ', 'i': 'ⁱ', 'x': 'ˣ', 'y': 'ʸ',
+    '0': '⁰',
+    '1': '¹',
+    '2': '²',
+    '3': '³',
+    '4': '⁴',
+    '5': '⁵',
+    '6': '⁶',
+    '7': '⁷',
+    '8': '⁸',
+    '9': '⁹',
+    '+': '⁺',
+    '-': '⁻',
+    '=': '⁼',
+    '(': '⁽',
+    ')': '⁾',
+    n: 'ⁿ',
+    i: 'ⁱ',
+    x: 'ˣ',
+    y: 'ʸ',
   };
   const subs: Record<string, string> = {
-    '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
-    '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
-    '+': '₊', '-': '₋', '=': '₌', '(': '₍', ')': '₎',
-    'a': 'ₐ', 'e': 'ₑ', 'i': 'ᵢ', 'o': 'ₒ', 'r': 'ᵣ', 'u': 'ᵤ', 'v': 'ᵥ', 'x': 'ₓ',
+    '0': '₀',
+    '1': '₁',
+    '2': '₂',
+    '3': '₃',
+    '4': '₄',
+    '5': '₅',
+    '6': '₆',
+    '7': '₇',
+    '8': '₈',
+    '9': '₉',
+    '+': '₊',
+    '-': '₋',
+    '=': '₌',
+    '(': '₍',
+    ')': '₎',
+    a: 'ₐ',
+    e: 'ₑ',
+    i: 'ᵢ',
+    o: 'ₒ',
+    r: 'ᵣ',
+    u: 'ᵤ',
+    v: 'ᵥ',
+    x: 'ₓ',
   };
 
   res = res.replace(/\^([0-9+\-nixy])/g, (_, ch) => supers[ch] || `^${ch}`);
   res = res.replace(/\^\{([^}]+)\}/g, (_, inner) => {
-    return inner.split('').map((c: string) => supers[c] || c).join('');
+    return inner
+      .split('')
+      .map((c: string) => supers[c] || c)
+      .join('');
   });
 
   res = res.replace(/_([0-9+\-aeioruvx])/g, (_, ch) => subs[ch] || `_${ch}`);
   res = res.replace(/_\{([^}]+)\}/g, (_, inner) => {
-    return inner.split('').map((c: string) => subs[c] || c).join('');
+    return inner
+      .split('')
+      .map((c: string) => subs[c] || c)
+      .join('');
   });
 
   // Clean text commands like \text{...} or \mathrm{...}
@@ -260,7 +344,11 @@ export function MarkdownRenderer({ content, isUser = false }: MarkdownRendererPr
         isSingleLine = true;
       } else {
         i++;
-        while (i < lines.length && !lines[i].trim().startsWith('$$') && !lines[i].trim().startsWith('\\]')) {
+        while (
+          i < lines.length &&
+          !lines[i].trim().startsWith('$$') &&
+          !lines[i].trim().startsWith('\\]')
+        ) {
           mathLines.push(lines[i]);
           i++;
         }
@@ -371,9 +459,13 @@ export function MarkdownRenderer({ content, isUser = false }: MarkdownRendererPr
             <View style={styles.alertHeaderRow}>
               <Ionicons
                 name={
-                  alertType === 'note' ? 'information-circle' :
-                  alertType === 'tip' ? 'bulb' :
-                  alertType === 'warning' ? 'warning' : 'star'
+                  alertType === 'note'
+                    ? 'information-circle'
+                    : alertType === 'tip'
+                      ? 'bulb'
+                      : alertType === 'warning'
+                        ? 'warning'
+                        : 'star'
                 }
                 size={14}
                 color={alertBorderColors[alertType]}
@@ -409,7 +501,7 @@ export function MarkdownRenderer({ content, isUser = false }: MarkdownRendererPr
       continue;
     }
 
-    // 7. Numbered List Items: 1. , 2. 
+    // 7. Numbered List Items: 1. , 2.
     const numMatch = line.match(/^(\s*)(\d+)\.\s+(.+)$/);
     if (numMatch) {
       const indentLevel = Math.min(Math.floor(numMatch[1].length / 2), 3);

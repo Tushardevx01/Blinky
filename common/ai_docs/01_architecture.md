@@ -60,28 +60,28 @@ See `07_agent_router.md` and `08_mobile_remote.md`.
 
 ## 4. Tauri Windows and Events
 
-| Window | Route | Purpose |
-| :--- | :--- | :--- |
-| `command` | `/command` | Floating command bar, settings, voice controls, status, Action Guide. |
-| `overlay` | `/overlay` | Transparent click-through highlight layer. |
-| default route | `/` | Fallback `App.tsx` command UI. |
+| Window        | Route      | Purpose                                                               |
+| :------------ | :--------- | :-------------------------------------------------------------------- |
+| `command`     | `/command` | Floating command bar, settings, voice controls, status, Action Guide. |
+| `overlay`     | `/overlay` | Transparent click-through highlight layer.                            |
+| default route | `/`        | Fallback `App.tsx` command UI.                                        |
 
 Important events:
 
-| Event | Source | Destination | Purpose |
-| :--- | :--- | :--- | :--- |
-| `blinky://open-command` | Rust hotkey/tray | command | Reveal and focus input. |
-| `blinky://guidance` | Rust or command route | overlay | Send tutor result to render highlights. |
-| `blinky://global-click` | Rust Windows polling thread | overlay | Report desktop click coordinates. |
-| `blinky://target-clicked` | overlay | command | Mark highlighted step as completed. |
-| `blinky://global-enter` | Rust Windows polling thread | app event bus | Advance text-entry steps after Enter. |
+| Event                     | Source                      | Destination   | Purpose                                 |
+| :------------------------ | :-------------------------- | :------------ | :-------------------------------------- |
+| `blinky://open-command`   | Rust hotkey/tray            | command       | Reveal and focus input.                 |
+| `blinky://guidance`       | Rust or command route       | overlay       | Send tutor result to render highlights. |
+| `blinky://global-click`   | Rust Windows polling thread | overlay       | Report desktop click coordinates.       |
+| `blinky://target-clicked` | overlay                     | command       | Mark highlighted step as completed.     |
+| `blinky://global-enter`   | Rust Windows polling thread | app event bus | Advance text-entry steps after Enter.   |
 
 Important commands:
 
-| Command | Source | Purpose |
-| :--- | :--- | :--- |
-| `run_tutor` | frontend -> Rust -> Python | Capture/read the screen and return the next tutor step. |
-| `click_screen_point` | frontend -> Rust | Native Windows click at physical screen coordinates for safe autopilot actions. |
+| Command              | Source                     | Purpose                                                                         |
+| :------------------- | :------------------------- | :------------------------------------------------------------------------------ |
+| `run_tutor`          | frontend -> Rust -> Python | Capture/read the screen and return the next tutor step.                         |
+| `click_screen_point` | frontend -> Rust           | Native Windows click at physical screen coordinates for safe autopilot actions. |
 
 ## 5. Python Screen Worker Contract
 
@@ -144,21 +144,21 @@ It returns one JSON object:
 
 Settings are persisted to `.env` through `get_settings` / `save_settings` in Rust.
 
-| Variable | Used by | Notes |
-| :--- | :--- | :--- |
-| `BLINKY_AI_PROVIDER` | Python/Rust | `ollama` or `groq`. Rust settings default is `groq`; Python defaults to `ollama` if absent. |
-| `BLINKY_OLLAMA_URL` | Python | Defaults to `http://localhost:11434/api/generate`. |
-| `BLINKY_OLLAMA_MODEL` | Python | Defaults to `gemma4:e4b`. |
-| `BLINKY_OLLAMA_TIMEOUT` | Python | Defaults to `35` seconds. |
-| `BLINKY_GROQ_URL` | Python | Defaults to OpenAI-compatible Groq chat completions URL. |
-| `BLINKY_GROQ_MODEL` | Python | Defaults to `llama-3.3-70b-versatile`. |
-| `BLINKY_GROQ_TIMEOUT` | Python | Defaults to `90` seconds. |
-| `GROQ_API_KEY` | Python/Rust settings | Required for Groq. |
-| `SARVAM_API_KEY` | Frontend/Rust settings | Required for voice features. |
-| `BLINKY_SHORTCUT` | Rust/frontend | `Enter` or `Space`, meaning Ctrl+Shift+Enter or Ctrl+Shift+Space. |
-| `BLINKY_BROWSER_CHANNEL` | Python browser controller | Defaults to `msedge`. |
-| `BLINKY_BROWSER_HEADLESS` | Python browser controller | Defaults to visible browser mode (`false`). |
-| SearXNG local service | Docker Compose | `docker compose up -d searxng`, exposed on port `8888`. |
+| Variable                  | Used by                   | Notes                                                                                       |
+| :------------------------ | :------------------------ | :------------------------------------------------------------------------------------------ |
+| `BLINKY_AI_PROVIDER`      | Python/Rust               | `ollama` or `groq`. Rust settings default is `groq`; Python defaults to `ollama` if absent. |
+| `BLINKY_OLLAMA_URL`       | Python                    | Defaults to `http://localhost:11434/api/generate`.                                          |
+| `BLINKY_OLLAMA_MODEL`     | Python                    | Defaults to `gemma4:e4b`.                                                                   |
+| `BLINKY_OLLAMA_TIMEOUT`   | Python                    | Defaults to `35` seconds.                                                                   |
+| `BLINKY_GROQ_URL`         | Python                    | Defaults to OpenAI-compatible Groq chat completions URL.                                    |
+| `BLINKY_GROQ_MODEL`       | Python                    | Defaults to `llama-3.3-70b-versatile`.                                                      |
+| `BLINKY_GROQ_TIMEOUT`     | Python                    | Defaults to `90` seconds.                                                                   |
+| `GROQ_API_KEY`            | Python/Rust settings      | Required for Groq.                                                                          |
+| `SARVAM_API_KEY`          | Frontend/Rust settings    | Required for voice features.                                                                |
+| `BLINKY_SHORTCUT`         | Rust/frontend             | `Enter` or `Space`, meaning Ctrl+Shift+Enter or Ctrl+Shift+Space.                           |
+| `BLINKY_BROWSER_CHANNEL`  | Python browser controller | Defaults to `msedge`.                                                                       |
+| `BLINKY_BROWSER_HEADLESS` | Python browser controller | Defaults to visible browser mode (`false`).                                                 |
+| SearXNG local service     | Docker Compose            | `docker compose up -d searxng`, exposed on port `8888`.                                     |
 
 ## 7. Platform Notes
 
@@ -174,6 +174,7 @@ Settings are persisted to `.env` through `get_settings` / `save_settings` in Rus
 Blinky embeds the **AiCut** C++ video editing engine in `common/aicut/`.
 
 ### Architecture & Data Flow
+
 1. **Frontend**: Users can drag & drop video/audio files into the CommandBar or highlight files in Windows File Explorer.
 2. **Intent Classification**: `main.py` classifies `VIDEO_EDIT` intent in **<50ms** via `tools.aicut_tool.resolve_aicut_request`.
 3. **Execution**: `aicut_tool.py` calls `common/aicut/aicut_mcp.py` which executes `common/aicut/build/AIVideoEditor.exe`.

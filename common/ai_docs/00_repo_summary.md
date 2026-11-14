@@ -4,19 +4,19 @@ This folder is the developer and AI-agent map for the Blinky repository. It refl
 
 ## Reading Order
 
-| File | Purpose |
-| :--- | :--- |
-| `00_repo_summary.md` | Repository map, setup commands, and guide index. |
-| `01_architecture.md` | Desktop architecture, IPC/event flow, autopilot, settings, and platform notes. |
-| `02_coordinate_scaling.md` | Screenshot, UIA, overlay, and autopilot click coordinate transforms. |
-| `03_matching_heuristics.md` | Target matching, merge rules, post-processing, and autopilot safety gates. |
-| `04_ai_inference.md` | Screen tutor prompts, preflight, provider clients, locator fast path, conversation state, and autopilot continuation. |
-| `05_sarvam.md` | Sarvam TTS/STT integration used by the desktop command bar. |
-| `06_detailed_summaries.md` | Per-file implementation reference for core modules. |
-| `07_agent_router.md` | Browser-agent sidecar, Edge controller, generated tools, streaming synthesis, and WebSocket protocol. |
-| `08_mobile_remote.md` | Expo mobile remote app, connection lifecycle, PC controls, and remote agent UI. |
-| `09_computer_use_and_spotify.md` | Human + AI guide for desktop agent-mode computer-use actions, Spotify playback, and routing boundaries. |
-| `files_index.json` | Machine-readable file index for agents and scripts. |
+| File                             | Purpose                                                                                                               |
+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `00_repo_summary.md`             | Repository map, setup commands, and guide index.                                                                      |
+| `01_architecture.md`             | Desktop architecture, IPC/event flow, autopilot, settings, and platform notes.                                        |
+| `02_coordinate_scaling.md`       | Screenshot, UIA, overlay, and autopilot click coordinate transforms.                                                  |
+| `03_matching_heuristics.md`      | Target matching, merge rules, post-processing, and autopilot safety gates.                                            |
+| `04_ai_inference.md`             | Screen tutor prompts, preflight, provider clients, locator fast path, conversation state, and autopilot continuation. |
+| `05_sarvam.md`                   | Sarvam TTS/STT integration used by the desktop command bar.                                                           |
+| `06_detailed_summaries.md`       | Per-file implementation reference for core modules.                                                                   |
+| `07_agent_router.md`             | Browser-agent sidecar, Edge controller, generated tools, streaming synthesis, and WebSocket protocol.                 |
+| `08_mobile_remote.md`            | Expo mobile remote app, connection lifecycle, PC controls, and remote agent UI.                                       |
+| `09_computer_use_and_spotify.md` | Human + AI guide for desktop agent-mode computer-use actions, Spotify playback, and routing boundaries.               |
+| `files_index.json`               | Machine-readable file index for agents and scripts.                                                                   |
 
 ## Current Product Shape
 
@@ -69,20 +69,20 @@ npm run start
 
 ## Key Runtime Defaults
 
-| Setting | Default / Source |
-| :--- | :--- |
-| Desktop app name | `Blinky` in `src-tauri/tauri.conf.json` |
-| Command route | `/command` -> `frontend/src/CommandBar.tsx` |
-| Overlay route | `/overlay` -> `frontend/src/Overlay.tsx` |
-| WebSocket server | `0.0.0.0:9001` in `src-tauri/src/websocket.rs` |
-| AI provider default in Rust settings | `groq` |
-| AI provider default in Python client | `ollama` if env is absent |
-| Ollama model | `gemma4:e4b` |
-| Groq model | `llama-3.3-70b-versatile` |
-| Sarvam TTS/STT | `bulbul:v3` / `saaras:v3` |
-| Browser controller | Playwright `chromium.launch(channel="msedge", headless=false)` by default |
-| SearXNG URL | `http://localhost:8888` |
-| Autopilot attempts | 5 max per command-bar globe/web request |
+| Setting                              | Default / Source                                                          |
+| :----------------------------------- | :------------------------------------------------------------------------ |
+| Desktop app name                     | `Blinky` in `src-tauri/tauri.conf.json`                                   |
+| Command route                        | `/command` -> `frontend/src/CommandBar.tsx`                               |
+| Overlay route                        | `/overlay` -> `frontend/src/Overlay.tsx`                                  |
+| WebSocket server                     | `0.0.0.0:9001` in `src-tauri/src/websocket.rs`                            |
+| AI provider default in Rust settings | `groq`                                                                    |
+| AI provider default in Python client | `ollama` if env is absent                                                 |
+| Ollama model                         | `gemma4:e4b`                                                              |
+| Groq model                           | `llama-3.3-70b-versatile`                                                 |
+| Sarvam TTS/STT                       | `bulbul:v3` / `saaras:v3`                                                 |
+| Browser controller                   | Playwright `chromium.launch(channel="msedge", headless=false)` by default |
+| SearXNG URL                          | `http://localhost:8888`                                                   |
+| Autopilot attempts                   | 5 max per command-bar globe/web request                                   |
 
 ## Agent Notes
 

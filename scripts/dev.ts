@@ -1,77 +1,84 @@
-import { spawn, type Subprocess } from "bun";
-import { existsSync } from "fs";
-import { delimiter, join } from "path";
+import { spawn, type Subprocess } from 'bun';
+import { existsSync } from 'fs';
+import { delimiter, join } from 'path';
 
 // Existing terminals can retain a stale PATH after installing Bun/Rust.
 // Resolve the same per-user toolchains that run.ps1 uses for every child.
-if (process.platform === "win32") {
-  const home = process.env.USERPROFILE || "";
-  const toolDirs = [join(home, ".bun", "bin"), join(home, ".cargo", "bin")].filter(existsSync);
-  process.env.PATH = [...toolDirs, process.env.PATH || ""].join(delimiter);
-  process.env.CARGO_BUILD_JOBS ||= "1";
+if (process.platform === 'win32') {
+  const home = process.env.USERPROFILE || '';
+  const toolDirs = [join(home, '.bun', 'bin'), join(home, '.cargo', 'bin')].filter(existsSync);
+  process.env.PATH = [...toolDirs, process.env.PATH || ''].join(delimiter);
+  process.env.CARGO_BUILD_JOBS ||= '1';
 }
 
 // Each Python worker otherwise creates a full BLAS/OpenMP thread pool. Those
 // per-worker buffers can exhaust Windows commit even when physical RAM is free.
-for (const variable of ["OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"]) {
-  process.env[variable] ||= "1";
+for (const variable of [
+  'OPENBLAS_NUM_THREADS',
+  'OMP_NUM_THREADS',
+  'MKL_NUM_THREADS',
+  'NUMEXPR_NUM_THREADS',
+]) {
+  process.env[variable] ||= '1';
 }
 
 const args = Bun.argv.slice(2);
-const noDocker = args.includes("--no-docker");
-const noMobile = args.includes("--no-mobile");
+const noDocker = args.includes('--no-docker');
+const noMobile = args.includes('--no-mobile');
 
 // A second dev session used to kill the first app's ports while its watcher
 // restarted it, leaving competing Vite/Tauri/Python processes. Windows releases
 // this mutex automatically if the owner exits, including crashes.
-if (process.platform === "win32") {
-  const { dlopen, FFIType, ptr } = require("bun:ffi");
-  const kernel32 = dlopen("kernel32.dll", {
+if (process.platform === 'win32') {
+  const { dlopen, FFIType, ptr } = require('bun:ffi');
+  const kernel32 = dlopen('kernel32.dll', {
     CreateMutexW: { args: [FFIType.ptr, FFIType.bool, FFIType.ptr], returns: FFIType.ptr },
     GetLastError: { args: [], returns: FFIType.u32 },
   });
-  const mutexName = Buffer.from("Local\\Blinky.Development.Session\0", "utf16le");
+  const mutexName = Buffer.from('Local\\Blinky.Development.Session\0', 'utf16le');
   const mutex = kernel32.symbols.CreateMutexW(null, false, ptr(mutexName));
   if (mutex && kernel32.symbols.GetLastError() === 183) {
-    console.log("[Blinky] A development session is already running. Use its app window; this launch will leave it running.");
+    console.log(
+      '[Blinky] A development session is already running. Use its app window; this launch will leave it running.'
+    );
     process.exit(0);
   }
 }
 
 function getDockerPath(): string {
-  if (process.platform !== "win32") {
-    return "docker";
+  if (process.platform !== 'win32') {
+    return 'docker';
   }
-  const progFiles = process.env.ProgramFiles || "C:\\Program Files";
-  const progFilesX86 = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
+  const progFiles = process.env.ProgramFiles || 'C:\\Program Files';
+  const progFilesX86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
   const candidates = [
-    "docker",
+    'docker',
     `${progFiles}\\Docker\\Docker\\resources\\bin\\docker.exe`,
     `${progFilesX86}\\Docker\\Docker\\resources\\bin\\docker.exe`,
-    "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+    'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe',
   ];
   for (const c of candidates) {
-    if (c === "docker") {
+    if (c === 'docker') {
       try {
-        const proc = spawn(["docker", "--version"]);
+        const proc = spawn(['docker', '--version']);
         proc.kill();
-        return "docker";
+        return 'docker';
       } catch {}
     } else if (existsSync(c)) {
       return c;
     }
   }
-  return "docker";
+  return 'docker';
 }
 
 function getDockerDesktopPath(): string | null {
-  if (process.platform === "win32") {
-    const progFiles = process.env.ProgramFiles || "C:\\Program Files";
-    const progFilesX86 = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
-    const localAppData = process.env.LOCALAPPDATA || "";
+  if (process.platform === 'win32') {
+    const progFiles = process.env.ProgramFiles || 'C:\\Program Files';
+    const progFilesX86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
+    const localAppData = process.env.LOCALAPPDATA || '';
     const candidates = [
       `${progFiles}\\Docker\\Docker\\Docker Desktop.exe`,
-      "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe",
+      'C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe',
       `${progFilesX86}\\Docker\\Docker\\Docker Desktop.exe`,
       `${localAppData}\\Programs\\Docker\\Docker\\Docker Desktop.exe`,
       `${localAppData}\\Docker\\Docker Desktop.exe`,
@@ -81,9 +88,9 @@ function getDockerDesktopPath(): string | null {
         return c;
       }
     }
-  } else if (process.platform === "darwin") {
-    if (existsSync("/Applications/Docker.app")) {
-      return "/Applications/Docker.app";
+  } else if (process.platform === 'darwin') {
+    if (existsSync('/Applications/Docker.app')) {
+      return '/Applications/Docker.app';
     }
   }
   return null;
@@ -91,9 +98,9 @@ function getDockerDesktopPath(): string | null {
 
 async function isDockerDaemonRunning(dockerPath: string): Promise<boolean> {
   try {
-    const proc = spawn([dockerPath, "info"], {
-      stdout: "pipe",
-      stderr: "pipe",
+    const proc = spawn([dockerPath, 'info'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
     });
     const exitCodePromise = proc.exited;
     const timeoutPromise = new Promise<number>((resolve) => setTimeout(() => resolve(1), 3500));
@@ -115,14 +122,16 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
     return true;
   }
 
-  if (process.platform === "win32") {
+  if (process.platform === 'win32') {
     const desktopExe = getDockerDesktopPath();
     if (desktopExe) {
-      console.log(`[Docker] 🐳 Docker is installed but daemon is not running. Launching Docker Desktop (${desktopExe})...`);
+      console.log(
+        `[Docker] 🐳 Docker is installed but daemon is not running. Launching Docker Desktop (${desktopExe})...`
+      );
       try {
-        const startProc = spawn(["cmd.exe", "/c", "start", "", desktopExe], {
+        const startProc = spawn(['cmd.exe', '/c', 'start', '', desktopExe], {
           detached: true,
-          stdio: ["ignore", "ignore", "ignore"],
+          stdio: ['ignore', 'ignore', 'ignore'],
         });
         startProc.unref();
       } catch (err: any) {
@@ -130,18 +139,25 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
         return false;
       }
     } else {
-      console.log("[Docker] 🐳 Docker Desktop executable not found at standard paths. Trying com.docker.service...");
+      console.log(
+        '[Docker] 🐳 Docker Desktop executable not found at standard paths. Trying com.docker.service...'
+      );
       try {
-        const netStart = spawn(["powershell", "-NoProfile", "-Command", "Start-Service com.docker.service -ErrorAction SilentlyContinue"]);
+        const netStart = spawn([
+          'powershell',
+          '-NoProfile',
+          '-Command',
+          'Start-Service com.docker.service -ErrorAction SilentlyContinue',
+        ]);
         await Promise.race([netStart.exited, new Promise((r) => setTimeout(r, 4000))]);
       } catch {}
     }
-  } else if (process.platform === "darwin") {
-    console.log("[Docker] 🐳 Docker daemon is not running. Launching Docker.app...");
+  } else if (process.platform === 'darwin') {
+    console.log('[Docker] 🐳 Docker daemon is not running. Launching Docker.app...');
     try {
-      const startProc = spawn(["open", "-a", "Docker"], {
+      const startProc = spawn(['open', '-a', 'Docker'], {
         detached: true,
-        stdio: ["ignore", "ignore", "ignore"],
+        stdio: ['ignore', 'ignore', 'ignore'],
       });
       startProc.unref();
     } catch (err: any) {
@@ -150,13 +166,13 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
     }
   } else {
     // Linux
-    console.log("[Docker] 🐳 Attempting to start Docker daemon service...");
+    console.log('[Docker] 🐳 Attempting to start Docker daemon service...');
     try {
-      const startProc = spawn(["systemctl", "--user", "start", "docker"], { stdio: "ignore" });
+      const startProc = spawn(['systemctl', '--user', 'start', 'docker'], { stdio: 'ignore' });
       await Promise.race([startProc.exited, new Promise((r) => setTimeout(r, 3000))]);
     } catch {
       try {
-        const sysStart = spawn(["sudo", "systemctl", "start", "docker"], { stdio: "ignore" });
+        const sysStart = spawn(['sudo', 'systemctl', 'start', 'docker'], { stdio: 'ignore' });
         await Promise.race([sysStart.exited, new Promise((r) => setTimeout(r, 3000))]);
       } catch {}
     }
@@ -168,7 +184,7 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
   const startTime = Date.now();
 
   console.log(`[Docker] ⏳ Waiting for Docker engine to become ready (max ${maxWaitSeconds}s)...`);
-  while ((Date.now() - startTime) < maxWaitSeconds * 1000) {
+  while (Date.now() - startTime < maxWaitSeconds * 1000) {
     await new Promise((r) => setTimeout(r, pollIntervalMs));
     const elapsed = Math.round((Date.now() - startTime) / 1000);
     if (await isDockerDaemonRunning(dockerPath)) {
@@ -176,7 +192,9 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
       return true;
     }
     if (elapsed % 6 === 0) {
-      console.log(`[Docker] ⏳ Still waiting for Docker engine to initialize (${elapsed}s / ${maxWaitSeconds}s)...`);
+      console.log(
+        `[Docker] ⏳ Still waiting for Docker engine to initialize (${elapsed}s / ${maxWaitSeconds}s)...`
+      );
     }
   }
 
@@ -186,7 +204,7 @@ async function tryStartDockerDaemon(dockerPath: string): Promise<boolean> {
 
 async function ensureSearXNGStarted(): Promise<void> {
   if (noDocker) {
-    console.log("[Docker] Skipping SearXNG (--no-docker flag specified).");
+    console.log('[Docker] Skipping SearXNG (--no-docker flag specified).');
     return;
   }
 
@@ -194,27 +212,32 @@ async function ensureSearXNGStarted(): Promise<void> {
   let isRunning = await isDockerDaemonRunning(dockerPath);
 
   if (!isRunning) {
-    console.log("[Docker] Docker daemon is not active. Attempting to start it automatically...");
+    console.log('[Docker] Docker daemon is not active. Attempting to start it automatically...');
     isRunning = await tryStartDockerDaemon(dockerPath);
   }
 
   if (!isRunning) {
-    console.warn("Warning: Docker was not found or failed to start. Skipping SearXNG (web search functionality will be disabled).");
-    console.warn("💡 Tip: You can start Docker Desktop manually anytime and SearXNG will connect.");
+    console.warn(
+      'Warning: Docker was not found or failed to start. Skipping SearXNG (web search functionality will be disabled).'
+    );
+    console.warn('💡 Tip: You can start Docker Desktop manually anytime and SearXNG will connect.');
     return;
   }
 
-  console.log("Starting SearXNG via Docker Compose...");
+  console.log('Starting SearXNG via Docker Compose...');
   try {
-    const dockerCompose = spawn([dockerPath, "compose", "-f", "common/docker-compose.yml", "up", "-d"], {
-      stdout: "inherit",
-      stderr: "inherit",
-    });
+    const dockerCompose = spawn(
+      [dockerPath, 'compose', '-f', 'common/docker-compose.yml', 'up', '-d'],
+      {
+        stdout: 'inherit',
+        stderr: 'inherit',
+      }
+    );
     const exitCode = await dockerCompose.exited;
     if (exitCode !== 0) {
-      console.error("Warning: Failed to start SearXNG via Docker Compose. Continuing anyway...");
+      console.error('Warning: Failed to start SearXNG via Docker Compose. Continuing anyway...');
     } else {
-      console.log("[Docker] ✅ SearXNG service is ready on http://localhost:8888");
+      console.log('[Docker] ✅ SearXNG service is ready on http://localhost:8888');
     }
   } catch (err: any) {
     console.warn(`Warning: Docker Compose error (${err?.message || err}). Skipping SearXNG.`);
@@ -222,22 +245,22 @@ async function ensureSearXNGStarted(): Promise<void> {
 }
 
 function getAdbPath(): string | null {
-  if (process.platform === "win32") {
-    const localAppData = process.env.LOCALAPPDATA || "";
-    const androidHome = process.env.ANDROID_HOME || "";
+  if (process.platform === 'win32') {
+    const localAppData = process.env.LOCALAPPDATA || '';
+    const androidHome = process.env.ANDROID_HOME || '';
     const candidates = [
-      "adb",
+      'adb',
       `${localAppData}\\Android\\platform-tools\\adb.exe`,
       `${localAppData}\\Android\\Sdk\\platform-tools\\adb.exe`,
       `${androidHome}\\platform-tools\\adb.exe`,
-      "C:\\Program Files\\Android\\Android Studio\\platform-tools\\adb.exe",
+      'C:\\Program Files\\Android\\Android Studio\\platform-tools\\adb.exe',
     ];
     for (const c of candidates) {
-      if (c === "adb") {
+      if (c === 'adb') {
         try {
-          const test = spawn(["adb", "version"]);
+          const test = spawn(['adb', 'version']);
           test.kill();
-          return "adb";
+          return 'adb';
         } catch {}
       } else if (existsSync(c)) {
         return c;
@@ -245,9 +268,9 @@ function getAdbPath(): string | null {
     }
   } else {
     try {
-      const test = spawn(["adb", "version"]);
+      const test = spawn(['adb', 'version']);
       test.kill();
-      return "adb";
+      return 'adb';
     } catch {}
   }
   return null;
@@ -256,15 +279,23 @@ function getAdbPath(): string | null {
 /** Best-effort physical LAN IPv4 (skips loopback/link-local/virtual adapters). */
 function getLanIp(): string | null {
   try {
-    if (process.platform === "win32") {
-      const res = Bun.spawnSync(["powershell", "-NoProfile", "-Command",
-        "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' -and $_.InterfaceAlias -notlike '*Loopback*' -and $_.InterfaceAlias -notlike '*vEthernet*' -and $_.InterfaceAlias -notlike '*WSL*' -and $_.InterfaceAlias -notlike '*Hyper-V*' -and $_.InterfaceAlias -notlike '*Tailscale*' -and $_.InterfaceAlias -notlike '*Docker*' } | Select-Object -ExpandProperty IPAddress -First 1"]);
+    if (process.platform === 'win32') {
+      const res = Bun.spawnSync([
+        'powershell',
+        '-NoProfile',
+        '-Command',
+        "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' -and $_.InterfaceAlias -notlike '*Loopback*' -and $_.InterfaceAlias -notlike '*vEthernet*' -and $_.InterfaceAlias -notlike '*WSL*' -and $_.InterfaceAlias -notlike '*Hyper-V*' -and $_.InterfaceAlias -notlike '*Tailscale*' -and $_.InterfaceAlias -notlike '*Docker*' } | Select-Object -ExpandProperty IPAddress -First 1",
+      ]);
       if (res.exitCode === 0) {
-        const ip = res.stdout.toString().trim().split(/\s+/)[0] ?? "";
+        const ip = res.stdout.toString().trim().split(/\s+/)[0] ?? '';
         if (/^\d+\.\d+\.\d+\.\d+$/.test(ip)) return ip;
       }
     } else {
-      const res = Bun.spawnSync(["sh", "-c", "hostname -I 2>/dev/null | tr ' ' '\\n' | grep -v '^127\\.' | grep -v '^169\\.254\\.' | grep -v '^172\\.17\\.' | head -n 1"]);
+      const res = Bun.spawnSync([
+        'sh',
+        '-c',
+        "hostname -I 2>/dev/null | tr ' ' '\\n' | grep -v '^127\\.' | grep -v '^169\\.254\\.' | grep -v '^172\\.17\\.' | head -n 1",
+      ]);
       if (res.exitCode === 0) {
         const ip = res.stdout.toString().trim();
         if (/^\d+\.\d+\.\d+\.\d+$/.test(ip)) return ip;
@@ -283,7 +314,9 @@ function printManualExpoHints(lanIp: string): void {
   console.log(`[Mobile] 3) The app auto-connects to ${lanIp}:9001. If it does not,`);
   console.log(`[Mobile]    open the PC app header QR icon and scan THAT code inside the`);
   console.log(`[Mobile]    app's Local Link Setup → QR tab (the two QRs are different).`);
-  console.log(`[Mobile]    PC must stay on the same Wi-Fi; discovery: http://${lanIp}:9004/discover`);
+  console.log(
+    `[Mobile]    PC must stay on the same Wi-Fi; discovery: http://${lanIp}:9004/discover`
+  );
   console.log(`[Mobile] ───────────────────────────────────────────────────────`);
 }
 
@@ -296,24 +329,28 @@ function printManualExpoHints(lanIp: string): void {
 async function publishMobileDevEnv(): Promise<string | null> {
   const lanIp = getLanIp();
   if (!lanIp) {
-    console.warn("[Mobile] Could not detect LAN IP; phone auto-connect will rely on Expo host IP + subnet scan.");
+    console.warn(
+      '[Mobile] Could not detect LAN IP; phone auto-connect will rely on Expo host IP + subnet scan.'
+    );
     return null;
   }
-  const envPath = "common/mobile/.env";
-  const begin = "# BEGIN blinky-dev-managed (rewritten by `bun run dev`; safe to delete)";
-  const end = "# END blinky-dev-managed";
+  const envPath = 'common/mobile/.env';
+  const begin = '# BEGIN blinky-dev-managed (rewritten by `bun run dev`; safe to delete)';
+  const end = '# END blinky-dev-managed';
   const managed = `${begin}\nEXPO_PUBLIC_PC_IP=${lanIp}\nEXPO_PUBLIC_PC_PORT=9001\n${end}\n`;
   try {
-    let existing = "";
+    let existing = '';
     try {
       existing = await Bun.file(envPath).text();
     } catch {}
     const blockRe = /# BEGIN blinky-dev-managed[\s\S]*?# END blinky-dev-managed\n?/;
     const next = blockRe.test(existing)
       ? existing.replace(blockRe, managed)
-      : `${existing}${existing && !existing.endsWith("\n") ? "\n" : ""}${existing ? "\n" : ""}${managed}`;
+      : `${existing}${existing && !existing.endsWith('\n') ? '\n' : ''}${existing ? '\n' : ''}${managed}`;
     await Bun.write(envPath, next);
-    console.log(`[Mobile] 📡 Published PC LAN IP ${lanIp} to ${envPath} (EXPO_PUBLIC_PC_IP). Restart Metro to pick up changes.`);
+    console.log(
+      `[Mobile] 📡 Published PC LAN IP ${lanIp} to ${envPath} (EXPO_PUBLIC_PC_IP). Restart Metro to pick up changes.`
+    );
   } catch (err: any) {
     console.warn(`[Mobile] Could not write ${envPath}: ${err?.message || err}`);
   }
@@ -324,23 +361,32 @@ async function checkAndStartMobileIfUsbConnected(): Promise<Subprocess | null> {
   const lanIp = await publishMobileDevEnv();
   const adb = getAdbPath();
   if (!adb) {
-    console.log("[Mobile] adb not found. Skipping USB mobile check.");
+    console.log('[Mobile] adb not found. Skipping USB mobile check.');
     if (lanIp) printManualExpoHints(lanIp);
     return null;
   }
 
   try {
-    const proc = spawn([adb, "devices", "-l"], { stdout: "pipe" });
+    const proc = spawn([adb, 'devices', '-l'], { stdout: 'pipe' });
     const outputPromise = new Response(proc.stdout).text();
-    const timeoutPromise = new Promise<string>((resolve) => setTimeout(() => resolve(""), 2500));
+    const timeoutPromise = new Promise<string>((resolve) => setTimeout(() => resolve(''), 2500));
     const output = await Promise.race([outputPromise, timeoutPromise]);
 
     // Parse connected devices in 'device' state
-    const lines = output.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    const connectedDevices = lines.filter(l => !l.startsWith("List of") && l.includes("device") && !l.includes("offline") && !l.includes("unauthorized"));
+    const lines = output
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const connectedDevices = lines.filter(
+      (l) =>
+        !l.startsWith('List of') &&
+        l.includes('device') &&
+        !l.includes('offline') &&
+        !l.includes('unauthorized')
+    );
 
     if (connectedDevices.length === 0) {
-      console.log("[Mobile] No USB-connected Android devices detected.");
+      console.log('[Mobile] No USB-connected Android devices detected.');
       if (lanIp) printManualExpoHints(lanIp);
       return null;
     }
@@ -350,71 +396,82 @@ async function checkAndStartMobileIfUsbConnected(): Promise<Subprocess | null> {
       console.log(`  - ${dev}`);
     }
 
-    console.log("[Mobile] Setting up USB reverse port forwarding (tcp:9001, tcp:9002, tcp:9004, tcp:8081)...");
-    const rev1 = spawn([adb, "reverse", "tcp:9001", "tcp:9001"]);
-    await Promise.race([rev1.exited, new Promise(r => setTimeout(r, 1500))]);
-    const rev2 = spawn([adb, "reverse", "tcp:9002", "tcp:9002"]);
-    await Promise.race([rev2.exited, new Promise(r => setTimeout(r, 1500))]);
-    const rev4 = spawn([adb, "reverse", "tcp:9004", "tcp:9004"]);
-    await Promise.race([rev4.exited, new Promise(r => setTimeout(r, 1500))]);
-    const rev3 = spawn([adb, "reverse", "tcp:8081", "tcp:8081"]);
-    await Promise.race([rev3.exited, new Promise(r => setTimeout(r, 1500))]);
+    console.log(
+      '[Mobile] Setting up USB reverse port forwarding (tcp:9001, tcp:9002, tcp:9004, tcp:8081)...'
+    );
+    const rev1 = spawn([adb, 'reverse', 'tcp:9001', 'tcp:9001']);
+    await Promise.race([rev1.exited, new Promise((r) => setTimeout(r, 1500))]);
+    const rev2 = spawn([adb, 'reverse', 'tcp:9002', 'tcp:9002']);
+    await Promise.race([rev2.exited, new Promise((r) => setTimeout(r, 1500))]);
+    const rev4 = spawn([adb, 'reverse', 'tcp:9004', 'tcp:9004']);
+    await Promise.race([rev4.exited, new Promise((r) => setTimeout(r, 1500))]);
+    const rev3 = spawn([adb, 'reverse', 'tcp:8081', 'tcp:8081']);
+    await Promise.race([rev3.exited, new Promise((r) => setTimeout(r, 1500))]);
 
     // Check if Metro bundler is already running on IPv4
     let mobileProc: Subprocess | null = null;
     let isRunning = false;
     try {
-      const res = await fetch("http://127.0.0.1:8081", { signal: AbortSignal.timeout(1000) });
+      const res = await fetch('http://127.0.0.1:8081', { signal: AbortSignal.timeout(1000) });
       isRunning = res.status === 200 || res.status === 404;
     } catch {}
 
     if (isRunning) {
-      console.log("[Mobile] ⚡ Metro bundler is already running on port 8081 (IPv4).");
+      console.log('[Mobile] ⚡ Metro bundler is already running on port 8081 (IPv4).');
     } else {
-      if (process.platform === "win32") {
+      if (process.platform === 'win32') {
         try {
-          const portCheck = Bun.spawnSync(["powershell", "-NoProfile", "-Command", "Get-NetTCPConnection -State Listen -LocalPort 8081 -ErrorAction SilentlyContinue | Select-Object LocalPort,OwningProcess -Unique | ForEach-Object { $owner = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; \"port $($_.LocalPort), PID $($_.OwningProcess), process $($owner.ProcessName)\" }"]);
+          const portCheck = Bun.spawnSync([
+            'powershell',
+            '-NoProfile',
+            '-Command',
+            'Get-NetTCPConnection -State Listen -LocalPort 8081 -ErrorAction SilentlyContinue | Select-Object LocalPort,OwningProcess -Unique | ForEach-Object { $owner = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; "port $($_.LocalPort), PID $($_.OwningProcess), process $($owner.ProcessName)" }',
+          ]);
           const listeners = portCheck.stdout.toString().trim();
           if (listeners) {
-            console.warn(`[Mobile] Port 8081 is occupied; leaving the existing listener running. Stop it manually if Metro cannot start.\n${listeners}`);
+            console.warn(
+              `[Mobile] Port 8081 is occupied; leaving the existing listener running. Stop it manually if Metro cannot start.\n${listeners}`
+            );
           }
         } catch {}
       }
 
-function getTailscaleIp(): string | null {
-  try {
-    const tailscaleExe = process.platform === "win32"
-      ? "C:\\Program Files\\Tailscale\\tailscale.exe"
-      : "tailscale";
-    const res = Bun.spawnSync([tailscaleExe, "ip", "-4"]);
-    if (res.exitCode === 0) {
-      const ip = res.stdout.toString().trim();
-      if (ip && ip.startsWith("100.")) {
-        return ip;
+      function getTailscaleIp(): string | null {
+        try {
+          const tailscaleExe =
+            process.platform === 'win32'
+              ? 'C:\\Program Files\\Tailscale\\tailscale.exe'
+              : 'tailscale';
+          const res = Bun.spawnSync([tailscaleExe, 'ip', '-4']);
+          if (res.exitCode === 0) {
+            const ip = res.stdout.toString().trim();
+            if (ip && ip.startsWith('100.')) {
+              return ip;
+            }
+          }
+        } catch {}
+        return null;
       }
-    }
-  } catch {}
-  return null;
-}
 
       const tailscaleIp = getTailscaleIp();
       if (tailscaleIp) {
         console.log(`[Mobile] 🔒 Detected Tailscale IP: ${tailscaleIp}`);
       }
 
-      console.log("[Mobile] 🚀 Starting Expo mobile development server on port 8081 (all interfaces)...");
-      mobileProc = spawn(["bun", "run", "start", "--", "--host", "lan"], {
-        cwd: "common/mobile",
-        stdout: "inherit",
-        stderr: "inherit",
-        stdin: "pipe",
+      console.log(
+        '[Mobile] 🚀 Starting Expo mobile development server on port 8081 (all interfaces)...'
+      );
+      mobileProc = spawn(['bun', 'run', 'start', '--', '--host', 'lan'], {
+        cwd: 'common/mobile',
+        stdout: 'inherit',
+        stderr: 'inherit',
+        stdin: 'pipe',
         env: {
           ...process.env,
-          EXPO_NO_TELEMETRY: "1",
+          EXPO_NO_TELEMETRY: '1',
           ...(tailscaleIp ? { EXPO_PUBLIC_TAILSCALE_IP: tailscaleIp } : {}),
         },
       });
-
     }
 
     // Wait for Metro packager to be ready before opening the app on device
@@ -423,31 +480,59 @@ function getTailscaleIp(): string | null {
       let ready = false;
       for (let i = 0; i < maxAttempts; i++) {
         try {
-          const res = await fetch("http://127.0.0.1:8081/status", { signal: AbortSignal.timeout(1000) });
+          const res = await fetch('http://127.0.0.1:8081/status', {
+            signal: AbortSignal.timeout(1000),
+          });
           if (res.status === 200) {
             ready = true;
             break;
           }
         } catch {}
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 500));
       }
 
       if (ready) {
-        console.log("[Mobile] 📱 Metro is ready. Opening app on device...");
+        console.log('[Mobile] 📱 Metro is ready. Opening app on device...');
       } else {
-        console.warn("[Mobile] ⚠️ Metro bundler readiness check timed out. Attempting launch anyway...");
+        console.warn(
+          '[Mobile] ⚠️ Metro bundler readiness check timed out. Attempting launch anyway...'
+        );
       }
 
       try {
-        const checkPkg = Bun.spawnSync([adb, "shell", "pm", "list", "packages", "com.technerds.blinkyremote"]);
-        const isCustomInstalled = checkPkg.stdout.toString().includes("com.technerds.blinkyremote");
+        const checkPkg = Bun.spawnSync([
+          adb,
+          'shell',
+          'pm',
+          'list',
+          'packages',
+          'com.technerds.blinkyremote',
+        ]);
+        const isCustomInstalled = checkPkg.stdout.toString().includes('com.technerds.blinkyremote');
         if (isCustomInstalled) {
-          console.log("[Mobile] 📱 Launching Blinky custom native app on device...");
-          const launchCustom = spawn([adb, "shell", "am", "start", "-n", "com.technerds.blinkyremote/.MainActivity"]);
+          console.log('[Mobile] 📱 Launching Blinky custom native app on device...');
+          const launchCustom = spawn([
+            adb,
+            'shell',
+            'am',
+            'start',
+            '-n',
+            'com.technerds.blinkyremote/.MainActivity',
+          ]);
           await launchCustom.exited;
         } else {
-          console.log("[Mobile] 📱 Launching Expo Go on device...");
-          const launchExpo = spawn([adb, "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", "exp://127.0.0.1:8081", "host.exp.exponent"]);
+          console.log('[Mobile] 📱 Launching Expo Go on device...');
+          const launchExpo = spawn([
+            adb,
+            'shell',
+            'am',
+            'start',
+            '-a',
+            'android.intent.action.VIEW',
+            '-d',
+            'exp://127.0.0.1:8081',
+            'host.exp.exponent',
+          ]);
           await launchExpo.exited;
         }
       } catch (err: any) {
@@ -464,21 +549,20 @@ function getTailscaleIp(): string | null {
 
 await ensureSearXNGStarted();
 
-
 let mobileProcess: Subprocess | null = null;
 if (!noMobile) {
   mobileProcess = await checkAndStartMobileIfUsbConnected();
 }
 
-if (process.platform === "win32" && !existsSync("common/python_runtime/Python313")) {
-  console.log("Preparing Python runtime...");
-  const prepProc = spawn(["bun", "common/scripts/prepare-python-runtime.mjs"], {
-    stdout: "inherit",
-    stderr: "inherit",
+if (process.platform === 'win32' && !existsSync('common/python_runtime/Python313')) {
+  console.log('Preparing Python runtime...');
+  const prepProc = spawn(['bun', 'common/scripts/prepare-python-runtime.mjs'], {
+    stdout: 'inherit',
+    stderr: 'inherit',
   });
   const exitCode = await prepProc.exited;
   if (exitCode !== 0) {
-    console.error("Warning: Python runtime preparation returned non-zero exit code.");
+    console.error('Warning: Python runtime preparation returned non-zero exit code.');
   }
 }
 
@@ -486,43 +570,45 @@ const customPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 5173;
 
 /** Stops only the Windows process tree started by this dev run. */
 const killWindowsProcessTree = (pid?: number) => {
-  if (process.platform !== "win32" || !pid) return;
+  if (process.platform !== 'win32' || !pid) return;
   try {
-    Bun.spawnSync(["taskkill", "/F", "/T", "/PID", String(pid)]);
+    Bun.spawnSync(['taskkill', '/F', '/T', '/PID', String(pid)]);
   } catch {}
 };
 
 /** Kills any processes listening on Blinky dev ports. */
 const killBlinkyPorts = () => {
-  if (process.platform !== "win32") return;
+  if (process.platform !== 'win32') return;
   const ports = [5173, 9001, 9002, 8081];
   try {
-    const cmd = `Get-NetTCPConnection -State Listen -LocalPort ${ports.join(",")} -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | Sort-Object -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }`;
-    Bun.spawnSync(["powershell", "-NoProfile", "-Command", cmd]);
-    console.log("[Blinky] 🧹 Cleared existing processes on dev ports (5173, 9001, 9002, 8081).");
+    const cmd = `Get-NetTCPConnection -State Listen -LocalPort ${ports.join(',')} -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | Sort-Object -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }`;
+    Bun.spawnSync(['powershell', '-NoProfile', '-Command', cmd]);
+    console.log('[Blinky] 🧹 Cleared existing processes on dev ports (5173, 9001, 9002, 8081).');
   } catch {}
 };
 
 /** Reports existing Windows listeners without terminating unrelated processes. */
 const reportWindowsPortConflicts = () => {
-  if (process.platform !== "win32") return;
+  if (process.platform !== 'win32') return;
   const ports = [...new Set([customPort, 9001, 9002])].filter(Number.isInteger);
-  const command = `Get-NetTCPConnection -State Listen -LocalPort ${ports.join(",")} -ErrorAction SilentlyContinue | Select-Object LocalPort,OwningProcess -Unique | ForEach-Object { $owner = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; "port $($_.LocalPort), PID $($_.OwningProcess), process $($owner.ProcessName)" }`;
+  const command = `Get-NetTCPConnection -State Listen -LocalPort ${ports.join(',')} -ErrorAction SilentlyContinue | Select-Object LocalPort,OwningProcess -Unique | ForEach-Object { $owner = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; "port $($_.LocalPort), PID $($_.OwningProcess), process $($owner.ProcessName)" }`;
   try {
-    const result = Bun.spawnSync(["powershell", "-NoProfile", "-Command", command]);
+    const result = Bun.spawnSync(['powershell', '-NoProfile', '-Command', command]);
     const listeners = result.stdout.toString().trim();
     if (listeners) {
-      console.warn(`[Blinky] Existing listeners detected; they will be left running. Resolve these port conflicts if startup fails:\n${listeners}`);
+      console.warn(
+        `[Blinky] Existing listeners detected; they will be left running. Resolve these port conflicts if startup fails:\n${listeners}`
+      );
     }
   } catch {}
 };
 
 /** Restores the user's standard Windows cursor scheme after development runs. */
 const restoreWindowsSystemCursor = () => {
-  if (process.platform === "win32") {
+  if (process.platform === 'win32') {
     try {
-      const { dlopen, FFIType } = require("bun:ffi");
-      const user32 = dlopen("user32.dll", {
+      const { dlopen, FFIType } = require('bun:ffi');
+      const user32 = dlopen('user32.dll', {
         SystemParametersInfoW: {
           args: [FFIType.u32, FFIType.u32, FFIType.ptr, FFIType.u32],
           returns: FFIType.bool,
@@ -531,7 +617,12 @@ const restoreWindowsSystemCursor = () => {
       user32.symbols.SystemParametersInfoW(0x0057 /* SPI_SETCURSORS */, 0, null, 0);
     } catch {
       try {
-        Bun.spawnSync(["powershell", "-NoProfile", "-Command", "rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True"]);
+        Bun.spawnSync([
+          'powershell',
+          '-NoProfile',
+          '-Command',
+          'rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True',
+        ]);
       } catch {}
     }
   }
@@ -542,7 +633,7 @@ restoreWindowsSystemCursor();
 killBlinkyPorts();
 reportWindowsPortConflicts();
 
-const tauriArgs = ["bun", "tauri", "dev"];
+const tauriArgs = ['bun', 'tauri', 'dev'];
 if (process.env.PORT) {
   const dynamicConfig = JSON.stringify({
     build: {
@@ -554,14 +645,14 @@ if (process.env.PORT) {
       },
     },
   });
-  tauriArgs.push("--config", dynamicConfig);
+  tauriArgs.push('--config', dynamicConfig);
 }
 
 console.log(`Starting Tauri Development Server on port ${customPort}...`);
 const tauriDev = spawn(tauriArgs, {
-  stdout: "inherit",
-  stderr: "inherit",
-  stdin: "ignore",
+  stdout: 'inherit',
+  stderr: 'inherit',
+  stdin: 'ignore',
 });
 
 const cleanup = () => {
@@ -579,18 +670,17 @@ const cleanup = () => {
   restoreWindowsSystemCursor();
 };
 
-
 const adbCmd = getAdbPath();
 if (process.stdin.isTTY) {
   try {
     process.stdin.setRawMode(true);
     process.stdin.resume();
-    process.stdin.setEncoding("utf8");
+    process.stdin.setEncoding('utf8');
 
-    process.stdin.on("data", (key: string) => {
+    process.stdin.on('data', (key: string) => {
       // Handle Ctrl+C
-      if (key === "\u0003") {
-        console.log("\n[Blinky] 🛑 Shutting down dev servers and closing Blinky PC app...");
+      if (key === '\u0003') {
+        console.log('\n[Blinky] 🛑 Shutting down dev servers and closing Blinky PC app...');
         cleanup();
         process.exit(0);
       }
@@ -607,30 +697,71 @@ if (process.stdin.isTTY) {
       if (adbCmd) {
         const checkCustomInstalled = () => {
           try {
-            const checkPkg = Bun.spawnSync([adbCmd, "shell", "pm", "list", "packages", "com.technerds.blinkyremote"]);
-            return checkPkg.stdout.toString().includes("com.technerds.blinkyremote");
+            const checkPkg = Bun.spawnSync([
+              adbCmd,
+              'shell',
+              'pm',
+              'list',
+              'packages',
+              'com.technerds.blinkyremote',
+            ]);
+            return checkPkg.stdout.toString().includes('com.technerds.blinkyremote');
           } catch {
             return false;
           }
         };
 
-        if (k === "r") {
-          console.log("\n[Mobile] 🔄 Reloading app on connected device...");
+        if (k === 'r') {
+          console.log('\n[Mobile] 🔄 Reloading app on connected device...');
           if (checkCustomInstalled()) {
-            spawn([adbCmd, "shell", "am", "start", "-n", "com.technerds.blinkyremote/.MainActivity"]);
+            spawn([
+              adbCmd,
+              'shell',
+              'am',
+              'start',
+              '-n',
+              'com.technerds.blinkyremote/.MainActivity',
+            ]);
           } else {
-            spawn([adbCmd, "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", "exp://127.0.0.1:8081", "host.exp.exponent"]);
+            spawn([
+              adbCmd,
+              'shell',
+              'am',
+              'start',
+              '-a',
+              'android.intent.action.VIEW',
+              '-d',
+              'exp://127.0.0.1:8081',
+              'host.exp.exponent',
+            ]);
           }
-        } else if (k === "m") {
-          console.log("\n[Mobile] 📱 Toggling developer menu on device...");
-          spawn([adbCmd, "shell", "input", "keyevent", "82"]);
-        } else if (k === "a") {
+        } else if (k === 'm') {
+          console.log('\n[Mobile] 📱 Toggling developer menu on device...');
+          spawn([adbCmd, 'shell', 'input', 'keyevent', '82']);
+        } else if (k === 'a') {
           if (checkCustomInstalled()) {
-            console.log("\n[Mobile] 📱 Opening Blinky custom native app on device...");
-            spawn([adbCmd, "shell", "am", "start", "-n", "com.technerds.blinkyremote/.MainActivity"]);
+            console.log('\n[Mobile] 📱 Opening Blinky custom native app on device...');
+            spawn([
+              adbCmd,
+              'shell',
+              'am',
+              'start',
+              '-n',
+              'com.technerds.blinkyremote/.MainActivity',
+            ]);
           } else {
-            console.log("\n[Mobile] 📱 Opening Expo Go on device...");
-            spawn([adbCmd, "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", "exp://127.0.0.1:8081", "host.exp.exponent"]);
+            console.log('\n[Mobile] 📱 Opening Expo Go on device...');
+            spawn([
+              adbCmd,
+              'shell',
+              'am',
+              'start',
+              '-a',
+              'android.intent.action.VIEW',
+              '-d',
+              'exp://127.0.0.1:8081',
+              'host.exp.exponent',
+            ]);
           }
         }
       }
@@ -638,15 +769,15 @@ if (process.stdin.isTTY) {
   } catch {}
 }
 
-process.on("SIGINT", () => {
+process.on('SIGINT', () => {
   cleanup();
   process.exit(0);
 });
-process.on("SIGTERM", () => {
+process.on('SIGTERM', () => {
   cleanup();
   process.exit(0);
 });
-process.on("exit", cleanup);
+process.on('exit', cleanup);
 
 // Wait for Tauri dev process to exit
 const exitCode = await tauriDev.exited;

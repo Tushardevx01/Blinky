@@ -13,6 +13,7 @@
 ### Task 1: Autopilot Loop Helper
 
 **Files:**
+
 - Create: `frontend/src/lib/autopilot.ts`
 - Create: `frontend/tests/autopilot.test.ts`
 
@@ -23,6 +24,7 @@
 ### Task 2: Click Command
 
 **Files:**
+
 - Modify: `src-tauri/src/lib.rs`
 - Modify: `frontend/src/lib/tauri.ts`
 
@@ -33,6 +35,7 @@
 ### Task 3: Command Bar Integration
 
 **Files:**
+
 - Modify: `frontend/src/CommandBar.tsx`
 - Test: `frontend/tests/autopilot.test.ts`
 

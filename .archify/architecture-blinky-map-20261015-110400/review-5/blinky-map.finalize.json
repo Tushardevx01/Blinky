@@ -84,14 +84,8 @@
                 "lx": 625,
                 "ly": 273.95
               },
-              "from": [
-                625,
-                127.05
-              ],
-              "to": [
-                625,
-                472
-              ]
+              "from": [625, 127.05],
+              "to": [625, 472]
             },
             "supportedFixes": [
               "adjust labelAt, labelDx, labelDy, or labelSegment; otherwise adjust the other relationship route/via/channel"
@@ -111,10 +105,7 @@
               "clearGapPx": 70,
               "minimumGapPx": 98,
               "labelWidthPx": 82,
-              "obstacles": [
-                "blinky_agent",
-                "decision_engine"
-              ]
+              "obstacles": ["blinky_agent", "decision_engine"]
             },
             "supportedFixes": [
               "increase the clear gap between the connected nodes to at least 98px",
@@ -182,14 +173,8 @@
           "lx": 625,
           "ly": 273.95
         },
-        "from": [
-          625,
-          127.05
-        ],
-        "to": [
-          625,
-          472
-        ]
+        "from": [625, 127.05],
+        "to": [625, 472]
       },
       "supportedFixes": [
         "adjust labelAt, labelDx, labelDy, or labelSegment; otherwise adjust the other relationship route/via/channel"
@@ -209,10 +194,7 @@
         "clearGapPx": 70,
         "minimumGapPx": 98,
         "labelWidthPx": 82,
-        "obstacles": [
-          "blinky_agent",
-          "decision_engine"
-        ]
+        "obstacles": ["blinky_agent", "decision_engine"]
       },
       "supportedFixes": [
         "increase the clear gap between the connected nodes to at least 98px",

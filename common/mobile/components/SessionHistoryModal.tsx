@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  FlatList,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { colors, typography, radius, spacing } from '../theme/theme';
@@ -47,18 +39,14 @@ export function SessionHistoryModal({
 
   const confirmDelete = (session: BlinkyChatSession) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      'Delete Conversation',
-      `Are you sure you want to delete "${session.title}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => onDeleteSession(session.id),
-        },
-      ]
-    );
+    Alert.alert('Delete Conversation', `Are you sure you want to delete "${session.title}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => onDeleteSession(session.id),
+      },
+    ]);
   };
 
   const confirmClearAll = () => {
@@ -110,7 +98,9 @@ export function SessionHistoryModal({
             <View style={styles.emptyContainer}>
               <Ionicons name="time-outline" size={42} color={colors.textMuted} />
               <Text style={styles.emptyText}>No previous conversations</Text>
-              <Text style={styles.emptySubText}>Tasks and questions you ask Blinky will be saved here.</Text>
+              <Text style={styles.emptySubText}>
+                Tasks and questions you ask Blinky will be saved here.
+              </Text>
             </View>
           ) : (
             <FlatList
@@ -130,7 +120,9 @@ export function SessionHistoryModal({
                     }}
                   >
                     <View style={styles.sessionLeft}>
-                      <View style={[styles.sessionIconWrapper, isActive && styles.sessionIconActive]}>
+                      <View
+                        style={[styles.sessionIconWrapper, isActive && styles.sessionIconActive]}
+                      >
                         <Ionicons
                           name={item.mode === 'grounded' ? 'book-outline' : 'desktop-outline'}
                           size={16}
@@ -138,7 +130,10 @@ export function SessionHistoryModal({
                         />
                       </View>
                       <View style={styles.sessionDetails}>
-                        <Text style={[styles.sessionTitle, isActive && styles.sessionTitleActive]} numberOfLines={1}>
+                        <Text
+                          style={[styles.sessionTitle, isActive && styles.sessionTitleActive]}
+                          numberOfLines={1}
+                        >
                           {item.title}
                         </Text>
                         <View style={styles.sessionMeta}>

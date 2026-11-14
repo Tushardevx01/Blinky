@@ -25,19 +25,19 @@ AiCut is invoked from Python and shells out to its C++ executable and/or FFmpeg 
 
 ## Process boundaries and ownership
 
-| Boundary | Primary source | Owns | Does not own |
-|---|---|---|---|
-| Tauri host | `common/src-tauri/src/lib.rs` | app lifecycle, windows, tray, shortcuts, native input commands, child processes, settings, wake-word process | intent classification or screen reasoning |
-| LAN/daemon bridge | `common/src-tauri/src/websocket.rs` | WebSocket protocol, mobile commands, Sarvam proxies, persistent `agent_router.py` daemon | UI presentation |
-| Desktop UI | `common/frontend/src/` | command/overlay rendering, user modes, streaming status, direct HTTPS Sarvam TTS/STT, bounded autopilot execution | LAN server ownership |
-| Python orchestrator | `common/python/main.py` | intent preflight, fast-path routing, capture/OCR/UI-map pipeline, tutor result contract | native window lifecycle |
-| Agent daemon | `common/python/agent_router.py` | line-delimited query service, deterministic/browser/tool routing, generated tool registry | desktop WebSocket transport |
-| Computer-use engine | `common/python/computer_use/` | Linux agent loop, planning, grounding, action tools, verification, recovery, recipes | React safety/UI state |
-| Web information layer | `common/python/wil/` | query planning, SearXNG retrieval, acquisition, processing, reasoning, sources | OS automation |
-| OS adapters | `windows/python/`, `linux/python/backend/`, platform Rust files | capture, OCR/accessibility, windows, input, power/media commands | product routing policy |
-| Mobile remote | `common/mobile/` | discovery, release native pinned-WSS/HTTPS and Keystore-or-Keychain connection, development WS/HTTP connection, file picker, streaming transfer, query/voice UX | desktop execution and process-restart recovery |
-| WhatsApp service | `common/whatsapp_backend/` | WhatsApp Web session, QR/status/chats/summaries, Socket.IO UI, ntfy | core tutor protocol |
-| AiCut | `common/aicut/`, `common/python/tools/aicut_tool.py` | deterministic edit intent, FFmpeg operations, subtitles/transcription/media inspection | general desktop automation |
+| Boundary              | Primary source                                                  | Owns                                                                                                                                                            | Does not own                                   |
+| --------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Tauri host            | `common/src-tauri/src/lib.rs`                                   | app lifecycle, windows, tray, shortcuts, native input commands, child processes, settings, wake-word process                                                    | intent classification or screen reasoning      |
+| LAN/daemon bridge     | `common/src-tauri/src/websocket.rs`                             | WebSocket protocol, mobile commands, Sarvam proxies, persistent `agent_router.py` daemon                                                                        | UI presentation                                |
+| Desktop UI            | `common/frontend/src/`                                          | command/overlay rendering, user modes, streaming status, direct HTTPS Sarvam TTS/STT, bounded autopilot execution                                               | LAN server ownership                           |
+| Python orchestrator   | `common/python/main.py`                                         | intent preflight, fast-path routing, capture/OCR/UI-map pipeline, tutor result contract                                                                         | native window lifecycle                        |
+| Agent daemon          | `common/python/agent_router.py`                                 | line-delimited query service, deterministic/browser/tool routing, generated tool registry                                                                       | desktop WebSocket transport                    |
+| Computer-use engine   | `common/python/computer_use/`                                   | Linux agent loop, planning, grounding, action tools, verification, recovery, recipes                                                                            | React safety/UI state                          |
+| Web information layer | `common/python/wil/`                                            | query planning, SearXNG retrieval, acquisition, processing, reasoning, sources                                                                                  | OS automation                                  |
+| OS adapters           | `windows/python/`, `linux/python/backend/`, platform Rust files | capture, OCR/accessibility, windows, input, power/media commands                                                                                                | product routing policy                         |
+| Mobile remote         | `common/mobile/`                                                | discovery, release native pinned-WSS/HTTPS and Keystore-or-Keychain connection, development WS/HTTP connection, file picker, streaming transfer, query/voice UX | desktop execution and process-restart recovery |
+| WhatsApp service      | `common/whatsapp_backend/`                                      | WhatsApp Web session, QR/status/chats/summaries, Socket.IO UI, ntfy                                                                                             | core tutor protocol                            |
+| AiCut                 | `common/aicut/`, `common/python/tools/aicut_tool.py`            | deterministic edit intent, FFmpeg operations, subtitles/transcription/media inspection                                                                          | general desktop automation                     |
 
 ## Deployment units
 

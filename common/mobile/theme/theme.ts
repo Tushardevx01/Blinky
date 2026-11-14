@@ -45,5 +45,11 @@ export const typography = {
   bodyLarge: { fontFamily: 'OkineSans', fontSize: 16, fontWeight: '400', letterSpacing: -0.2 },
   bodyMedium: { fontFamily: 'OkineSans', fontSize: 14, fontWeight: '400', letterSpacing: -0.1 },
   bodySmall: { fontFamily: 'OkineSansMedium', fontSize: 13, fontWeight: '500', letterSpacing: 0 },
-  label: { fontFamily: 'OkineSansMedium', fontSize: 11, fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase' },
+  label: {
+    fontFamily: 'OkineSansMedium',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
 } as const;

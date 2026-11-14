@@ -2,7 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { runTutor } from './lib/tauri';
-import { Zap, Minus, Square, X, Plus, Upload, FileText, Sparkles, Paperclip, Send, Box, ChevronRight, MessageCircleQuestion, Layers, CheckSquare, Lightbulb, Globe, Mic } from 'lucide-react';
+import {
+  Zap,
+  Minus,
+  Square,
+  X,
+  Plus,
+  Upload,
+  FileText,
+  Sparkles,
+  Paperclip,
+  Send,
+  Box,
+  ChevronRight,
+  MessageCircleQuestion,
+  Layers,
+  CheckSquare,
+  Lightbulb,
+  Globe,
+  Mic,
+} from 'lucide-react';
 
 export interface Source {
   id: string;
@@ -211,7 +230,9 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
         nb.id === activeNotebookId
           ? {
               ...nb,
-              sources: nb.sources.map((s) => (s.id === sourceId ? { ...s, active: nextActive } : s)),
+              sources: nb.sources.map((s) =>
+                s.id === sourceId ? { ...s, active: nextActive } : s
+              ),
             }
           : nb
       )
@@ -235,13 +256,16 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
         prompt = 'Generate a high-level Executive Summary of all active sources in this notebook.';
         break;
       case 'faq':
-        prompt = 'Generate a list of Frequently Asked Questions (FAQs) based on these notebook sources.';
+        prompt =
+          'Generate a list of Frequently Asked Questions (FAQs) based on these notebook sources.';
         break;
       case 'study':
-        prompt = 'Create a structured Study Guide with key takeaways and definitions from these sources.';
+        prompt =
+          'Create a structured Study Guide with key takeaways and definitions from these sources.';
         break;
       case 'action':
-        prompt = 'Extract a step-by-step Action Checklist of tasks mentioned across these notebook sources.';
+        prompt =
+          'Extract a step-by-step Action Checklist of tasks mentioned across these notebook sources.';
         break;
     }
     if (prompt) handleSendMessage(prompt);
@@ -250,14 +274,17 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
   return (
     <div className={`notebook-overlay ${isStandalone ? 'notebook-standalone' : ''}`}>
       <div className="notebook-container">
-        
         {/* HEADER */}
         <div className="notebook-header">
           <div className="header-left">
             <img src="/logo_text.png" alt="Blinky" className="header-logo" />
             <span className="notebook-badge-red">OKF NOTEBOOK</span>
             <span className="notebook-title-caps">DEFAULT KNOWLEDGE HUB</span>
-            <button className="rag-badge" onClick={() => setUseVectorSearch(!useVectorSearch)} title="Toggle between Dense Vector RAG and Full Context OKF">
+            <button
+              className="rag-badge"
+              onClick={() => setUseVectorSearch(!useVectorSearch)}
+              title="Toggle between Dense Vector RAG and Full Context OKF"
+            >
               <Zap size={12} /> {useVectorSearch ? 'Dense Vector RAG' : 'Full Context OKF'}
             </button>
           </div>
@@ -265,7 +292,6 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
 
         {/* 3-COLUMN WORKSPACE GRID */}
         <div className="notebook-grid">
-          
           {/* LEFT COLUMN: SOURCES */}
           <div className="notebook-col notebook-sources-col">
             <div className="col-header-flex">
@@ -285,7 +311,10 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
 
             <div
               className={`sources-dropzone ${dragOver ? 'dragover' : ''} ${uploading ? 'uploading' : ''}`}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
               onDragLeave={() => setDragOver(false)}
               onDrop={async (e) => {
                 e.preventDefault();
@@ -302,36 +331,85 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                 }
               }}
             >
-              <Upload size={24} color={uploading ? "#94a3b8" : "#FF5A00"} style={{opacity: uploading ? 0.5 : 0.8}} />
-              <p>{uploading ? 'Parsing and vector-indexing files...' : 'Drag & drop PDFs, Markdown, or text documents here'}</p>
+              <Upload
+                size={24}
+                color={uploading ? '#94a3b8' : '#FF5A00'}
+                style={{ opacity: uploading ? 0.5 : 0.8 }}
+              />
+              <p>
+                {uploading
+                  ? 'Parsing and vector-indexing files...'
+                  : 'Drag & drop PDFs, Markdown, or text documents here'}
+              </p>
               {!uploading && <small>Supported: PDF, MD, TXT</small>}
             </div>
 
             <div className="sources-list">
               {activeNotebook.sources.length === 0 && !uploading && (
                 <div className="empty-sources">
-
-                  <p>No sources added yet.<br/>Drop PDFs or notes above to begin.</p>
+                  <p>
+                    No sources added yet.
+                    <br />
+                    Drop PDFs or notes above to begin.
+                  </p>
                 </div>
               )}
               {activeNotebook.sources.map((src) => (
-                <div key={src.id} className={`source-card ${src.active ? 'active' : 'inactive'}`} style={{display: 'flex', gap: '12px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', marginBottom: '8px', border: '1px solid rgba(255,255,255,0.05)', opacity: src.active ? 1 : 0.5}}>
+                <div
+                  key={src.id}
+                  className={`source-card ${src.active ? 'active' : 'inactive'}`}
+                  style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px',
+                    background: 'rgba(255,255,255,0.03)',
+                    borderRadius: '8px',
+                    marginBottom: '8px',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    opacity: src.active ? 1 : 0.5,
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={src.active}
                     onChange={() => toggleSourceActive(src.id, src.active)}
                     className="source-checkbox"
-                    title={src.active ? 'Disable from grounded context' : 'Enable in grounded context'}
+                    title={
+                      src.active ? 'Disable from grounded context' : 'Enable in grounded context'
+                    }
                   />
-                  <div className="source-info" style={{flex: 1, minWidth: 0}}>
-                    <div className="source-name" title={src.source_name} style={{fontSize: '13px', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '4px'}}>
+                  <div className="source-info" style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      className="source-name"
+                      title={src.source_name}
+                      style={{
+                        fontSize: '13px',
+                        color: '#fff',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: '4px',
+                      }}
+                    >
                       {src.source_name}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className={`source-badge-type`} style={{fontSize: '10px', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontWeight: 600}}>
+                      <span
+                        className={`source-badge-type`}
+                        style={{
+                          fontSize: '10px',
+                          background: 'rgba(255,255,255,0.1)',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {src.file_type.toUpperCase()}
                       </span>
-                      <span className="source-meta" style={{fontSize: '11px', color: 'rgba(255,255,255,0.5)'}}>
+                      <span
+                        className="source-meta"
+                        style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}
+                      >
                         {src.word_count.toLocaleString()} words
                       </span>
                     </div>
@@ -354,30 +432,54 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                       <span className="ai-label">Blinky Notebook AI</span>
                       <span className="time-label">{messages[0].timestamp}</span>
                     </div>
-                    <h2>Welcome to your <span className="highlight">Blinky Knowledge Hub!</span> 📚</h2>
-                    <p>Upload your PDFs, Markdown files, or notes on the left to ground the AI. When active, every answer is synthesized with verifiable inline citations.</p>
+                    <h2>
+                      Welcome to your <span className="highlight">Blinky Knowledge Hub!</span> 📚
+                    </h2>
+                    <p>
+                      Upload your PDFs, Markdown files, or notes on the left to ground the AI. When
+                      active, every answer is synthesized with verifiable inline citations.
+                    </p>
                   </div>
                 </div>
               ) : (
                 messages.map((msg) => (
-                  <div key={msg.id} className={`message-bubble ${msg.sender}`} style={{maxWidth: '80%', padding: '16px', borderRadius: '16px'}}>
-                    <div className="bubble-header" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px', color: 'rgba(255,255,255,0.5)'}}>
-                      <span className="sender-name">{msg.sender === 'user' ? 'You' : 'Blinky Notebook AI'}</span>
+                  <div
+                    key={msg.id}
+                    className={`message-bubble ${msg.sender}`}
+                    style={{ maxWidth: '80%', padding: '16px', borderRadius: '16px' }}
+                  >
+                    <div
+                      className="bubble-header"
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                        fontSize: '12px',
+                        color: 'rgba(255,255,255,0.5)',
+                      }}
+                    >
+                      <span className="sender-name">
+                        {msg.sender === 'user' ? 'You' : 'Blinky Notebook AI'}
+                      </span>
                       <span className="timestamp">{msg.timestamp}</span>
                     </div>
-                    <div className="bubble-text" style={{fontSize: '14px', lineHeight: 1.6}}>
+                    <div className="bubble-text" style={{ fontSize: '14px', lineHeight: 1.6 }}>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
                     </div>
                   </div>
                 ))
               )}
               {loading && (
-                <div className="message-bubble ai loading" style={{padding: '16px'}}>
+                <div className="message-bubble ai loading" style={{ padding: '16px' }}>
                   <div className="typing-indicator">
-                    <span></span><span></span><span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                   </div>
                   <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px' }}>
-                    {useVectorSearch ? 'Searching Vector Database & generating grounded response...' : 'Synthesizing grounded answer across active sources...'}
+                    {useVectorSearch
+                      ? 'Searching Vector Database & generating grounded response...'
+                      : 'Synthesizing grounded answer across active sources...'}
                   </span>
                 </div>
               )}
@@ -386,7 +488,12 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
 
             <div className={`composer-wrapper ${queryInput || dragOver ? 'expanded' : ''}`}>
               <div className="composer-row">
-                <button className="composer-btn-icon" title="Attach file" type="button" tabIndex={-1}>
+                <button
+                  className="composer-btn-icon"
+                  title="Attach file"
+                  type="button"
+                  tabIndex={-1}
+                >
                   <Paperclip size={20} />
                 </button>
 
@@ -404,31 +511,44 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                       {(activeNotebook.sources.length === 0
                         ? 'Add a source document first to ask grounded questions...'
                         : useVectorSearch
-                        ? 'Query notebook using Dense Vector Search...'
-                        : 'Ask a grounded question across active sources...'
-                      ).split('').map((char, i) => (
-                        <span key={i} className="composer-placeholder-char" style={{animationDelay: `${i * 0.02}s`}}>
-                          {char === ' ' ? '\u00A0' : char}
-                        </span>
-                      ))}
+                          ? 'Query notebook using Dense Vector Search...'
+                          : 'Ask a grounded question across active sources...'
+                      )
+                        .split('')
+                        .map((char, i) => (
+                          <span
+                            key={i}
+                            className="composer-placeholder-char"
+                            style={{ animationDelay: `${i * 0.02}s` }}
+                          >
+                            {char === ' ' ? '\u00A0' : char}
+                          </span>
+                        ))}
                     </div>
                   )}
                 </div>
 
-                <button className="composer-btn-icon" title="Voice input" type="button" tabIndex={-1}>
+                <button
+                  className="composer-btn-icon"
+                  title="Voice input"
+                  type="button"
+                  tabIndex={-1}
+                >
                   <Mic size={20} />
                 </button>
-                <button className="composer-send" onClick={() => handleSendMessage()} disabled={loading} type="button" tabIndex={-1}>
+                <button
+                  className="composer-send"
+                  onClick={() => handleSendMessage()}
+                  disabled={loading}
+                  type="button"
+                  tabIndex={-1}
+                >
                   <Send size={18} />
                 </button>
               </div>
 
               <div className="composer-expanded-controls">
-                <button
-                  className="composer-toggle-btn active"
-                  title="Think"
-                  type="button"
-                >
+                <button className="composer-toggle-btn active" title="Think" type="button">
                   <Lightbulb size={16} /> Think
                 </button>
                 <button
@@ -446,13 +566,22 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
           {/* RIGHT COLUMN: STUDIO ARTIFACTS */}
           <div className="notebook-col notebook-artifacts-col">
             <div className="col-header-flex">
-              <h3 style={{display:'flex', alignItems:'center', gap:'8px'}}><Box size={16} /> STUDIO ARTIFACTS</h3>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Box size={16} /> STUDIO ARTIFACTS
+              </h3>
             </div>
-            <p className="artifacts-desc">One-click generate structured knowledge artifacts from your active sources:</p>
+            <p className="artifacts-desc">
+              One-click generate structured knowledge artifacts from your active sources:
+            </p>
 
             <div className="artifact-cards">
-              <div className="artifact-card ac-exec" onClick={() => handleArtifactGenerate('summary')}>
-                <div className="ac-icon"><FileText size={18} /></div>
+              <div
+                className="artifact-card ac-exec"
+                onClick={() => handleArtifactGenerate('summary')}
+              >
+                <div className="ac-icon">
+                  <FileText size={18} />
+                </div>
                 <div className="ac-text">
                   <h4>Executive Summary</h4>
                   <p>High-level key points overview</p>
@@ -461,7 +590,9 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
               </div>
 
               <div className="artifact-card ac-faq" onClick={() => handleArtifactGenerate('faq')}>
-                <div className="ac-icon"><MessageCircleQuestion size={18} /></div>
+                <div className="ac-icon">
+                  <MessageCircleQuestion size={18} />
+                </div>
                 <div className="ac-text">
                   <h4>FAQ Generator</h4>
                   <p>Question & Answer study guide</p>
@@ -469,8 +600,13 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                 <ChevronRight size={16} />
               </div>
 
-              <div className="artifact-card ac-study" onClick={() => handleArtifactGenerate('study')}>
-                <div className="ac-icon"><Layers size={18} /></div>
+              <div
+                className="artifact-card ac-study"
+                onClick={() => handleArtifactGenerate('study')}
+              >
+                <div className="ac-icon">
+                  <Layers size={18} />
+                </div>
                 <div className="ac-text">
                   <h4>Study Guide</h4>
                   <p>Definitions & core concepts</p>
@@ -478,8 +614,13 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
                 <ChevronRight size={16} />
               </div>
 
-              <div className="artifact-card ac-action" onClick={() => handleArtifactGenerate('action')}>
-                <div className="ac-icon"><CheckSquare size={18} /></div>
+              <div
+                className="artifact-card ac-action"
+                onClick={() => handleArtifactGenerate('action')}
+              >
+                <div className="ac-icon">
+                  <CheckSquare size={18} />
+                </div>
                 <div className="ac-text">
                   <h4>Action Checklist</h4>
                   <p>Extracted step-by-step tasks</p>
@@ -488,10 +629,8 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ onClose, isStandalon
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   );
 };
-

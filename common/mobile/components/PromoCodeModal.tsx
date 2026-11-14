@@ -79,7 +79,11 @@ export function PromoCodeModal({ visible, onClose, onSuccess }: PromoCodeModalPr
     if (!visible) return;
     const subscription = Keyboard.addListener('keyboardDidShow', () => {
       if (focusedInput.current != null) {
-        scrollRef.current?.scrollResponderScrollNativeHandleToKeyboard(focusedInput.current, 24, true);
+        scrollRef.current?.scrollResponderScrollNativeHandleToKeyboard(
+          focusedInput.current,
+          24,
+          true
+        );
       }
     });
     return () => subscription.remove();
@@ -134,18 +138,10 @@ export function PromoCodeModal({ visible, onClose, onSuccess }: PromoCodeModalPr
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.overlay}>
-          <KeyboardAvoidingView
-            behavior="padding"
-            style={styles.keyboardAvoid}
-          >
+          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
             <ScrollView
               ref={scrollRef}
               contentContainerStyle={styles.scrollContent}
@@ -154,132 +150,133 @@ export function PromoCodeModal({ visible, onClose, onSuccess }: PromoCodeModalPr
               showsVerticalScrollIndicator={false}
               bounces={false}
             >
-            <Animated.View
-              style={[
-                styles.modalCard,
-                { transform: [{ translateY: panY }] },
-              ]}
-            >
-              {/* Drag Handle */}
-              <View {...panResponder.panHandlers} style={styles.dragHandleContainer}>
-                <View style={styles.dragHandle} />
-              </View>
-
-              {/* Header */}
-              <View style={styles.header}>
-                <View style={styles.headerTitleRow}>
-                  <View style={styles.iconCircle}>
-                    <Ionicons name="ticket-outline" size={20} color={colors.accent} />
-                  </View>
-                  <Text style={styles.headerTitle}>Redeem Promo Code</Text>
+              <Animated.View style={[styles.modalCard, { transform: [{ translateY: panY }] }]}>
+                {/* Drag Handle */}
+                <View {...panResponder.panHandlers} style={styles.dragHandleContainer}>
+                  <View style={styles.dragHandle} />
                 </View>
-                <TouchableOpacity
-                  onPress={handleClose}
-                  style={styles.closeBtn}
-                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                >
-                  <Ionicons name="close" size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
-              </View>
 
-              <Text style={styles.description}>
-                Enter your Shipathon pass or promotional voucher code to unlock full PC Controls without a subscription.
-              </Text>
-
-              {/* Code Input */}
-              <View style={styles.inputContainer}>
-                <Ionicons name="key-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. SHIPATHON, BLINKYVIP"
-                  placeholderTextColor={colors.textMuted}
-                  value={code}
-                  onFocus={(event) => {
-                    focusedInput.current = event.nativeEvent.target;
-                  }}
-                  onChangeText={(val) => {
-                    setCode(val.toUpperCase());
-                    if (result) setResult(null);
-                  }}
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                  autoFocus
-                  blurOnSubmit={false}
-                  keyboardType="default"
-                  returnKeyType="done"
-                  onSubmitEditing={handleRedeem}
-                  editable={!loading && !(result?.success)}
-                />
-                {code.length > 0 && !loading && !(result?.success) && (
+                {/* Header */}
+                <View style={styles.header}>
+                  <View style={styles.headerTitleRow}>
+                    <View style={styles.iconCircle}>
+                      <Ionicons name="ticket-outline" size={20} color={colors.accent} />
+                    </View>
+                    <Text style={styles.headerTitle}>Redeem Promo Code</Text>
+                  </View>
                   <TouchableOpacity
-                    onPress={() => {
-                      setCode('');
-                      setResult(null);
-                    }}
-                    style={styles.clearBtn}
+                    onPress={handleClose}
+                    style={styles.closeBtn}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                   >
-                    <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+                    <Ionicons name="close" size={20} color={colors.textSecondary} />
                   </TouchableOpacity>
-                )}
-              </View>
+                </View>
 
-              {/* Result banner */}
-              {result && (
-                <View
-                  style={[
-                    styles.resultBanner,
-                    result.success ? styles.resultSuccess : styles.resultError,
-                  ]}
-                >
+                <Text style={styles.description}>
+                  Enter your Shipathon pass or promotional voucher code to unlock full PC Controls
+                  without a subscription.
+                </Text>
+
+                {/* Code Input */}
+                <View style={styles.inputContainer}>
                   <Ionicons
-                    name={result.success ? 'checkmark-circle' : 'alert-circle'}
+                    name="key-outline"
                     size={18}
-                    color={result.success ? colors.success : colors.danger}
+                    color={colors.textMuted}
+                    style={styles.inputIcon}
                   />
-                  <Text
+                  <TextInput
+                    style={styles.input}
+                    placeholder="e.g. SHIPATHON, BLINKYVIP"
+                    placeholderTextColor={colors.textMuted}
+                    value={code}
+                    onFocus={(event) => {
+                      focusedInput.current = event.nativeEvent.target;
+                    }}
+                    onChangeText={(val) => {
+                      setCode(val.toUpperCase());
+                      if (result) setResult(null);
+                    }}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    autoFocus
+                    blurOnSubmit={false}
+                    keyboardType="default"
+                    returnKeyType="done"
+                    onSubmitEditing={handleRedeem}
+                    editable={!loading && !result?.success}
+                  />
+                  {code.length > 0 && !loading && !result?.success && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCode('');
+                        setResult(null);
+                      }}
+                      style={styles.clearBtn}
+                    >
+                      <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                {/* Result banner */}
+                {result && (
+                  <View
                     style={[
-                      styles.resultText,
-                      result.success ? styles.resultTextSuccess : styles.resultTextError,
+                      styles.resultBanner,
+                      result.success ? styles.resultSuccess : styles.resultError,
                     ]}
                   >
-                    {result.message}
-                  </Text>
+                    <Ionicons
+                      name={result.success ? 'checkmark-circle' : 'alert-circle'}
+                      size={18}
+                      color={result.success ? colors.success : colors.danger}
+                    />
+                    <Text
+                      style={[
+                        styles.resultText,
+                        result.success ? styles.resultTextSuccess : styles.resultTextError,
+                      ]}
+                    >
+                      {result.message}
+                    </Text>
+                  </View>
+                )}
+
+                {/* Action Buttons */}
+                <View style={styles.actionRow}>
+                  <TouchableOpacity
+                    style={[styles.btn, styles.cancelBtn]}
+                    onPress={handleClose}
+                    disabled={loading}
+                  >
+                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.btn,
+                      styles.submitBtn,
+                      loading && styles.btnDisabled,
+                      result?.success && styles.submitBtnSuccess,
+                    ]}
+                    onPress={handleRedeem}
+                    disabled={loading || !!result?.success}
+                  >
+                    {loading ? (
+                      <ActivityIndicator size="small" color={colors.white} />
+                    ) : result?.success ? (
+                      <View style={styles.btnSuccessContent}>
+                        <Ionicons name="checkmark" size={18} color={colors.white} />
+                        <Text style={styles.submitBtnText}>Unlocked!</Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.submitBtnText}>Redeem Code</Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
-              )}
-
-              {/* Action Buttons */}
-              <View style={styles.actionRow}>
-                <TouchableOpacity
-                  style={[styles.btn, styles.cancelBtn]}
-                  onPress={handleClose}
-                  disabled={loading}
-                >
-                  <Text style={styles.cancelBtnText}>Cancel</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.btn,
-                    styles.submitBtn,
-                    loading && styles.btnDisabled,
-                    result?.success && styles.submitBtnSuccess,
-                  ]}
-                  onPress={handleRedeem}
-                  disabled={loading || !!result?.success}
-                >
-                  {loading ? (
-                    <ActivityIndicator size="small" color={colors.white} />
-                  ) : result?.success ? (
-                    <View style={styles.btnSuccessContent}>
-                      <Ionicons name="checkmark" size={18} color={colors.white} />
-                      <Text style={styles.submitBtnText}>Unlocked!</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.submitBtnText}>Redeem Code</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
+              </Animated.View>
             </ScrollView>
           </KeyboardAvoidingView>
         </View>

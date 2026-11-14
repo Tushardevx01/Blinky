@@ -46,7 +46,9 @@ export function SystemScreen({
   isRestoring = false,
 }: SystemScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'restart' | 'sleep' | 'lock' | 'hibernate' | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    'restart' | 'sleep' | 'lock' | 'hibernate' | null
+  >(null);
 
   const panY = useRef(new Animated.Value(0)).current;
 
@@ -138,8 +140,12 @@ export function SystemScreen({
   // Telemetry metrics
   const cpuUsage = systemInfo?.cpu?.percent ?? systemInfo?.cpu_percent ?? 0;
   const ramUsage = systemInfo?.memory?.percent ?? 0;
-  const ramUsedGb = systemInfo?.memory?.used_mb ? (systemInfo.memory.used_mb / 1024).toFixed(1) : undefined;
-  const ramTotalGb = systemInfo?.memory?.total_mb ? (systemInfo.memory.total_mb / 1024).toFixed(1) : undefined;
+  const ramUsedGb = systemInfo?.memory?.used_mb
+    ? (systemInfo.memory.used_mb / 1024).toFixed(1)
+    : undefined;
+  const ramTotalGb = systemInfo?.memory?.total_mb
+    ? (systemInfo.memory.total_mb / 1024).toFixed(1)
+    : undefined;
   const ramSubtitle = ramUsedGb && ramTotalGb ? `${ramUsedGb} / ${ramTotalGb} GB` : undefined;
 
   const hasBattery = systemInfo?.battery?.has_battery ?? false;
@@ -151,7 +157,7 @@ export function SystemScreen({
   const batteryValue = !hasBattery ? 'AC Power' : `${batteryLevel.toFixed(0)}%`;
   const batterySubtitle = !hasBattery
     ? 'AC Mains Nominal'
-    : (batteryStatus || (isPluggedIn ? (isCharging ? 'Charging' : 'Plugged In') : 'Discharging'));
+    : batteryStatus || (isPluggedIn ? (isCharging ? 'Charging' : 'Plugged In') : 'Discharging');
 
   const ipAddress = systemInfo?.network?.ip_address;
   const networkIface = systemInfo?.network?.interface;
@@ -159,8 +165,8 @@ export function SystemScreen({
   const networkSubtitle = ipAddress && networkIface ? networkIface : undefined;
 
   return (
-    <ScrollView 
-      style={styles.container} 
+    <ScrollView
+      style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
         onRefresh ? (
@@ -188,7 +194,12 @@ export function SystemScreen({
         )}
       </View>
       <View style={styles.statusRow}>
-        <View style={[styles.statusIndicator, { backgroundColor: isConnected ? colors.success : colors.danger }]} />
+        <View
+          style={[
+            styles.statusIndicator,
+            { backgroundColor: isConnected ? colors.success : colors.danger },
+          ]}
+        />
         <Text style={styles.statusText}>
           {isConnected ? `Connected to ${systemInfo?.hostname || 'PC'}` : 'Disconnected'}
         </Text>
@@ -211,7 +222,9 @@ export function SystemScreen({
           <View style={styles.paywallFeaturesList}>
             <View style={styles.paywallFeatureItem}>
               <Ionicons name="flash-outline" size={14} color={colors.accent} />
-              <Text style={styles.paywallFeatureText}>Sleep, Restart, Lock & Hibernate controls</Text>
+              <Text style={styles.paywallFeatureText}>
+                Sleep, Restart, Lock & Hibernate controls
+              </Text>
             </View>
             <View style={styles.paywallFeatureItem}>
               <Ionicons name="hardware-chip-outline" size={14} color={colors.accent} />
@@ -272,42 +285,61 @@ export function SystemScreen({
         </View>
       )}
 
-      <View style={isLocked ? styles.lockedContentWrapper : undefined} pointerEvents={isLocked ? 'none' : 'auto'}>
+      <View
+        style={isLocked ? styles.lockedContentWrapper : undefined}
+        pointerEvents={isLocked ? 'none' : 'auto'}
+      >
         <Text style={styles.sectionTitle}>METRICS</Text>
         <View style={styles.metricsGrid}>
-          <MetricCard 
-            icon="hardware-chip" 
-            title="CPU" 
-            value={`${cpuUsage.toFixed(1)}%`} 
-            color="#3B82F6" 
-            subtitle={systemInfo?.platform ? `${systemInfo.platform.toUpperCase()} Host` : undefined}
+          <MetricCard
+            icon="hardware-chip"
+            title="CPU"
+            value={`${cpuUsage.toFixed(1)}%`}
+            color="#3B82F6"
+            subtitle={
+              systemInfo?.platform ? `${systemInfo.platform.toUpperCase()} Host` : undefined
+            }
           />
-          <MetricCard 
-            icon="server" 
-            title="RAM" 
-            value={`${ramUsage.toFixed(1)}%`} 
-            color="#8B5CF6" 
+          <MetricCard
+            icon="server"
+            title="RAM"
+            value={`${ramUsage.toFixed(1)}%`}
+            color="#8B5CF6"
             subtitle={ramSubtitle}
           />
-          <MetricCard 
-            icon={!hasBattery ? "power" : (isPluggedIn ? "battery-charging" : (batteryLevel < 20 ? "battery-dead" : "battery-half"))} 
-            title={!hasBattery ? "Power" : "Battery"} 
-            value={batteryValue} 
-            color={isPluggedIn || !hasBattery ? colors.success : (batteryLevel < 20 ? colors.danger : "#10B981")} 
+          <MetricCard
+            icon={
+              !hasBattery
+                ? 'power'
+                : isPluggedIn
+                  ? 'battery-charging'
+                  : batteryLevel < 20
+                    ? 'battery-dead'
+                    : 'battery-half'
+            }
+            title={!hasBattery ? 'Power' : 'Battery'}
+            value={batteryValue}
+            color={
+              isPluggedIn || !hasBattery
+                ? colors.success
+                : batteryLevel < 20
+                  ? colors.danger
+                  : '#10B981'
+            }
             subtitle={batterySubtitle}
           />
-          <MetricCard 
-            icon="wifi" 
-            title="Network" 
-            value={networkValue} 
-            color="#06B6D4" 
-            isSmallText={networkValue.length > 13} 
+          <MetricCard
+            icon="wifi"
+            title="Network"
+            value={networkValue}
+            color="#06B6D4"
+            isSmallText={networkValue.length > 13}
             subtitle={networkSubtitle}
           />
         </View>
 
         <Text style={[styles.sectionTitle, { marginTop: spacing.lg }]}>POWER CONTROLS</Text>
-        
+
         {onWakePc && (
           <TouchableOpacity
             style={[styles.wakeBtn, isSendingWol && styles.wakeBtnActive]}
@@ -324,16 +356,20 @@ export function SystemScreen({
             </View>
             <View style={styles.wakeTextContainer}>
               <Text style={styles.wakeLabel}>
-                {isSendingWol ? 'Waking PC...' : isWorkstationLocked ? 'Wake / Unlock PC' : 'Wake PC (WoL)'}
+                {isSendingWol
+                  ? 'Waking PC...'
+                  : isWorkstationLocked
+                    ? 'Wake / Unlock PC'
+                    : 'Wake PC (WoL)'}
               </Text>
               <Text style={styles.wakeSubtext}>
                 {isSendingWol
                   ? 'Broadcasting Magic Packet...'
                   : !isConnected
-                  ? 'Send Wake-on-LAN magic packet over network'
-                  : isWorkstationLocked
-                  ? 'Unlock display or send magic packet'
-                  : 'Send Wake-on-LAN magic packet'}
+                    ? 'Send Wake-on-LAN magic packet over network'
+                    : isWorkstationLocked
+                      ? 'Unlock display or send magic packet'
+                      : 'Send Wake-on-LAN magic packet'}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
@@ -341,10 +377,34 @@ export function SystemScreen({
         )}
 
         <View style={styles.powerGrid}>
-          <PowerButton icon="moon" label="Sleep" color="#8B5CF6" onPress={() => handlePromptPowerAction('sleep')} disabled={!isConnected} />
-          <PowerButton icon="lock-closed" label="Lock" color="#F59E0B" onPress={() => handlePromptPowerAction('lock')} disabled={!isConnected} />
-          <PowerButton icon="refresh" label="Restart" color="#06B6D4" onPress={() => handlePromptPowerAction('restart')} disabled={!isConnected} />
-          <PowerButton icon="power" label="Hibernate" color={colors.danger} onPress={() => handlePromptPowerAction('hibernate')} disabled={!isConnected} />
+          <PowerButton
+            icon="moon"
+            label="Sleep"
+            color="#8B5CF6"
+            onPress={() => handlePromptPowerAction('sleep')}
+            disabled={!isConnected}
+          />
+          <PowerButton
+            icon="lock-closed"
+            label="Lock"
+            color="#F59E0B"
+            onPress={() => handlePromptPowerAction('lock')}
+            disabled={!isConnected}
+          />
+          <PowerButton
+            icon="refresh"
+            label="Restart"
+            color="#06B6D4"
+            onPress={() => handlePromptPowerAction('restart')}
+            disabled={!isConnected}
+          />
+          <PowerButton
+            icon="power"
+            label="Hibernate"
+            color={colors.danger}
+            onPress={() => handlePromptPowerAction('hibernate')}
+            disabled={!isConnected}
+          />
         </View>
       </View>
 
@@ -355,11 +415,7 @@ export function SystemScreen({
         animationType="fade"
         onRequestClose={handleDismiss}
       >
-        <TouchableOpacity
-          style={styles.modalBackdrop}
-          activeOpacity={1}
-          onPress={handleDismiss}
-        >
+        <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={handleDismiss}>
           <Animated.View
             style={[
               styles.modalContent,
@@ -383,10 +439,10 @@ export function SystemScreen({
                       pendingAction === 'restart'
                         ? 'rgba(6, 182, 212, 0.15)'
                         : pendingAction === 'hibernate'
-                        ? 'rgba(239, 68, 68, 0.15)'
-                        : pendingAction === 'lock'
-                        ? 'rgba(245, 158, 11, 0.15)'
-                        : 'rgba(139, 92, 246, 0.15)',
+                          ? 'rgba(239, 68, 68, 0.15)'
+                          : pendingAction === 'lock'
+                            ? 'rgba(245, 158, 11, 0.15)'
+                            : 'rgba(139, 92, 246, 0.15)',
                   },
                 ]}
               >
@@ -395,20 +451,20 @@ export function SystemScreen({
                     pendingAction === 'restart'
                       ? 'refresh'
                       : pendingAction === 'hibernate'
-                      ? 'power'
-                      : pendingAction === 'lock'
-                      ? 'lock-closed'
-                      : 'moon'
+                        ? 'power'
+                        : pendingAction === 'lock'
+                          ? 'lock-closed'
+                          : 'moon'
                   }
                   size={26}
                   color={
                     pendingAction === 'restart'
                       ? '#06B6D4'
                       : pendingAction === 'hibernate'
-                      ? colors.danger
-                      : pendingAction === 'lock'
-                      ? '#F59E0B'
-                      : '#8B5CF6'
+                        ? colors.danger
+                        : pendingAction === 'lock'
+                          ? '#F59E0B'
+                          : '#8B5CF6'
                   }
                 />
               </View>
@@ -417,19 +473,19 @@ export function SystemScreen({
                   {pendingAction === 'restart'
                     ? 'Restart Workstation'
                     : pendingAction === 'hibernate'
-                    ? 'Hibernate Workstation'
-                    : pendingAction === 'lock'
-                    ? 'Lock Workstation'
-                    : 'Sleep Workstation'}
+                      ? 'Hibernate Workstation'
+                      : pendingAction === 'lock'
+                        ? 'Lock Workstation'
+                        : 'Sleep Workstation'}
                 </Text>
                 <Text style={styles.modalSubtitle}>
                   {pendingAction === 'restart'
                     ? 'Your PC will immediately reboot. Save any active work.'
                     : pendingAction === 'hibernate'
-                    ? 'Saves state to disk and powers down completely.'
-                    : pendingAction === 'lock'
-                    ? 'Locks the Windows desktop session.'
-                    : 'Puts your computer into low-power sleep mode.'}
+                      ? 'Saves state to disk and powers down completely.'
+                      : pendingAction === 'lock'
+                        ? 'Locks the Windows desktop session.'
+                        : 'Puts your computer into low-power sleep mode.'}
                 </Text>
               </View>
             </View>
@@ -468,18 +524,18 @@ export function SystemScreen({
   );
 }
 
-function MetricCard({ 
-  icon, 
-  title, 
-  value, 
-  color, 
+function MetricCard({
+  icon,
+  title,
+  value,
+  color,
   isSmallText,
   subtitle,
-}: { 
-  icon: any; 
-  title: string; 
-  value: string; 
-  color: string; 
+}: {
+  icon: any;
+  title: string;
+  value: string;
+  color: string;
   isSmallText?: boolean;
   subtitle?: string;
 }) {
@@ -490,7 +546,10 @@ function MetricCard({
       </View>
       <View style={styles.metricData}>
         <Text style={styles.metricTitle}>{title}</Text>
-        <Text style={[styles.metricValue, isSmallText && { fontSize: 13, letterSpacing: 0 }]} numberOfLines={1}>
+        <Text
+          style={[styles.metricValue, isSmallText && { fontSize: 13, letterSpacing: 0 }]}
+          numberOfLines={1}
+        >
           {value}
         </Text>
         {subtitle ? (
@@ -503,10 +562,22 @@ function MetricCard({
   );
 }
 
-function PowerButton({ icon, label, color, onPress, disabled }: { icon: any, label: string, color: string, onPress: () => void, disabled: boolean }) {
+function PowerButton({
+  icon,
+  label,
+  color,
+  onPress,
+  disabled,
+}: {
+  icon: any;
+  label: string;
+  color: string;
+  onPress: () => void;
+  disabled: boolean;
+}) {
   return (
-    <TouchableOpacity 
-      style={[styles.powerBtn, disabled && styles.powerBtnDisabled]} 
+    <TouchableOpacity
+      style={[styles.powerBtn, disabled && styles.powerBtnDisabled]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}

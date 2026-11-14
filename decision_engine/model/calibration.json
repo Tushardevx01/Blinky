@@ -1,8 +1,8 @@
 {
   "temperature": 0.9999983906745911,
   "accuracy": 1.0,
-  "ece_before": 1.5795230865478516e-05,
-  "ece_after": 1.5795230865478516e-05,
+  "ece_before": 1.5795230865478516e-5,
+  "ece_after": 1.5795230865478516e-5,
   "label2id": {
     "DAEMON_SYSTEM": 0,
     "OCR_EXACT": 1,

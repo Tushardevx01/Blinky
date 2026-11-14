@@ -11,7 +11,7 @@ interface WebGuidanceInput {
     previousQuestion: string | undefined,
     progress: TutorProgress,
     conversationHistory: TutorConversationMessage[],
-    webSearchEnabled?: boolean,
+    webSearchEnabled?: boolean
   ) => Promise<TutorResult>;
 }
 

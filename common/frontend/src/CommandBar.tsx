@@ -1,12 +1,69 @@
 import { emit, listen } from '@tauri-apps/api/event';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { ArrowUp, Bot, Loader2, Minus, Sparkles, X, Settings, Check, Mic, Volume2, Globe, Square, QrCode, Paperclip, Film, Image as ImageIcon, Music, FileVideo, BookOpen, Cpu, Zap, Brain, Cloud, Wrench, Key, Smartphone, MessageSquare, Command, Palette, Info, Clock, Trash2, Plus, Search, ChevronDown, Edit3, RefreshCw, Sliders } from 'lucide-react';
-import { AnchorHTMLAttributes, FormEvent, useEffect, useRef, useState, cloneElement, isValidElement } from 'react';
+import {
+  ArrowUp,
+  Bot,
+  Loader2,
+  Minus,
+  Sparkles,
+  X,
+  Settings,
+  Check,
+  Mic,
+  Volume2,
+  Globe,
+  Square,
+  QrCode,
+  Paperclip,
+  Film,
+  Image as ImageIcon,
+  Music,
+  FileVideo,
+  BookOpen,
+  Cpu,
+  Zap,
+  Brain,
+  Cloud,
+  Wrench,
+  Key,
+  Smartphone,
+  MessageSquare,
+  Command,
+  Palette,
+  Info,
+  Clock,
+  Trash2,
+  Plus,
+  Search,
+  ChevronDown,
+  Edit3,
+  RefreshCw,
+  Sliders,
+} from 'lucide-react';
+import {
+  AnchorHTMLAttributes,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+  cloneElement,
+  isValidElement,
+} from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import QRCode from 'qrcode';
-import { runAutopilotLoop, extractTextToType, shouldPressEnterAfterTyping, isScrollAction, getScrollDirection, isClickInstruction, isSingleActionQuery, createEmptyTutorResult, getPhysicalClickablePoint } from './lib/autopilot';
+import {
+  runAutopilotLoop,
+  extractTextToType,
+  shouldPressEnterAfterTyping,
+  isScrollAction,
+  getScrollDirection,
+  isClickInstruction,
+  isSingleActionQuery,
+  createEmptyTutorResult,
+  getPhysicalClickablePoint,
+} from './lib/autopilot';
 import {
   getCurrentGuideSteps,
   getDisplaySteps,
@@ -15,7 +72,32 @@ import {
   shouldCompleteStepOnHighlightClick,
   shouldShowSummaryBubble,
 } from './lib/guidance';
-import { runTutor, cancelTutor, showOverlay, hideOverlay, resizeCommandWindow, setCommandWindowSize, getSettings, saveSettings, resizeAndMoveCommandWindow, clickElement, clickScreenPoint, openUrl, openFolder, typeText, scrollAtPoint, pauseWakeWord, resumeWakeWord, logDebugMessage, confirmRecipeSave, setAgentCursorVisibility, getSecureTransportInfo, getMobilePairingPayload, regenerateRemoteToken, openNotebookWindow } from './lib/tauri';
+import {
+  runTutor,
+  cancelTutor,
+  showOverlay,
+  hideOverlay,
+  resizeCommandWindow,
+  setCommandWindowSize,
+  getSettings,
+  saveSettings,
+  resizeAndMoveCommandWindow,
+  clickElement,
+  clickScreenPoint,
+  openUrl,
+  openFolder,
+  typeText,
+  scrollAtPoint,
+  pauseWakeWord,
+  resumeWakeWord,
+  logDebugMessage,
+  confirmRecipeSave,
+  setAgentCursorVisibility,
+  getSecureTransportInfo,
+  getMobilePairingPayload,
+  regenerateRemoteToken,
+  openNotebookWindow,
+} from './lib/tauri';
 
 import { linkCitationMarkers, preprocessMarkdown } from './lib/citations';
 import {
@@ -31,7 +113,7 @@ import {
   AssemblyAIRealtimeSTT,
   transcribeAudioWithAssemblyAI,
   floatTo16BitPCM,
-  playPCM16Audio
+  playPCM16Audio,
 } from './lib/assemblyaiVoice';
 import { AdaptiveTransportManager } from './lib/adaptiveTransport';
 import type { TutorConversationMessage, TutorProgress, TutorResult } from './lib/types';
@@ -48,7 +130,6 @@ import {
   generatePcSessionTitle,
   type PcChatSession,
 } from './lib/sessionStorage';
-
 
 interface AttachedMedia {
   path: string;
@@ -115,7 +196,6 @@ function ExternalMarkdownLink({ href, children }: AnchorHTMLAttributes<HTMLAncho
   );
 }
 
-
 /** Renders the desktop command bar and coordinates its interactive workflows. */
 export function CommandBar() {
   const [question, setQuestion] = useState('');
@@ -177,7 +257,6 @@ export function CommandBar() {
   const [agentModeEnabled, setAgentModeEnabled] = useState(false);
   const defaultStatus = 'Ask anything on your screen';
 
-
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{
     startX: number;
@@ -206,7 +285,7 @@ export function CommandBar() {
       initialX: position.x / scaleFactor,
       initialY: position.y / scaleFactor,
       scaleFactor,
-      side
+      side,
     };
     setIsResizing(true);
   };
@@ -214,7 +293,8 @@ export function CommandBar() {
   const handleResize = async (event: React.PointerEvent<HTMLDivElement>) => {
     if (!isResizing || !resizeRef.current) return;
 
-    const { startX, initialWidth, initialHeight, initialX, initialY, scaleFactor, side } = resizeRef.current;
+    const { startX, initialWidth, initialHeight, initialX, initialY, scaleFactor, side } =
+      resizeRef.current;
     const dx = (event.screenX - startX) / scaleFactor;
 
     if (side === 'right') {
@@ -289,7 +369,8 @@ export function CommandBar() {
   const [agent1SearchQuery, setAgent1SearchQuery] = useState<string>('');
   const [isAgent1SearchOpen, setIsAgent1SearchOpen] = useState<boolean>(false);
   const [showAgent1Config, setShowAgent1Config] = useState<boolean>(false);
-  const [agent1ModelsList, setAgent1ModelsList] = useState<DynamicModelItem[]>(DEFAULT_GROQ_CATALOG);
+  const [agent1ModelsList, setAgent1ModelsList] =
+    useState<DynamicModelItem[]>(DEFAULT_GROQ_CATALOG);
   const [agent1ModelsLoading, setAgent1ModelsLoading] = useState<boolean>(false);
   const agent1FetchSeqRef = useRef<number>(0);
 
@@ -337,10 +418,13 @@ export function CommandBar() {
   const [geminiSearchQuery, setGeminiSearchQuery] = useState<string>('');
   const [isGeminiSearchOpen, setIsGeminiSearchOpen] = useState<boolean>(false);
   const [showGeminiConfig, setShowGeminiConfig] = useState<boolean>(false);
-  const [geminiModelsList, setGeminiModelsList] = useState<DynamicModelItem[]>(DEFAULT_GEMINI_CATALOG);
+  const [geminiModelsList, setGeminiModelsList] =
+    useState<DynamicModelItem[]>(DEFAULT_GEMINI_CATALOG);
   const [geminiModelsLoading, setGeminiModelsLoading] = useState<boolean>(false);
   const geminiFetchSeqRef = useRef<number>(0);
-  const [settingsTab, setSettingsTab] = useState<'agents' | 'keys' | 'mobile' | 'shortcuts' | 'about'>('agents');
+  const [settingsTab, setSettingsTab] = useState<
+    'agents' | 'keys' | 'mobile' | 'shortcuts' | 'about'
+  >('agents');
 
   const updateGeminiModel = (newModel: string) => {
     const clean = newModel.trim();
@@ -417,7 +501,8 @@ export function CommandBar() {
           setVoiceProvider(s.voice_provider);
           voiceProviderRef.current = s.voice_provider;
         } else {
-          const cached = localStorage.getItem('blinky_voice_provider') as 'assemblyai' | 'sarvam' | null;
+          const cached = localStorage.getItem('blinky_voice_provider') as
+            'assemblyai' | 'sarvam' | null;
           if (cached === 'sarvam' || cached === 'assemblyai') {
             setVoiceProvider(cached);
             voiceProviderRef.current = cached;
@@ -444,7 +529,13 @@ export function CommandBar() {
         if (s.custom_api_key) setCustomApiKey(s.custom_api_key);
 
         const prov = s.provider || 'groq';
-        void refreshAgent1Models(prov, s.groq_api_key, s.deepseek_api_key, s.custom_url, s.custom_api_key);
+        void refreshAgent1Models(
+          prov,
+          s.groq_api_key,
+          s.deepseek_api_key,
+          s.custom_url,
+          s.custom_api_key
+        );
         void refreshGeminiModels(geminiApiKey);
       } catch (err) {
         console.error('Failed to load initial settings in CommandBar:', err);
@@ -461,12 +552,18 @@ export function CommandBar() {
 
   // Workflow-save prompt (emitted by the agent loop after a successful task)
 
-  const [recipePrompt, setRecipePrompt] = useState<{ recipe_id: string; preview: string[]; intent: string } | null>(null);
+  const [recipePrompt, setRecipePrompt] = useState<{
+    recipe_id: string;
+    preview: string[];
+    intent: string;
+  } | null>(null);
   const [recipeBusy, setRecipeBusy] = useState(false);
 
   // WhatsApp connection states
   const [waBackendUrl, setWaBackendUrl] = useState('http://localhost:3000');
-  const [waStatus, setWaStatus] = useState<'loading' | 'disconnected' | 'qr' | 'connected' | 'error'>('loading');
+  const [waStatus, setWaStatus] = useState<
+    'loading' | 'disconnected' | 'qr' | 'connected' | 'error'
+  >('loading');
   const [waQr, setWaQr] = useState('');
   const [waError, setWaError] = useState('');
   const [isWaActionLoading, setIsWaActionLoading] = useState(false);
@@ -491,7 +588,7 @@ export function CommandBar() {
         const res = await fetch(`${url}/api/sessions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: SESSION_ID })
+          body: JSON.stringify({ sessionId: SESSION_ID }),
         });
         if (res.ok || res.status === 400) {
           return url;
@@ -510,11 +607,11 @@ export function CommandBar() {
       const res = await fetch(`${backendUrl}/api/sessions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: SESSION_ID })
+        body: JSON.stringify({ sessionId: SESSION_ID }),
       });
       if (res.ok) {
         const statusRes = await fetch(`${backendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
+          headers: { 'X-Session-Id': SESSION_ID },
         });
         if (statusRes.ok) {
           const data = await statusRes.json();
@@ -542,8 +639,8 @@ export function CommandBar() {
         method: 'POST',
         headers: {
           'X-Session-Id': SESSION_ID,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       if (res.ok) {
         setWaStatus('loading');
@@ -583,11 +680,15 @@ export function CommandBar() {
     try {
       const payload = await getMobilePairingPayload();
       setPairingPayload(payload);
-      setPairingIp((current) => (
+      setPairingIp((current) =>
         current && payload.ips.includes(current) ? current : (payload.ips[0] ?? '')
-      ));
+      );
     } catch (err) {
-      setPairingError(err instanceof Error ? err.message : 'Could not load pairing info. Is the desktop backend running?');
+      setPairingError(
+        err instanceof Error
+          ? err.message
+          : 'Could not load pairing info. Is the desktop backend running?'
+      );
     } finally {
       setPairingLoading(false);
     }
@@ -612,17 +713,18 @@ export function CommandBar() {
   };
 
   // Compact JSON the mobile app scans: full credentials for one-scan connect.
-  const pairingQrText = pairingPayload && pairingIp
-    ? JSON.stringify({
-      v: 1,
-      ip: pairingIp,
-      ws: pairingPayload.ws_port,
-      disc: pairingPayload.discovery_port,
-      token: pairingPayload.token,
-      pin: pairingPayload.certificate_pin,
-      mode: pairingPayload.mode,
-    })
-    : '';
+  const pairingQrText =
+    pairingPayload && pairingIp
+      ? JSON.stringify({
+          v: 1,
+          ip: pairingIp,
+          ws: pairingPayload.ws_port,
+          disc: pairingPayload.discovery_port,
+          token: pairingPayload.token,
+          pin: pairingPayload.certificate_pin,
+          mode: pairingPayload.mode,
+        })
+      : '';
 
   // Keep WhatsApp status fresh so startup state and logout state update without user interaction.
   useEffect(() => {
@@ -630,7 +732,7 @@ export function CommandBar() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(`${waBackendUrl}/api/status`, {
-          headers: { 'X-Session-Id': SESSION_ID }
+          headers: { 'X-Session-Id': SESSION_ID },
         });
         if (!active) return;
         if (res.ok) {
@@ -673,8 +775,8 @@ export function CommandBar() {
           margin: 2,
           color: {
             dark: '#140f13',
-            light: '#ffffff'
-          }
+            light: '#ffffff',
+          },
         },
         (error) => {
           if (error) console.error('Failed to render QR Code:', error);
@@ -685,7 +787,11 @@ export function CommandBar() {
 
   // Draw mobile-pairing QR code to canvas
   useEffect(() => {
-    if ((showMobileModal || (showSettings && settingsTab === 'mobile')) && pairingQrText && mobileCanvasRef.current) {
+    if (
+      (showMobileModal || (showSettings && settingsTab === 'mobile')) &&
+      pairingQrText &&
+      mobileCanvasRef.current
+    ) {
       QRCode.toCanvas(
         mobileCanvasRef.current,
         pairingQrText,
@@ -694,8 +800,8 @@ export function CommandBar() {
           margin: 2,
           color: {
             dark: '#140f13',
-            light: '#ffffff'
-          }
+            light: '#ffffff',
+          },
         },
         (error) => {
           if (error) console.error('Failed to render pairing QR Code:', error);
@@ -745,7 +851,9 @@ export function CommandBar() {
 
   // TTS Streaming state
   const speechBufferRef = useRef<string>('');
-  const ttsTextQueueRef = useRef<{ text: string, isHidden?: boolean, startWordIdx?: number, wordsCount?: number }[]>([]);
+  const ttsTextQueueRef = useRef<
+    { text: string; isHidden?: boolean; startWordIdx?: number; wordsCount?: number }[]
+  >([]);
   const ttsAudioQueueRef = useRef<string[]>([]);
   const isFetchingTtsRef = useRef<boolean>(false);
   const isPlayingTtsRef = useRef<boolean>(false);
@@ -767,11 +875,15 @@ export function CommandBar() {
       text: cleanSentence,
       isHidden,
       startWordIdx,
-      wordsCount
+      wordsCount,
     });
   };
 
-  const rememberCompletedStep = (targetText?: string, instruction?: string, plannedTarget?: string) => {
+  const rememberCompletedStep = (
+    targetText?: string,
+    instruction?: string,
+    plannedTarget?: string
+  ) => {
     const cleanTarget = targetText?.trim();
     const cleanInstruction = instruction?.trim();
     const cleanPlanned = plannedTarget?.trim();
@@ -809,13 +921,13 @@ export function CommandBar() {
     if (assemblyaiAudioSourceRef.current) {
       try {
         assemblyaiAudioSourceRef.current.stop();
-      } catch { }
+      } catch {}
       assemblyaiAudioSourceRef.current = null;
     }
     activeSourcesRef.current.forEach((source) => {
       try {
         source.stop();
-      } catch { }
+      } catch {}
     });
     activeSourcesRef.current = [];
     if (ttsStreamRef.current) {
@@ -843,7 +955,8 @@ export function CommandBar() {
   // Initialize Adaptive Transport Manager when API key is loaded
   useEffect(() => {
     if (sarvamApiKey) {
-      const wtUrl = import.meta.env.VITE_SARVAM_GATEWAY_WT_URL || 'wt://gateway.blinky.internal/sarvam-stream';
+      const wtUrl =
+        import.meta.env.VITE_SARVAM_GATEWAY_WT_URL || 'wt://gateway.blinky.internal/sarvam-stream';
       const wsUrl = `wss://api.sarvam.ai/speech-to-text-stream?api-subscription-key=${encodeURIComponent(sarvamApiKey)}`;
 
       transportManagerRef.current = new AdaptiveTransportManager(
@@ -868,7 +981,7 @@ export function CommandBar() {
       activeSourcesRef.current.forEach((source) => {
         try {
           source.stop();
-        } catch { }
+        } catch {}
       });
       if (ttsStreamRef.current) {
         ttsStreamRef.current.disconnect();
@@ -880,16 +993,19 @@ export function CommandBar() {
   }, []);
 
   // Use a ref to avoid stale closure for the fetch queue function
-  const processTtsFetchQueueRef = useRef<() => void>(() => { });
+  const processTtsFetchQueueRef = useRef<() => void>(() => {});
 
   // Listen for real-time status and streaming chunks from python worker
   useEffect(() => {
     let unlistenStatus: Promise<any>;
     let unlistenChunk: Promise<any>;
 
-    unlistenStatus = listen<{ phase: string; message: string }>('blinky://tutor-status', (event) => {
-      setStatus(event.payload.message);
-    });
+    unlistenStatus = listen<{ phase: string; message: string }>(
+      'blinky://tutor-status',
+      (event) => {
+        setStatus(event.payload.message);
+      }
+    );
 
     // Workflow-save prompt from the agent loop
     const unlistenRecipe = listen<{ recipe_id: string; preview: string[]; intent: string }>(
@@ -925,8 +1041,8 @@ export function CommandBar() {
   }, []);
 
   // Callbacks refs to avoid stale closures in WebSockets
-  const onTranscriptRef = useRef<(transcript: string, isFinal: boolean) => void>(() => { });
-  const onAudioChunkRef = useRef<(base64Audio: string) => void>(() => { });
+  const onTranscriptRef = useRef<(transcript: string, isFinal: boolean) => void>(() => {});
+  const onAudioChunkRef = useRef<(base64Audio: string) => void>(() => {});
 
   // Update refs on every render
   onTranscriptRef.current = (transcript, isFinal) => {
@@ -955,12 +1071,15 @@ export function CommandBar() {
       try {
         audioBuffer = await audioCtxRef.current.decodeAudioData(bytes.buffer.slice(0));
       } catch (decodeErr) {
-        const isMp3 = bytes.length >= 3 && (
-          (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) ||
-          (bytes[0] === 0xFF && (bytes[1] & 0xE0) === 0xE0)
-        );
+        const isMp3 =
+          bytes.length >= 3 &&
+          ((bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) ||
+            (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0));
         if (isMp3) {
-          throw new Error('Failed to decode MP3 data: ' + (decodeErr instanceof Error ? decodeErr.message : String(decodeErr)));
+          throw new Error(
+            'Failed to decode MP3 data: ' +
+              (decodeErr instanceof Error ? decodeErr.message : String(decodeErr))
+          );
         }
         const validByteLength = bytes.buffer.byteLength - (bytes.buffer.byteLength % 2);
         const int16Array = new Int16Array(bytes.buffer, 0, validByteLength / 2);
@@ -996,20 +1115,20 @@ export function CommandBar() {
     }
   };
 
-  const processTtsFetchQueue = async () => {
-  };
+  const processTtsFetchQueue = async () => {};
 
   // Update ref so useEffect closure always uses the latest state
   processTtsFetchQueueRef.current = processTtsFetchQueue;
 
-  const processTtsPlayQueue = async () => {
-  };
+  const processTtsPlayQueue = async () => {};
 
-  const speakText = async (summaryText: string, stepsList: any[], options: { includeSteps?: boolean } = {}) => {
-  };
+  const speakText = async (
+    summaryText: string,
+    stepsList: any[],
+    options: { includeSteps?: boolean } = {}
+  ) => {};
 
-  const speakResponse = () => {
-  };
+  const speakResponse = () => {};
 
   useEffect(() => {
     let rafId: number;
@@ -1056,7 +1175,7 @@ export function CommandBar() {
             setAssemblyaiApiKey(s.assemblyai_api_key);
             assemblyaiApiKeyRef.current = s.assemblyai_api_key;
           }
-        } catch { }
+        } catch {}
       }
 
       if (!aaiKey) {
@@ -1122,8 +1241,13 @@ export function CommandBar() {
           transcribedText = data.transcript?.trim() || '';
         } else {
           let payload: any = {};
-          try { payload = await res.json(); } catch { }
-          console.warn('Sarvam STT failed, falling back to Groq Whisper:', getSarvamErrorMessage(payload, res.status));
+          try {
+            payload = await res.json();
+          } catch {}
+          console.warn(
+            'Sarvam STT failed, falling back to Groq Whisper:',
+            getSarvamErrorMessage(payload, res.status)
+          );
         }
       } catch (err: any) {
         console.warn('Sarvam STT connection error, falling back to Groq Whisper:', err);
@@ -1206,7 +1330,7 @@ export function CommandBar() {
             gKey = s.groq_api_key;
             effectiveVP = 'sarvam';
           }
-        } catch { }
+        } catch {}
       }
     }
 
@@ -1223,13 +1347,15 @@ export function CommandBar() {
     }
 
     await pauseWakeWord();
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     void showOverlay();
 
     // Ensure AudioContext is initialized before starting recording (e.g. on hotkey first start)
     try {
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+          sampleRate: 16000,
+        });
       } else if (audioCtxRef.current.state === 'suspended') {
         await audioCtxRef.current.resume();
       }
@@ -1253,7 +1379,9 @@ export function CommandBar() {
 
       // Setup VAD using AudioContext
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+          sampleRate: 16000,
+        });
       }
       if (audioCtxRef.current.state === 'suspended') {
         await audioCtxRef.current.resume();
@@ -1268,11 +1396,18 @@ export function CommandBar() {
           apiKey: aaiKey,
           onAgentAudio: (base64Audio) => {
             if (assemblyaiAudioSourceRef.current) {
-              try { assemblyaiAudioSourceRef.current.stop(); } catch { }
+              try {
+                assemblyaiAudioSourceRef.current.stop();
+              } catch {}
             }
             setIsSpeaking(true);
             if (audioCtxRef.current) {
-              const src = playPCM16Audio(audioCtxRef.current, base64Audio, 24000, ttsAnalyserRef.current || undefined);
+              const src = playPCM16Audio(
+                audioCtxRef.current,
+                base64Audio,
+                24000,
+                ttsAnalyserRef.current || undefined
+              );
               assemblyaiAudioSourceRef.current = src;
               src.onended = () => {
                 setIsSpeaking(false);
@@ -1309,7 +1444,9 @@ export function CommandBar() {
           onTurnChange: (turn) => {
             if (turn === 'user') {
               if (assemblyaiAudioSourceRef.current) {
-                try { assemblyaiAudioSourceRef.current.stop(); } catch { }
+                try {
+                  assemblyaiAudioSourceRef.current.stop();
+                } catch {}
                 assemblyaiAudioSourceRef.current = null;
               }
               setIsSpeaking(false);
@@ -1317,7 +1454,7 @@ export function CommandBar() {
           },
           onError: (err) => {
             console.error('AssemblyAI Voice Agent error:', err);
-          }
+          },
         });
         agent.connect();
         assemblyaiAgentRef.current = agent;
@@ -1362,7 +1499,9 @@ export function CommandBar() {
           } else if (now - silenceStartTime > SILENCE_DURATION_MS) {
             if (!silenceTimeoutTriggered) {
               silenceTimeoutTriggered = true;
-              console.log("VAD: Local silence timeout reached. Stopping recording and submitting query.");
+              console.log(
+                'VAD: Local silence timeout reached. Stopping recording and submitting query.'
+              );
 
               if ((mediaRecorderRef as any).current?.state === 'recording') {
                 stopRecording();
@@ -1379,7 +1518,10 @@ export function CommandBar() {
         if (stream) {
           stream.getTracks().forEach((track) => track.stop());
         }
-        try { processor.disconnect(); source.disconnect(); } catch { }
+        try {
+          processor.disconnect();
+          source.disconnect();
+        } catch {}
         // If real-time stream did not execute, run audio transcription.
         // Skip the REST fallback when VAD never heard speech — this is what
         // previously produced "language_detection cannot be performed on
@@ -1411,7 +1553,6 @@ export function CommandBar() {
           stopRecording();
         }
       }, 12000);
-
     } catch (err) {
       console.error('Error starting audio recording:', err);
       setStatus('Microphone access failed or was denied.');
@@ -1436,7 +1577,7 @@ export function CommandBar() {
     if (mediaRecorderRef.current) {
       try {
         mediaRecorderRef.current.stop();
-      } catch { }
+      } catch {}
       mediaRecorderRef.current = null;
       setIsRecording(false);
 
@@ -1446,7 +1587,9 @@ export function CommandBar() {
 
   const toggleRecording = () => {
     if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+        sampleRate: 16000,
+      });
     } else if (audioCtxRef.current.state === 'suspended') {
       void audioCtxRef.current.resume();
     }
@@ -1471,16 +1614,21 @@ export function CommandBar() {
   async function executeTutor(
     queryText: string,
     shouldSpeakAfter: boolean,
-    options: TutorRunOptions = {},
+    options: TutorRunOptions = {}
   ) {
     if (isRunningRef.current) return;
     isRunningRef.current = true;
-    let effectiveQuery = queryText.trim().replace(/^(hey\s+)?blinky[\s,.:;!?]*/i, '').trim();
+    let effectiveQuery = queryText
+      .trim()
+      .replace(/^(hey\s+)?blinky[\s,.:;!?]*/i, '')
+      .trim();
     if (attachedFiles.length > 0) {
       const pathsStr = attachedFiles.map((f) => f.path).join(', ');
       const prefix = `[Referenced Files: ${pathsStr}]`;
       if (!effectiveQuery.includes('[Referenced Files:')) {
-        effectiveQuery = effectiveQuery ? `${prefix} ${effectiveQuery}` : `${prefix} merge these videos`;
+        effectiveQuery = effectiveQuery
+          ? `${prefix} ${effectiveQuery}`
+          : `${prefix} merge these videos`;
       }
       setAttachedFiles([]);
     }
@@ -1526,7 +1674,17 @@ export function CommandBar() {
       let result: TutorResult;
       if (agentModeEnabled) {
         // Run the agent first — it may handle everything via MCP tools
-        const agentResult = await runTutor(effectiveQuery, previousQuestion, currentProgress(), conversationHistory, false, true, undefined, undefined, workerRunId);
+        const agentResult = await runTutor(
+          effectiveQuery,
+          previousQuestion,
+          currentProgress(),
+          conversationHistory,
+          false,
+          true,
+          undefined,
+          undefined,
+          workerRunId
+        );
 
         // If agent handled it via computer use, use its result directly.
         // Autopilot loop is only for standard locator/vision questions that didn't run via computer_use loop.
@@ -1546,7 +1704,10 @@ export function CommandBar() {
             isCancelled: () => cancelledRunIdsRef.current.has(runId),
             onStepFailed: (failedStep, retryCount) => {
               setStatus(`Action had no effect. Rethinking next step (Attempt ${retryCount})...`);
-              rememberFailedStep(failedStep.target_text, failedStep.target_ref || failedStep.match?.ref);
+              rememberFailedStep(
+                failedStep.target_text,
+                failedStep.target_ref || failedStep.match?.ref
+              );
             },
             observe: async () => {
               if (cancelledRunIdsRef.current.has(runId)) {
@@ -1556,7 +1717,17 @@ export function CommandBar() {
                 firstObservation = agentResult;
                 return firstObservation;
               }
-              return runTutor(effectiveQuery, previousQuestion, currentProgress(), conversationHistory, false, true, undefined, undefined, workerRunId);
+              return runTutor(
+                effectiveQuery,
+                previousQuestion,
+                currentProgress(),
+                conversationHistory,
+                false,
+                true,
+                undefined,
+                undefined,
+                workerRunId
+              );
             },
             act: async (point, step) => {
               if (cancelledRunIdsRef.current.has(runId)) return;
@@ -1581,14 +1752,17 @@ export function CommandBar() {
                 rememberCompletedStep(step.target_text, step.instruction, plannedTarget);
                 await scrollAtPoint(point.x, point.y, direction, 3);
               } else {
-                const textToType = (step as any).text_to_type || extractTextToType(step.instruction);
+                const textToType =
+                  (step as any).text_to_type || extractTextToType(step.instruction);
                 if (textToType) {
                   setStatus(`Autopilot typing "${textToType}"...`);
                   rememberCompletedStep(step.target_text, step.instruction, plannedTarget);
                   await click();
                   await new Promise((resolve) => setTimeout(resolve, 150));
                   if (cancelledRunIdsRef.current.has(runId)) return;
-                  const pressEnter = (step as any).key?.toLowerCase() === 'enter' || shouldPressEnterAfterTyping(step.instruction);
+                  const pressEnter =
+                    (step as any).key?.toLowerCase() === 'enter' ||
+                    shouldPressEnterAfterTyping(step.instruction);
                   await typeText(point.x, point.y, textToType, pressEnter);
                 } else {
                   setStatus(`Autopilot clicking (${point.x}, ${point.y})...`);
@@ -1598,7 +1772,10 @@ export function CommandBar() {
               }
             },
           });
-          if ((autopilot.stopReason === 'complete' || autopilot.stopReason === 'single_action') && autopilot.attempts > 0) {
+          if (
+            (autopilot.stopReason === 'complete' || autopilot.stopReason === 'single_action') &&
+            autopilot.attempts > 0
+          ) {
             const firstStep = agentResult.steps?.find((candidate) => candidate.instruction.trim());
             result = {
               ...autopilot.finalResult,
@@ -1608,9 +1785,11 @@ export function CommandBar() {
               steps: [],
             };
           } else if (autopilot.stopReason === 'unsafe_step') {
-
-            const nextStep = autopilot.finalResult.steps.find((candidate) => candidate.instruction.trim());
-            const blockedLabel = nextStep?.target_text || nextStep?.instruction || 'the next action';
+            const nextStep = autopilot.finalResult.steps.find((candidate) =>
+              candidate.instruction.trim()
+            );
+            const blockedLabel =
+              nextStep?.target_text || nextStep?.instruction || 'the next action';
             result = {
               ...autopilot.finalResult,
               summary: `Autopilot paused because "${blockedLabel}" requires manual interaction for safety.`,
@@ -1635,23 +1814,41 @@ export function CommandBar() {
           }
         }
       } else {
-        result = await runTutor(effectiveQuery, previousQuestion, currentProgress(), conversationHistory, webSearchEnabled, undefined, undefined, undefined, workerRunId);
+        result = await runTutor(
+          effectiveQuery,
+          previousQuestion,
+          currentProgress(),
+          conversationHistory,
+          webSearchEnabled,
+          undefined,
+          undefined,
+          undefined,
+          workerRunId
+        );
 
-        await logDebugMessage(`[executeTutor] (Standard) Received result from backend. Steps count: ${result.steps?.length || 0}`);
+        await logDebugMessage(
+          `[executeTutor] (Standard) Received result from backend. Steps count: ${result.steps?.length || 0}`
+        );
         if (result.steps && result.steps.length > 0) {
           const step = result.steps[0];
-          await logDebugMessage(`[executeTutor] (Standard) Step 1: instruction="${step.instruction}", target_ref="${step.target_ref}", target_text="${step.target_text}", hasMatch=${!!step.match}`);
+          await logDebugMessage(
+            `[executeTutor] (Standard) Step 1: instruction="${step.instruction}", target_ref="${step.target_ref}", target_text="${step.target_text}", hasMatch=${!!step.match}`
+          );
         }
 
         // Auto-trigger autopilot click for locator fast path results with click instructions
         const clickStep = result.steps?.find((s) => s.instruction && s.match);
         if (clickStep) {
           const isClick = isClickInstruction(clickStep.instruction);
-          await logDebugMessage(`[executeTutor] (Standard) Click step candidate: instruction="${clickStep.instruction}", isClickInstruction=${isClick}`);
+          await logDebugMessage(
+            `[executeTutor] (Standard) Click step candidate: instruction="${clickStep.instruction}", isClickInstruction=${isClick}`
+          );
         }
 
         if (clickStep && isClickInstruction(clickStep.instruction)) {
-          await logDebugMessage(`[executeTutor] (Standard) Triggering autopilot click at physical match x=${clickStep.match?.x}, y=${clickStep.match?.y}`);
+          await logDebugMessage(
+            `[executeTutor] (Standard) Triggering autopilot click at physical match x=${clickStep.match?.x}, y=${clickStep.match?.y}`
+          );
           const autopilot = await runAutopilotLoop({
             maxAttempts: 1,
             observeAfterAction: false,
@@ -1659,7 +1856,9 @@ export function CommandBar() {
             observe: async () => result,
             act: async (point, step) => {
               if (cancelledRunIdsRef.current.has(runId)) return;
-              await logDebugMessage(`[executeTutor] (Standard) Autopilot act: clicking point x=${point.x}, y=${point.y}`);
+              await logDebugMessage(
+                `[executeTutor] (Standard) Autopilot act: clicking point x=${point.x}, y=${point.y}`
+              );
               setStatus(`Clicking (${point.x}, ${point.y})...`);
               const label = String(step.target_text || '').trim();
               if (label) {
@@ -1670,7 +1869,9 @@ export function CommandBar() {
             },
           });
           if (autopilot.stopReason === 'complete' || autopilot.attempts > 0) {
-            await logDebugMessage(`[executeTutor] (Standard) Autopilot completed with stopReason=${autopilot.stopReason}`);
+            await logDebugMessage(
+              `[executeTutor] (Standard) Autopilot completed with stopReason=${autopilot.stopReason}`
+            );
             result = {
               ...result,
               summary: `Clicked ${clickStep.target_text || 'the target'}.`,
@@ -1741,7 +1942,9 @@ export function CommandBar() {
           currentActiveSession.title === 'New Conversation' ||
           currentActiveSession.title === 'Initial Session' ||
           currentActiveSession.title === 'Current Session';
-        const updatedTitle = isDefaultTitle ? generatePcSessionTitle(effectiveQuery) : currentActiveSession.title;
+        const updatedTitle = isDefaultTitle
+          ? generatePcSessionTitle(effectiveQuery)
+          : currentActiveSession.title;
         const updatedSession: PcChatSession = {
           ...currentActiveSession,
           title: updatedTitle,
@@ -1750,7 +1953,11 @@ export function CommandBar() {
             { role: 'user', text: effectiveQuery, timestamp: Date.now() },
             {
               role: 'assistant',
-              text: result.summary || (result as any).solution || (result as any).explanation || 'Completed instruction.',
+              text:
+                result.summary ||
+                (result as any).solution ||
+                (result as any).explanation ||
+                'Completed instruction.',
               timestamp: Date.now(),
               steps: (currentGuideSteps || []).map((s: any) =>
                 typeof s === 'string' ? s : s.instruction || s.title || ''
@@ -1763,10 +1970,12 @@ export function CommandBar() {
         setPcSessions(listPcChatSessions());
       }
       setShowGuideCompletionSummary(
-        (hasCompletedProgress && currentGuideSteps.length === 0 && Boolean(result.summary))
-        || Boolean(result.computer_use)
+        (hasCompletedProgress && currentGuideSteps.length === 0 && Boolean(result.summary)) ||
+          Boolean(result.computer_use)
       );
-      setSteps((previousSteps) => mergeGuideHistory(previousSteps, currentGuideSteps, currentProgress()));
+      setSteps((previousSteps) =>
+        mergeGuideHistory(previousSteps, currentGuideSteps, currentProgress())
+      );
       setQuestion('');
       if (inputRef.current) {
         inputRef.current.style.height = 'auto';
@@ -1925,7 +2134,6 @@ export function CommandBar() {
   }, [agentModeEnabled]);
 
   useEffect(() => {
-
     const handleUnload = () => {
       void setAgentCursorVisibility(false);
     };
@@ -1936,10 +2144,11 @@ export function CommandBar() {
     };
   }, []);
 
-
-
-
-  const isVoiceActive = isSpeaking || isRecording || isTtsActive || (isRunning && workflowStartedWithReadbackRef.current);
+  const isVoiceActive =
+    isSpeaking ||
+    isRecording ||
+    isTtsActive ||
+    (isRunning && workflowStartedWithReadbackRef.current);
 
   useEffect(() => {
     isRecordingRef.current = isRecording;
@@ -1982,7 +2191,6 @@ export function CommandBar() {
       void resumeWakeWord();
     }
   }, [isRunning, isRecording, isSpeaking, isTtsActive]);
-
 
   const updateVoiceProvider = async (newVoiceProvider: 'assemblyai' | 'sarvam') => {
     setVoiceProvider(newVoiceProvider);
@@ -2247,7 +2455,9 @@ export function CommandBar() {
       if (!mediaRecorderRef.current) {
         void pauseWakeWord();
         if (!audioCtxRef.current) {
-          audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+          audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+            sampleRate: 16000,
+          });
         } else if (audioCtxRef.current.state === 'suspended') {
           void audioCtxRef.current.resume();
         }
@@ -2266,14 +2476,14 @@ export function CommandBar() {
       if (!query || isRunning) return;
       const targetText = event.payload.target_text?.trim();
       const instruction = event.payload.instruction?.trim();
-      const clickedStep =
-        currentGuideStepsRef.current.find(
-          (step) => step.instruction?.trim() === instruction && step.target_text?.trim() === targetText,
-        ) || {
-          instruction: instruction || '',
-          target_text: targetText || '',
-          match: null,
-        };
+      const clickedStep = currentGuideStepsRef.current.find(
+        (step) =>
+          step.instruction?.trim() === instruction && step.target_text?.trim() === targetText
+      ) || {
+        instruction: instruction || '',
+        target_text: targetText || '',
+        match: null,
+      };
       if (!shouldCompleteStepOnHighlightClick(clickedStep, query)) {
         void hideOverlay();
         return;
@@ -2288,12 +2498,15 @@ export function CommandBar() {
 
   // Listen for remote Sentinel power events (Hibernate, Shutdown, Reboot, Lock, Sleep)
   useEffect(() => {
-    const unlisten = listen<{ action?: string; message?: string }>('blinky://power-event', (event) => {
-      const action = event.payload?.action || 'power action';
-      const msg = event.payload?.message || `⚡ Sentinel: Remote ${action} initiated.`;
-      setStatus(msg);
-      setShowGuideCompletionSummary(true);
-    });
+    const unlisten = listen<{ action?: string; message?: string }>(
+      'blinky://power-event',
+      (event) => {
+        const action = event.payload?.action || 'power action';
+        const msg = event.payload?.message || `⚡ Sentinel: Remote ${action} initiated.`;
+        setStatus(msg);
+        setShowGuideCompletionSummary(true);
+      }
+    );
     return () => {
       unlisten.then((dispose) => dispose());
     };
@@ -2301,7 +2514,12 @@ export function CommandBar() {
 
   // Listen for remote mobile queries: executes with native PC Blinky tutor & autopilot pipeline
   useEffect(() => {
-    const unlisten = listen<{ requestId: string; query: string; attachedImage?: string; attachedFile?: unknown }>('blinky://mobile-query', async (event) => {
+    const unlisten = listen<{
+      requestId: string;
+      query: string;
+      attachedImage?: string;
+      attachedFile?: unknown;
+    }>('blinky://mobile-query', async (event) => {
       const { requestId, query, attachedImage, attachedFile } = event.payload;
       if ((!query || !query.trim()) && !attachedImage) return;
       const cleanQuery = (query || '').trim() || 'Explain what is in this image.';
@@ -2315,7 +2533,16 @@ export function CommandBar() {
 
         lastTutorResultRef.current = null;
         if (attachedImage) {
-          const direct = await runTutor(cleanQuery, lastQueryRef.current || undefined, currentProgress(), conversationHistoryRef.current.slice(-8), false, false, attachedImage, attachedFile);
+          const direct = await runTutor(
+            cleanQuery,
+            lastQueryRef.current || undefined,
+            currentProgress(),
+            conversationHistoryRef.current.slice(-8),
+            false,
+            false,
+            attachedImage,
+            attachedFile
+          );
           lastTutorResultRef.current = direct;
           setStatus(direct.summary);
           await emit('blinky://mobile-status', {
@@ -2389,8 +2616,6 @@ export function CommandBar() {
       unlisten.then((dispose) => dispose());
     };
   }, [isRunning]);
-
-
 
   // Handle clicking outside settings/history dropdown and window focus change/blur
   useEffect(() => {
@@ -2503,7 +2728,9 @@ export function CommandBar() {
     if (isRunning) return;
 
     if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+        sampleRate: 16000,
+      });
     } else if (audioCtxRef.current.state === 'suspended') {
       void audioCtxRef.current.resume();
     }
@@ -2546,7 +2773,7 @@ export function CommandBar() {
       const children = (node.props as any).children;
       if (children) {
         return cloneElement(node, {
-          children: highlightText(children)
+          children: highlightText(children),
         } as any);
       }
     }
@@ -2606,14 +2833,22 @@ export function CommandBar() {
     tr: ({ children }: any) => <tr className="markdown-tr">{children}</tr>,
     th: ({ children }: any) => <th className="markdown-th">{highlightText(children)}</th>,
     td: ({ children }: any) => <td className="markdown-td">{highlightText(children)}</td>,
-    blockquote: ({ children }: any) => <blockquote className="markdown-blockquote">{children}</blockquote>,
+    blockquote: ({ children }: any) => (
+      <blockquote className="markdown-blockquote">{children}</blockquote>
+    ),
     hr: () => <hr className="markdown-hr" />,
     code: ({ inline, className, children, ...props }: any) => {
       const isInline = inline ?? !String(children).includes('\n');
       return isInline ? (
-        <code className="markdown-inline-code" {...props}>{children}</code>
+        <code className="markdown-inline-code" {...props}>
+          {children}
+        </code>
       ) : (
-        <pre className="markdown-pre"><code className="markdown-code-block" {...props}>{children}</code></pre>
+        <pre className="markdown-pre">
+          <code className="markdown-code-block" {...props}>
+            {children}
+          </code>
+        </pre>
       );
     },
   };
@@ -2624,11 +2859,7 @@ export function CommandBar() {
 
   return (
     <main className="command-window">
-      <form
-        ref={formRef}
-        className="command-popup command-mini"
-        onSubmit={submit}
-      >
+      <form ref={formRef} className="command-popup command-mini" onSubmit={submit}>
         <div
           className="resize-handle resize-handle-left"
           onPointerDown={(e) => startResize(e, 'left')}
@@ -2659,7 +2890,8 @@ export function CommandBar() {
           </div>
 
           <div className="command-top-hint" data-tauri-drag-region>
-            Blinky app <span className="keys">Ctrl + Shift + {shortcut === 'Space' ? 'Space' : 'Enter'}</span>
+            Blinky app{' '}
+            <span className="keys">Ctrl + Shift + {shortcut === 'Space' ? 'Space' : 'Enter'}</span>
           </div>
 
           <div className="command-actions">
@@ -2719,7 +2951,16 @@ export function CommandBar() {
         {showHistory && (
           <div ref={historyDropdownRef} className="command-history-dropdown">
             <div className="history-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, fontSize: '13px', color: '#fff' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  color: '#fff',
+                }}
+              >
                 <Clock size={15} style={{ color: 'var(--accent-color, #ff5a36)' }} />
                 <span>Command & Chat History</span>
               </div>
@@ -2741,11 +2982,7 @@ export function CommandBar() {
                   <Plus size={13} />
                   <span>New Chat</span>
                 </button>
-                <button
-                  type="button"
-                  className="icon-action"
-                  onClick={() => setShowHistory(false)}
-                >
+                <button type="button" className="icon-action" onClick={() => setShowHistory(false)}>
                   <X size={15} />
                 </button>
               </div>
@@ -2756,7 +2993,9 @@ export function CommandBar() {
                 <div className="history-empty">
                   <Clock size={28} style={{ opacity: 0.3, marginBottom: '6px' }} />
                   <div>No saved sessions yet</div>
-                  <div style={{ fontSize: '11px', opacity: 0.6 }}>Your commands and conversations will appear here.</div>
+                  <div style={{ fontSize: '11px', opacity: 0.6 }}>
+                    Your commands and conversations will appear here.
+                  </div>
                 </div>
               ) : (
                 pcSessions.map((s) => {
@@ -2781,7 +3020,9 @@ export function CommandBar() {
                             content: m.text,
                           }));
                           if (switched.messages.length > 0) {
-                            const lastUser = [...switched.messages].reverse().find((m) => m.role === 'user');
+                            const lastUser = [...switched.messages]
+                              .reverse()
+                              .find((m) => m.role === 'user');
                             if (lastUser) setQuestion(lastUser.text);
                           }
                           setShowHistory(false);
@@ -2793,7 +3034,9 @@ export function CommandBar() {
                         <div className="history-item-meta">
                           <span>{formatTime(s.updatedAt)}</span>
                           <span>•</span>
-                          <span>{s.messages.length} msg{s.messages.length !== 1 ? 's' : ''}</span>
+                          <span>
+                            {s.messages.length} msg{s.messages.length !== 1 ? 's' : ''}
+                          </span>
                         </div>
                       </div>
                       <button
@@ -2841,28 +3084,43 @@ export function CommandBar() {
           </div>
         )}
 
-
-
-
         {/* Workflow-save prompt (agent loop completed a task) */}
         {recipePrompt && (
           <div className="recipe-prompt-banner">
             <div className="recipe-prompt-title">
-              <img src="/blinky_mascot_logo.png" alt="Blinky" style={{ height: 24, objectFit: 'contain' }} />
+              <img
+                src="/blinky_mascot_logo.png"
+                alt="Blinky"
+                style={{ height: 24, objectFit: 'contain' }}
+              />
               <span>Save this workflow?</span>
             </div>
             <div className="recipe-prompt-preview">
-              {recipePrompt.preview.length > 0
-                ? recipePrompt.preview.slice(0, 6).map((step, i) => (
-                  <span key={i} className="recipe-prompt-step">{step}</span>
+              {recipePrompt.preview.length > 0 ? (
+                recipePrompt.preview.slice(0, 6).map((step, i) => (
+                  <span key={i} className="recipe-prompt-step">
+                    {step}
+                  </span>
                 ))
-                : <span className="recipe-prompt-step">No reusable steps</span>}
+              ) : (
+                <span className="recipe-prompt-step">No reusable steps</span>
+              )}
             </div>
             <div className="recipe-prompt-actions">
-              <button type="button" className="recipe-prompt-btn primary" disabled={recipeBusy} onClick={() => handleRecipeDecision(true)}>
+              <button
+                type="button"
+                className="recipe-prompt-btn primary"
+                disabled={recipeBusy}
+                onClick={() => handleRecipeDecision(true)}
+              >
                 <Check size={13} /> Save
               </button>
-              <button type="button" className="recipe-prompt-btn" disabled={recipeBusy} onClick={() => handleRecipeDecision(false)}>
+              <button
+                type="button"
+                className="recipe-prompt-btn"
+                disabled={recipeBusy}
+                onClick={() => handleRecipeDecision(false)}
+              >
                 <X size={13} /> Discard
               </button>
             </div>
@@ -2876,7 +3134,9 @@ export function CommandBar() {
               <ImageIcon size={24} />
               <Music size={24} />
             </div>
-            <span className="command-dropzone-text">Drop videos or images to reference in AiCut</span>
+            <span className="command-dropzone-text">
+              Drop videos or images to reference in AiCut
+            </span>
           </div>
         )}
 
@@ -2891,8 +3151,14 @@ export function CommandBar() {
 
         <div
           className="command-stack"
-          onDragOver={(e) => { e.preventDefault(); setIsDraggingOver(true); }}
-          onDragLeave={(e) => { e.preventDefault(); setIsDraggingOver(false); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDraggingOver(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setIsDraggingOver(false);
+          }}
           onDrop={(e) => {
             e.preventDefault();
             setIsDraggingOver(false);
@@ -2911,7 +3177,11 @@ export function CommandBar() {
             {attachedFiles.length > 0 && (
               <div className="command-attachments-tray">
                 {attachedFiles.map((file) => (
-                  <div key={file.path} className={`command-attachment-chip ${file.type}`} title={file.path}>
+                  <div
+                    key={file.path}
+                    className={`command-attachment-chip ${file.type}`}
+                    title={file.path}
+                  >
                     {file.previewUrl ? (
                       <img src={file.previewUrl} alt="" className="command-attachment-thumb" />
                     ) : file.type === 'video' ? (
@@ -2946,14 +3216,14 @@ export function CommandBar() {
                 isRecording
                   ? assemblyaiApiKey || assemblyaiApiKeyRef.current
                     ? assemblyaiVoiceMode === 'agent'
-                      ? "⚡ AssemblyAI Voice Agent listening... (Win+Space)"
-                      : "🎙️ AssemblyAI Realtime STT listening... (Win+Space)"
-                    : "Listening... click mic to stop (Win+Space)"
+                      ? '⚡ AssemblyAI Voice Agent listening... (Win+Space)'
+                      : '🎙️ AssemblyAI Realtime STT listening... (Win+Space)'
+                    : 'Listening... click mic to stop (Win+Space)'
                   : isTranscribing
-                    ? "Transcribing voice with Universal-3 Pro..."
+                    ? 'Transcribing voice with Universal-3 Pro...'
                     : assemblyaiApiKey || assemblyaiApiKeyRef.current
                       ? `Ask anything or speak (Win+Space) • AssemblyAI ${assemblyaiVoiceMode === 'agent' ? 'Voice Agent' : 'Realtime STT'}`
-                      : "Ask anything... (Win+Space to speak)"
+                      : 'Ask anything... (Win+Space to speak)'
               }
               disabled={isTranscribing}
               autoFocus
@@ -3039,7 +3309,9 @@ export function CommandBar() {
                     toggleRecording();
                   }}
                   disabled={isRunning || isTranscribing}
-                  title={isRecording ? "Stop recording (Win+Space)" : "Record voice command (Win+Space)"}
+                  title={
+                    isRecording ? 'Stop recording (Win+Space)' : 'Record voice command (Win+Space)'
+                  }
                 >
                   {isTranscribing ? (
                     <Loader2 className="spin" size={16} />
@@ -3075,8 +3347,16 @@ export function CommandBar() {
             <div className="command-progress-bar-container">
               <div className="command-progress-bar-fill" />
               <div className="command-progress-status-text">
-                {agentModeEnabled ? <Bot size={12} className="spin" /> : <Globe size={12} className="spin" />}
-                <span>{agentModeEnabled ? 'Agent Automation Active...' : 'Web Intelligence Search Active...'}</span>
+                {agentModeEnabled ? (
+                  <Bot size={12} className="spin" />
+                ) : (
+                  <Globe size={12} className="spin" />
+                )}
+                <span>
+                  {agentModeEnabled
+                    ? 'Agent Automation Active...'
+                    : 'Web Intelligence Search Active...'}
+                </span>
               </div>
             </div>
           )}
@@ -3085,10 +3365,18 @@ export function CommandBar() {
             <div className="command-result-container">
               {showSummaryBubble && (
                 <div className="command-summary-bubble">
-                  <img src="/blinky_mascot_logo.png" className="summary-sparkle" style={{ height: 24, objectFit: 'contain' }} alt="Blinky" />
+                  <img
+                    src="/blinky_mascot_logo.png"
+                    className="summary-sparkle"
+                    style={{ height: 24, objectFit: 'contain' }}
+                    alt="Blinky"
+                  />
                   <div className="command-summary-text-container">
                     <span className="command-status">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents as any}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownComponents as any}
+                      >
                         {preprocessMarkdown(status)}
                       </ReactMarkdown>
                     </span>
@@ -3105,7 +3393,9 @@ export function CommandBar() {
                         className={[
                           idx === steps.length - 1 ? 'guide-step-current' : 'guide-step-completed',
                           steps.length === 1 ? 'guide-step-single' : '',
-                        ].filter(Boolean).join(' ')}
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
                         key={`${step.step || idx}-${step.instruction}-${step.target_text}`}
                       >
                         {steps.length > 1 && <span>{idx + 1}</span>}
@@ -3155,21 +3445,29 @@ export function CommandBar() {
 
               {waStatus === 'disconnected' && (
                 <div className="wa-disconnected">
-                  <p className="wa-help-text">Connect to summarize group or direct chats using AI commands.</p>
+                  <p className="wa-help-text">
+                    Connect to summarize group or direct chats using AI commands.
+                  </p>
                   <button
                     type="button"
                     className="wa-btn wa-btn-connect"
                     onClick={() => connectWhatsApp()}
                     disabled={isWaActionLoading}
                   >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Connect WhatsApp'}
+                    {isWaActionLoading ? (
+                      <Loader2 className="spin" size={14} />
+                    ) : (
+                      'Connect WhatsApp'
+                    )}
                   </button>
                 </div>
               )}
 
               {waStatus === 'qr' && (
                 <div className="wa-qr-container">
-                  <p className="wa-scan-instruction">Scan this QR code with WhatsApp Linked Devices:</p>
+                  <p className="wa-scan-instruction">
+                    Scan this QR code with WhatsApp Linked Devices:
+                  </p>
                   <div className="wa-qr-canvas-wrapper">
                     <canvas ref={waCanvasRef} className="wa-qr-canvas" />
                     {isWaActionLoading && (
@@ -3201,7 +3499,11 @@ export function CommandBar() {
                     onClick={logoutWhatsApp}
                     disabled={isWaActionLoading}
                   >
-                    {isWaActionLoading ? <Loader2 className="spin" size={14} /> : 'Disconnect Account'}
+                    {isWaActionLoading ? (
+                      <Loader2 className="spin" size={14} />
+                    ) : (
+                      'Disconnect Account'
+                    )}
                   </button>
                 </div>
               )}
@@ -3273,7 +3575,9 @@ export function CommandBar() {
                         onChange={(e) => setPairingIp(e.target.value)}
                       >
                         {pairingPayload.ips.map((ip) => (
-                          <option key={ip} value={ip}>{ip}</option>
+                          <option key={ip} value={ip}>
+                            {ip}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -3287,11 +3591,19 @@ export function CommandBar() {
                     )}
                   </div>
                   {pairingPayload.ips.length === 0 ? (
-                    <p className="wa-error-msg">No LAN address detected. Enter the PC IP manually in the app (see ./setup-mobile.sh output).</p>
+                    <p className="wa-error-msg">
+                      No LAN address detected. Enter the PC IP manually in the app (see
+                      ./setup-mobile.sh output).
+                    </p>
                   ) : (
-                    <p className="wa-help-text">Or enter manually: IP {pairingIp} :{pairingPayload.ws_port}, then Establish Link.</p>
+                    <p className="wa-help-text">
+                      Or enter manually: IP {pairingIp} :{pairingPayload.ws_port}, then Establish
+                      Link.
+                    </p>
                   )}
-                  <p className="wa-help-text pairing-warning">Anyone who scans this can control this PC on your LAN.</p>
+                  <p className="wa-help-text pairing-warning">
+                    Anyone who scans this can control this PC on your LAN.
+                  </p>
                   <button
                     type="button"
                     className="wa-btn wa-btn-cancel"
@@ -3313,7 +3625,10 @@ export function CommandBar() {
             {/* Header */}
             <div className="settings-modal-header">
               <div className="settings-modal-header-left">
-                <div className="settings-about-logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
+                <div
+                  className="settings-about-logo"
+                  style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                >
                   <Sliders size={16} />
                 </div>
                 <div>
@@ -3326,14 +3641,19 @@ export function CommandBar() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {pingTesting && (
-                  <span className="settings-ping-chip" style={{ background: 'rgba(255, 90, 54, 0.15)', color: '#ff8b6a' }}>
+                  <span
+                    className="settings-ping-chip"
+                    style={{ background: 'rgba(255, 90, 54, 0.15)', color: '#ff8b6a' }}
+                  >
                     <Loader2 className="spin" size={12} /> Pinging...
                   </span>
                 )}
                 {pingResult && !pingTesting && (
                   <span className={`settings-ping-chip ${pingResult.ok ? 'success' : 'error'}`}>
                     {pingResult.ok ? (
-                      <>⚡ {pingResult.latency_ms}ms ({pingResult.provider})</>
+                      <>
+                        ⚡ {pingResult.latency_ms}ms ({pingResult.provider})
+                      </>
                     ) : (
                       <>❌ Ping Failed</>
                     )}
@@ -3411,7 +3731,8 @@ export function CommandBar() {
                         <span className="agent-badge-pill ember">Vision &amp; Computer Use</span>
                       </div>
                       <p className="settings-help-text">
-                        Orchestrates natural language commands into vision-guided OS clicks, keystrokes, and workflows.
+                        Orchestrates natural language commands into vision-guided OS clicks,
+                        keystrokes, and workflows.
                       </p>
 
                       <div className="settings-input-group">
@@ -3461,7 +3782,9 @@ export function CommandBar() {
                           <div className="settings-model-selector-row">
                             <div className="settings-model-info">
                               <span className="settings-model-name">{agent1Model}</span>
-                              <span className="settings-model-sub">Provider: {provider.toUpperCase()}</span>
+                              <span className="settings-model-sub">
+                                Provider: {provider.toUpperCase()}
+                              </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <button
@@ -3475,7 +3798,18 @@ export function CommandBar() {
                               <button
                                 type="button"
                                 className="settings-btn-action settings-btn-secondary"
-                                onClick={() => handleTestPing(provider, provider === 'groq' ? groqApiKey : provider === 'deepseek' ? deepseekApiKey : customApiKey, agent1Model, customUrl)}
+                                onClick={() =>
+                                  handleTestPing(
+                                    provider,
+                                    provider === 'groq'
+                                      ? groqApiKey
+                                      : provider === 'deepseek'
+                                        ? deepseekApiKey
+                                        : customApiKey,
+                                    agent1Model,
+                                    customUrl
+                                  )
+                                }
                                 disabled={pingTesting}
                               >
                                 ⚡ Ping
@@ -3493,11 +3827,24 @@ export function CommandBar() {
                                 onChange={(e) => setAgent1SearchQuery(e.target.value)}
                                 autoFocus
                               />
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '4px' }}>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: '3px',
+                                  marginTop: '4px',
+                                }}
+                              >
                                 {agent1ModelsList
-                                  .filter((m) =>
-                                    m.id.toLowerCase().includes(agent1SearchQuery.toLowerCase()) ||
-                                    (m.name && m.name.toLowerCase().includes(agent1SearchQuery.toLowerCase()))
+                                  .filter(
+                                    (m) =>
+                                      m.id
+                                        .toLowerCase()
+                                        .includes(agent1SearchQuery.toLowerCase()) ||
+                                      (m.name &&
+                                        m.name
+                                          .toLowerCase()
+                                          .includes(agent1SearchQuery.toLowerCase()))
                                   )
                                   .slice(0, 15)
                                   .map((m) => (
@@ -3511,9 +3858,13 @@ export function CommandBar() {
                                     >
                                       <div>
                                         <div style={{ fontWeight: 600 }}>{m.name || m.id}</div>
-                                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>{m.id}</div>
+                                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                                          {m.id}
+                                        </div>
                                       </div>
-                                      {agent1Model === m.id && <Check size={14} style={{ color: '#ff5a36' }} />}
+                                      {agent1Model === m.id && (
+                                        <Check size={14} style={{ color: '#ff5a36' }} />
+                                      )}
                                     </div>
                                   ))}
                               </div>
@@ -3536,7 +3887,8 @@ export function CommandBar() {
                         </div>
                       </div>
                       <p className="settings-help-text">
-                        Powers document synthesis, smart context grounding, offline/online vector search, and web citations.
+                        Powers document synthesis, smart context grounding, offline/online vector
+                        search, and web citations.
                       </p>
 
                       <div className="settings-input-group">
@@ -3590,11 +3942,24 @@ export function CommandBar() {
                                 onChange={(e) => setGeminiSearchQuery(e.target.value)}
                                 autoFocus
                               />
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '4px' }}>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: '3px',
+                                  marginTop: '4px',
+                                }}
+                              >
                                 {geminiModelsList
-                                  .filter((m) =>
-                                    m.id.toLowerCase().includes(geminiSearchQuery.toLowerCase()) ||
-                                    (m.name && m.name.toLowerCase().includes(geminiSearchQuery.toLowerCase()))
+                                  .filter(
+                                    (m) =>
+                                      m.id
+                                        .toLowerCase()
+                                        .includes(geminiSearchQuery.toLowerCase()) ||
+                                      (m.name &&
+                                        m.name
+                                          .toLowerCase()
+                                          .includes(geminiSearchQuery.toLowerCase()))
                                   )
                                   .slice(0, 15)
                                   .map((m) => (
@@ -3608,9 +3973,13 @@ export function CommandBar() {
                                     >
                                       <div>
                                         <div style={{ fontWeight: 600 }}>{m.name || m.id}</div>
-                                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>{m.id}</div>
+                                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                                          {m.id}
+                                        </div>
                                       </div>
-                                      {geminiModel === m.id && <Check size={14} style={{ color: '#c084fc' }} />}
+                                      {geminiModel === m.id && (
+                                        <Check size={14} style={{ color: '#c084fc' }} />
+                                      )}
                                     </div>
                                   ))}
                               </div>
@@ -3630,17 +3999,23 @@ export function CommandBar() {
                         <span className="agent-badge-pill emerald">Streaming STT + TTS</span>
                       </div>
                       <p className="settings-help-text">
-                        Conversational voice streaming with real-time speech-to-text, audio chunking, and speech playback.
+                        Conversational voice streaming with real-time speech-to-text, audio
+                        chunking, and speech playback.
                       </p>
 
-                      <div className="settings-provider-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                      <div
+                        className="settings-provider-grid"
+                        style={{ gridTemplateColumns: '1fr 1fr' }}
+                      >
                         <div
                           className={`provider-grid-item ${voiceProvider === 'assemblyai' ? 'active' : ''}`}
                           onClick={() => updateVoiceProvider('assemblyai')}
                         >
                           <Zap size={16} />
                           <span className="provider-grid-item-label">AssemblyAI Realtime</span>
-                          <span style={{ fontSize: '10px', color: '#94a3b8' }}>Conversational Voice Agent</span>
+                          <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                            Conversational Voice Agent
+                          </span>
                         </div>
                         <div
                           className={`provider-grid-item ${voiceProvider === 'sarvam' ? 'active' : ''}`}
@@ -3648,7 +4023,9 @@ export function CommandBar() {
                         >
                           <Volume2 size={16} />
                           <span className="provider-grid-item-label">Sarvam AI</span>
-                          <span style={{ fontSize: '10px', color: '#94a3b8' }}>Multilingual Indian Accents</span>
+                          <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                            Multilingual Indian Accents
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -3724,7 +4101,9 @@ export function CommandBar() {
                           type="button"
                           className="settings-btn-action"
                           style={{ padding: '2px 8px', fontSize: '10px' }}
-                          onClick={() => handleTestPing('deepseek', deepseekApiKey, 'deepseek-chat')}
+                          onClick={() =>
+                            handleTestPing('deepseek', deepseekApiKey, 'deepseek-chat')
+                          }
                           disabled={pingTesting || !deepseekApiKey}
                         >
                           Test ⚡
@@ -3737,9 +4116,7 @@ export function CommandBar() {
                         value={deepseekApiKey}
                         onChange={(e) => updateDeepseekApiKey(e.target.value)}
                       />
-                      <p className="settings-help-text">
-                        Powers deep reasoning actuator routines.
-                      </p>
+                      <p className="settings-help-text">Powers deep reasoning actuator routines.</p>
                     </div>
 
                     <div className="settings-section-card settings-key-card">
@@ -3847,7 +4224,15 @@ export function CommandBar() {
                     )}
 
                     {pairingPayload && !pairingError && (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', textAlign: 'center' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '12px',
+                          textAlign: 'center',
+                        }}
+                      >
                         <p style={{ margin: 0, fontSize: '12px', color: '#cbd5e1' }}>
                           Scan this QR code from your Blinky Mobile app (Pair tab):
                         </p>
@@ -3861,13 +4246,18 @@ export function CommandBar() {
                               onChange={(e) => setPairingIp(e.target.value)}
                             >
                               {pairingPayload.ips.map((ip) => (
-                                <option key={ip} value={ip}>{ip}</option>
+                                <option key={ip} value={ip}>
+                                  {ip}
+                                </option>
                               ))}
                             </select>
                           </div>
                         )}
 
-                        <div className="wa-qr-canvas-wrapper" style={{ background: '#fff', padding: '10px', borderRadius: '12px' }}>
+                        <div
+                          className="wa-qr-canvas-wrapper"
+                          style={{ background: '#fff', padding: '10px', borderRadius: '12px' }}
+                        >
                           <canvas ref={mobileCanvasRef} className="wa-qr-canvas" />
                           {pairingLoading && (
                             <div className="wa-qr-overlay">
@@ -3877,7 +4267,8 @@ export function CommandBar() {
                         </div>
 
                         <p className="settings-help-text">
-                          Manual address: IP <code style={{ color: '#38bdf8' }}>{pairingIp}</code>, Port <code style={{ color: '#38bdf8' }}>{pairingPayload.ws_port}</code>
+                          Manual address: IP <code style={{ color: '#38bdf8' }}>{pairingIp}</code>,
+                          Port <code style={{ color: '#38bdf8' }}>{pairingPayload.ws_port}</code>
                         </p>
 
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -3887,7 +4278,11 @@ export function CommandBar() {
                             onClick={handleRegenerateToken}
                             disabled={pairingLoading}
                           >
-                            {pairingLoading ? <Loader2 className="spin" size={13} /> : 'Regenerate Code'}
+                            {pairingLoading ? (
+                              <Loader2 className="spin" size={13} />
+                            ) : (
+                              'Regenerate Code'
+                            )}
                           </button>
                           <button
                             type="button"
@@ -3918,7 +4313,8 @@ export function CommandBar() {
                         <span className="agent-badge-pill ember">System-Wide</span>
                       </div>
                       <p className="settings-help-text">
-                        Press this key combination from any application on Windows to instantly summon Blinky.
+                        Press this key combination from any application on Windows to instantly
+                        summon Blinky.
                       </p>
 
                       <div className="settings-shortcut-grid">
@@ -3948,10 +4344,20 @@ export function CommandBar() {
                           <span>Push-To-Talk Voice Input</span>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         <div>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9' }}>Hold Mic Button / Hotkey</div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>Streams speech directly to Blinky's voice pipeline</div>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9' }}>
+                            Hold Mic Button / Hotkey
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                            Streams speech directly to Blinky's voice pipeline
+                          </div>
                         </div>
                         <span className="agent-badge-pill emerald">Win + Space</span>
                       </div>
@@ -3964,12 +4370,27 @@ export function CommandBar() {
                           <span>Dismiss &amp; Cancel</span>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         <div>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9' }}>Escape Key</div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>Closes modals, dismisses result bubbles, or cancels autopilot</div>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#f1f5f9' }}>
+                            Escape Key
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                            Closes modals, dismisses result bubbles, or cancels autopilot
+                          </div>
                         </div>
-                        <span className="agent-badge-pill" style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#cbd5e1' }}>Esc</span>
+                        <span
+                          className="agent-badge-pill"
+                          style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#cbd5e1' }}
+                        >
+                          Esc
+                        </span>
                       </div>
                     </div>
                   </>
@@ -3982,13 +4403,28 @@ export function CommandBar() {
                       <Bot size={28} />
                     </div>
                     <div>
-                      <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#fff', fontFamily: 'Astonpoliz, Okine Sans, sans-serif' }}>
+                      <h3
+                        style={{
+                          margin: '0 0 4px 0',
+                          fontSize: '16px',
+                          color: '#fff',
+                          fontFamily: 'Astonpoliz, Okine Sans, sans-serif',
+                        }}
+                      >
                         Blinky Desktop
                       </h3>
                       <span className="agent-badge-pill ember">v1.0.0 Production</span>
                     </div>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '11.5px', color: '#94a3b8', maxWidth: '380px' }}>
-                      The Vision-Guided Autonomous AI Companion for Windows. Unified multi-agent intelligence with local computer-use actuation and streaming voice.
+                    <p
+                      style={{
+                        margin: '4px 0 0 0',
+                        fontSize: '11.5px',
+                        color: '#94a3b8',
+                        maxWidth: '380px',
+                      }}
+                    >
+                      The Vision-Guided Autonomous AI Companion for Windows. Unified multi-agent
+                      intelligence with local computer-use actuation and streaming voice.
                     </p>
 
                     <div className="settings-about-grid">
@@ -3998,7 +4434,9 @@ export function CommandBar() {
                       </div>
                       <div className="settings-about-stat">
                         <span className="settings-about-stat-label">Actuator Engine</span>
-                        <span className="settings-about-stat-val">{provider.toUpperCase()} ({agent1Model})</span>
+                        <span className="settings-about-stat-val">
+                          {provider.toUpperCase()} ({agent1Model})
+                        </span>
                       </div>
                       <div className="settings-about-stat">
                         <span className="settings-about-stat-label">Knowledge Engine</span>
@@ -4006,7 +4444,11 @@ export function CommandBar() {
                       </div>
                       <div className="settings-about-stat">
                         <span className="settings-about-stat-label">Voice Pipeline</span>
-                        <span className="settings-about-stat-val">{voiceProvider === 'assemblyai' ? 'AssemblyAI Realtime' : 'Sarvam Multilingual'}</span>
+                        <span className="settings-about-stat-val">
+                          {voiceProvider === 'assemblyai'
+                            ? 'AssemblyAI Realtime'
+                            : 'Sarvam Multilingual'}
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -11,6 +11,7 @@ The matching engine located in [matching.py](file:///c:/projects/Jarvis/common/p
 $$\text{Score} = (\text{Similarity} \times 0.94) + (\text{OCR Confidence} \times 0.06) + \sum \text{Bonuses}$$
 
 ### Similarity Scores
+
 1. **Exact Match**: If case-normalized, punctuation-stripped target text equals candidate text: `Similarity = 1.0`
 2. **Substring Match**: If target is a substring of candidate text (or vice versa): `Similarity = 0.86`
 3. **Fuzzy Match**: Evaluates `difflib.SequenceMatcher.ratio()`. If ratio is $< 0.65$, it is ignored.
@@ -23,21 +24,23 @@ If the LLM includes generic UI words in `target_text`, `_target_candidates()` al
 
 To resolve ambiguities when multiple similar terms exist on screen, the engine applies specific bonuses and penalties:
 
-* **Exact Match Bonus (+0.30)**: Granted for case-insensitive exact string equality.
-* **Input Control Preference (+0.30)**: Applied when the step is a type/search/filter action and the element is classified as an input control (e.g. `Edit`, `TextBox`).
-* **Interactive Control Bonus (+0.24)**: Applied to UIA buttons, tabs, menu items, or combo boxes when the step requires interactive click coordinates.
-* **Sidebar Region Context (+0.20)**: Granted if the AI instruction references words like `"sidebar"`, `"left"`, or `"panel"`, and the candidate is located in the left-hand sidebar viewport.
-* **OCR Source Bonus (+0.02)**: Minor bonus for OCR-detected text containers.
-* **Size/Area Bonus (Up to +0.05)**:
+- **Exact Match Bonus (+0.30)**: Granted for case-insensitive exact string equality.
+- **Input Control Preference (+0.30)**: Applied when the step is a type/search/filter action and the element is classified as an input control (e.g. `Edit`, `TextBox`).
+- **Interactive Control Bonus (+0.24)**: Applied to UIA buttons, tabs, menu items, or combo boxes when the step requires interactive click coordinates.
+- **Sidebar Region Context (+0.20)**: Granted if the AI instruction references words like `"sidebar"`, `"left"`, or `"panel"`, and the candidate is located in the left-hand sidebar viewport.
+- **OCR Source Bonus (+0.02)**: Minor bonus for OCR-detected text containers.
+- **Size/Area Bonus (Up to +0.05)**:
   $$\text{Size Bonus} = \min\left(0.05, \frac{\text{width} \times \text{height}}{10000}\right)$$
-* **Blinky UI Exclusion Penalty (-0.40)**: Applied to elements matching Blinky's own UI text labels (to prevent the AI from clicking Blinky's windows instead of the target app).
+- **Blinky UI Exclusion Penalty (-0.40)**: Applied to elements matching Blinky's own UI text labels (to prevent the AI from clicking Blinky's windows instead of the target app).
 
 ### Minimum Acceptance Threshold
+
 A candidate match is only accepted if its final score satisfies:
 $$\text{Score} \ge 0.52$$
 Otherwise, the engine reports no match.
 
 ### Ambiguity Diagnostics
+
 `find_best_match_with_score()` returns diagnostics used by the locator fast path:
 
 ```json
@@ -71,18 +74,23 @@ Before matching, [main.py](file:///c:/projects/Jarvis/common/python/main.py) mer
 After LLM inference, the output steps list undergoes a 4-stage post-processing pipeline:
 
 ### Stage 1: Target Attachment (`attach_matches`)
+
 Scans the steps list and runs `find_best_match` to link each step's `target_text` to its physical screen coordinate match.
 
 ### Stage 2: Navigation Skip (`skip_completed_navigation_steps`)
+
 If step 1 is a navigation action (e.g., "click Extensions panel" or "open settings") AND step 2's target is already visible on the screen, step 1 is removed and the remaining steps are renumbered.
 
 ### Stage 3: Empty Search Target Fallback (`_fill_empty_search_targets`)
+
 If a step represents a search/type instruction but `target_text` is empty and no match was found:
+
 - Finds the first visible item that is an input control containing a search/filter/find placeholder.
 - If none is found, falls back to the first visible element containing search keywords.
 - Attaches the resolved item to the step.
 
 ### Stage 4: Step Slicing (`steps[:1]`)
+
 Programmatically restricts the return payload to a single step, minimizing latency and enforcing Blinky's single-step reactive architecture.
 
 ---
@@ -109,6 +117,7 @@ The matcher remains responsible for finding the target. Autopilot is only the bo
 ---
 
 ## Related Guides & Files
+
 - [01 System Architecture](file:///c:/projects/Jarvis/common/ai/01_architecture.md)
 - [Fuzzy Matcher Module](file:///c:/projects/Jarvis/common/python/utils/matching.py)
 - [Python Orchestrator](file:///c:/projects/Jarvis/common/python/main.py)

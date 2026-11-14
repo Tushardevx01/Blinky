@@ -55,7 +55,10 @@ export function calculateTermFrequencies(tokens: string[]): Record<string, numbe
 /**
  * Calculates cosine similarity between two term-frequency maps.
  */
-export function calculateCosineSimilarity(tf1: Record<string, number>, tf2: Record<string, number>): number {
+export function calculateCosineSimilarity(
+  tf1: Record<string, number>,
+  tf2: Record<string, number>
+): number {
   if (!tf1 || !tf2) return 0;
   let dotProduct = 0;
   let mag1Sq = 0;
@@ -97,7 +100,8 @@ export async function listMobileNotebooks(): Promise<MobileNotebook[]> {
             file_type: 'md',
             word_count: 220,
             content: 'Blinky Mobile companion allows document research and PC remote control.',
-            okf_block: '### SOURCE: Getting_Started.md\nType: MD\n\nBlinky Mobile companion allows document research and PC remote control.\n',
+            okf_block:
+              '### SOURCE: Getting_Started.md\nType: MD\n\nBlinky Mobile companion allows document research and PC remote control.\n',
             active: true,
             created_at: Date.now(),
           },
@@ -127,7 +131,10 @@ export async function saveMobileNotebooks(notebooks: MobileNotebook[]): Promise<
 /**
  * Creates a new notebook on the mobile device.
  */
-export async function createMobileNotebook(title: string, description: string = ''): Promise<MobileNotebook> {
+export async function createMobileNotebook(
+  title: string,
+  description: string = ''
+): Promise<MobileNotebook> {
   const notebooks = await listMobileNotebooks();
   const newNb: MobileNotebook = {
     id: `mb_${Date.now()}`,
@@ -286,14 +293,15 @@ export async function syncPcNotebooks(pcData: any): Promise<void> {
     const pcNotebookList: any[] = Array.isArray(pcData)
       ? pcData
       : typeof pcData === 'object'
-      ? Object.values(pcData)
-      : [];
+        ? Object.values(pcData)
+        : [];
 
     for (const rawNb of pcNotebookList) {
       if (!rawNb || typeof rawNb !== 'object' || !rawNb.id) continue;
 
       const convertedSources: MobileSource[] = (rawNb.sources || []).map((s: any) => {
-        const ext = s.file_type || (s.source_name || s.name || '').split('.').pop()?.toLowerCase() || 'txt';
+        const ext =
+          s.file_type || (s.source_name || s.name || '').split('.').pop()?.toLowerCase() || 'txt';
         const content = s.raw_text || s.content || s.okf_content || '';
         const name = s.source_name || s.name || 'document.txt';
         return {
@@ -302,7 +310,8 @@ export async function syncPcNotebooks(pcData: any): Promise<void> {
           file_type: ext,
           word_count: s.word_count || Math.round(content.length / 5),
           content: content,
-          okf_block: s.okf_content || `### SOURCE: ${name}\nType: ${ext.toUpperCase()}\n\n${content}\n`,
+          okf_block:
+            s.okf_content || `### SOURCE: ${name}\nType: ${ext.toUpperCase()}\n\n${content}\n`,
           active: s.active !== false,
           created_at: s.created_at || Date.now(),
         };

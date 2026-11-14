@@ -26,12 +26,12 @@ Welcome to the **Blinky PDF & Format Conversion Engine** documentation. This use
    - **OCR (Optical Character Recognition)**: Extract text from scanned/image-based PDFs.
 
 4. **Security, Watermarking & Redaction**:
-   - **Watermark**: Overlay text (e.g., *"CONFIDENTIAL"*, *"DRAFT"*) or image logos on PDF pages.
-   - **Dynamic Page Numbers**: Insert page numbering in headers or footers (e.g., *"Page X of Y"*).
+   - **Watermark**: Overlay text (e.g., _"CONFIDENTIAL"_, _"DRAFT"_) or image logos on PDF pages.
+   - **Dynamic Page Numbers**: Insert page numbering in headers or footers (e.g., _"Page X of Y"_).
    - **Sensitive Data Redaction**: Automatically detect and black out sensitive data like SSNs, Credit Cards, Email Addresses, and Phone Numbers.
 
 5. **Windows File Explorer Context Auto-Detection**:
-   - Speak or type requests like *"Convert this PDF to docx"* or *"Watermark this file with CONFIDENTIAL"*. Blinky will automatically detect the selected file in your active Windows File Explorer window!
+   - Speak or type requests like _"Convert this PDF to docx"_ or _"Watermark this file with CONFIDENTIAL"_. Blinky will automatically detect the selected file in your active Windows File Explorer window!
 
 6. **Mobile Companion Integration**:
    - Send conversion, merge, split, watermark, or extraction commands directly from the Blinky Mobile Companion app via WebSocket sync.
@@ -41,34 +41,37 @@ Welcome to the **Blinky PDF & Format Conversion Engine** documentation. This use
 ## 🛠 Usage & Prompts
 
 ### 1. Natural Language / Voice Prompts
+
 You can issue commands directly to Blinky using natural language:
 
 - **Format Conversion**:
-  - *"Convert report.docx to PDF"*
-  - *"Convert document.pdf to word"*
-  - *"Turn scanner_output.pdf into images"*
-  - *"Combine photo1.png and photo2.jpg into a PDF called portfolio.pdf"*
+  - _"Convert report.docx to PDF"_
+  - _"Convert document.pdf to word"_
+  - _"Turn scanner_output.pdf into images"_
+  - _"Combine photo1.png and photo2.jpg into a PDF called portfolio.pdf"_
 
 - **Page Operations**:
-  - *"Merge doc1.pdf and doc2.pdf into combined.pdf"*
-  - *"Split huge_contract.pdf into individual pages"*
-  - *"Extract pages 1 to 5 from chapter.pdf"*
-  - *"Rotate scan.pdf by 90 degrees clockwise"*
+  - _"Merge doc1.pdf and doc2.pdf into combined.pdf"_
+  - _"Split huge_contract.pdf into individual pages"_
+  - _"Extract pages 1 to 5 from chapter.pdf"_
+  - _"Rotate scan.pdf by 90 degrees clockwise"_
 
 - **Data Extraction**:
-  - *"Extract all text from statement.pdf"*
-  - *"Parse tables from invoice.pdf into Excel"*
-  - *"OCR scanned_doc.pdf to plain text"*
+  - _"Extract all text from statement.pdf"_
+  - _"Parse tables from invoice.pdf into Excel"_
+  - _"OCR scanned_doc.pdf to plain text"_
 
 - **Watermarking & Security**:
-  - *"Add a draft watermark to financial_report.pdf"*
-  - *"Add page numbers to thesis.pdf"*
-  - *"Redact sensitive SSN and credit card numbers from application.pdf"*
+  - _"Add a draft watermark to financial_report.pdf"_
+  - _"Add page numbers to thesis.pdf"_
+  - _"Redact sensitive SSN and credit card numbers from application.pdf"_
 
 ---
 
 ### 2. Windows File Explorer Selection Auto-Context
+
 When using Blinky on Windows desktop:
+
 1. Open Windows File Explorer.
 2. Select (highlight) a PDF, DOCX, or Image file.
 3. Simply say or type: **"Convert this file to docx"** or **"Add watermark DRAFT to this file"**.
@@ -107,13 +110,16 @@ result = execute_pdf_tool(
 ---
 
 ## ⚡ Performance & Privacy
+
 - **100% Offline & Private**: All conversions, OCR, and redactions take place entirely on your local CPU. No files or data are ever uploaded to third-party cloud services.
 - **Fast Execution**: Pure Python binary stream optimizations process pages in < 30ms per page.
 
 ---
 
 ## 🧪 Testing & Verification
+
 To run the complete PDF engine test suite:
+
 ```bash
 pytest common/python/tests/test_pdf_engine.py
 ```

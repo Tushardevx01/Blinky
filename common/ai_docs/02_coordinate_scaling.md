@@ -11,10 +11,11 @@ Screenshots can be captured at any physical desktop resolution (e.g., $2560 \tim
 $$\text{Max Width} = 1920 \text{ px}, \quad \text{Max Height} = 1080 \text{ px}$$
 
 The aspect ratio is strictly preserved.
-* **Example**: A physical screen of $2560 \times 1600$ (16:10 aspect ratio) downsamples to a screenshot of $1728 \times 1080$ pixels.
-* **Dataclass Representation**: The [Screenshot](file:///c:/projects/Jarvis/common/python/capture/screen.py) dataclass maintains both:
-  * `width` / `height`: Downsampled screenshot dimensions.
-  * `screen_width` / `screen_height`: Original physical desktop dimensions.
+
+- **Example**: A physical screen of $2560 \times 1600$ (16:10 aspect ratio) downsamples to a screenshot of $1728 \times 1080$ pixels.
+- **Dataclass Representation**: The [Screenshot](file:///c:/projects/Jarvis/common/python/capture/screen.py) dataclass maintains both:
+  - `width` / `height`: Downsampled screenshot dimensions.
+  - `screen_width` / `screen_height`: Original physical desktop dimensions.
 
 ---
 
@@ -25,11 +26,13 @@ Windows UI Automation (UIA) returns control bounding rectangles in physical desk
 To align both coordinate systems in the same space, [main.py](file:///c:/projects/Jarvis/common/python/main.py) maps UIA bounds to screenshot-space bounds:
 
 ### Scale Factors
+
 $$s_x = \frac{\text{screenshot.width}}{\text{screenshot.screen\_width}}$$
 
 $$s_y = \frac{\text{screenshot.height}}{\text{screenshot.screen\_height}}$$
 
 ### Normalization Mapping
+
 For any coordinate pair $(x_{\text{uia}}, y_{\text{uia}})$:
 
 $$x_{\text{ss}} = \lfloor x_{\text{uia}} \times s_x \rceil$$
@@ -45,11 +48,13 @@ This scaling ensures that fuzzy matching and text calibration operate on identic
 When the React frontend renders [Overlay.tsx](file:///c:/projects/Jarvis/common/frontend/src/Overlay.tsx), it must map screenshot-space coordinates back to CSS pixels matching the browser's viewport.
 
 ### Viewport Ratios
+
 $$\text{scale}_x = \frac{\text{window.innerWidth}}{\text{screenshot.width}}$$
 
 $$\text{scale}_y = \frac{\text{window.innerHeight}}{\text{screenshot.height}}$$
 
 ### Render Calculations
+
 $$\text{frame.left} = \text{round}(x_{\text{ss}} \times \text{scale}_x)$$
 
 $$\text{frame.top} = \text{round}(y_{\text{ss}} \times \text{scale}_y)$$
@@ -63,12 +68,14 @@ $$\text{frame.height} = \text{round}(\text{height}_{\text{ss}} \times \text{scal
 ## 3.5 Linux Viewport Coordinate Shifting (GNOME Shell vs KDE/Plasma)
 
 Under Linux (GNOME/Wayland), standard frameless full-screen windows hide the system top panel. To prevent this, **Blinky dynamically detects the desktop environment at runtime**:
-* **GNOME**: Spawns the native overlay window exactly below the GNOME status bar (physically positioned at $y = 32 \times \text{scale\_factor}$).
-* **KDE / Plasma / Others**: Spawns the overlay window at $y = 0$ with full screen dimensions (as system panels are usually placed at the bottom or sides and do not trigger full-screen hiding).
+
+- **GNOME**: Spawns the native overlay window exactly below the GNOME status bar (physically positioned at $y = 32 \times \text{scale\_factor}$).
+- **KDE / Plasma / Others**: Spawns the overlay window at $y = 0$ with full screen dimensions (as system panels are usually placed at the bottom or sides and do not trigger full-screen hiding).
 
 To maintain absolute coordinate precision across all platforms, resolutions, and desktop setups, **the vertical offset is resolved dynamically at runtime** inside `Overlay.tsx`.
 
 ### Dynamic Offset Calculation
+
 The frontend queries the Tauri window shell's native screen coordinates:
 
 $$\text{y\_offset} = \frac{\text{appWindow.outerPosition().y}}{\text{appWindow.scaleFactor()}}$$
@@ -79,8 +86,8 @@ $$y_{\text{shifted}} = y_{\text{ss}} - \text{y\_offset}$$
 
 $$\text{frame.top} = \text{round}(y_{\text{shifted}} \times \text{scale}_y)$$
 
-* **On GNOME**: `y_offset` dynamically evaluates to `32` (or the corresponding scaled panel height), aligning overlay frames perfectly with underlying elements.
-* **On KDE / Plasma / Windows**: The window is positioned at `y: 0`, so `y_offset` evaluates to `0`, resulting in a zero-offset rendering.
+- **On GNOME**: `y_offset` dynamically evaluates to `32` (or the corresponding scaled panel height), aligning overlay frames perfectly with underlying elements.
+- **On KDE / Plasma / Windows**: The window is positioned at `y: 0`, so `y_offset` evaluates to `0`, resulting in a zero-offset rendering.
 
 This dynamic shift guarantees that graphical highlights overlay target items with pixel-perfect accuracy on all display types (1080p, 2K, 4K) and all desktop environments.
 
@@ -122,7 +129,9 @@ $$y_{\text{physical}} = \text{round}\left(y_{\text{center}} \times \frac{\text{s
 To prevent large highlight boxes from cluttering the screen or looking unpolished, [Overlay.tsx](file:///c:/projects/Jarvis/common/frontend/src/Overlay.tsx) applies custom sizing restrictions based on the control type:
 
 ### Standard / Non-Input Controls
+
 For text, buttons, and icons, bounds are capped:
+
 ```typescript
 const MAX_BOX_WIDTH = isIcon ? 100 : 140;
 const MAX_BOX_HEIGHT = isIcon ? 40 : 44;
@@ -131,20 +140,24 @@ const MIN_BOX_SIZE = 36;
 const displayWidth = Math.min(Math.max(MIN_BOX_SIZE, rawWidth), MAX_BOX_WIDTH);
 const displayHeight = Math.min(Math.max(MIN_BOX_SIZE, rawHeight), MAX_BOX_HEIGHT);
 ```
-*Standard elements are center-aligned when width/height constraints are active.*
+
+_Standard elements are center-aligned when width/height constraints are active._
 
 ### Input Control Full-Width Bypass
+
 If the matched element is an input control (e.g. `Edit`, `TextBox`, `ComboBox`), the capping logic is bypassed to highlight the entire text input field:
+
 ```typescript
 if (isInput) {
-  displayWidth = rawWidth;   // Use full element width
-  displayLeft = rawLeft;     // Bypasses centering shift offsets
+  displayWidth = rawWidth; // Use full element width
+  displayLeft = rawLeft; // Bypasses centering shift offsets
 }
 ```
 
 ---
 
 ## Related Guides & Files
+
 - [01 System Architecture](file:///c:/projects/Jarvis/common/ai/01_architecture.md)
 - [Overlay Frontend Component](file:///c:/projects/Jarvis/common/frontend/src/Overlay.tsx)
 - [Screen Capture Engine](file:///c:/projects/Jarvis/common/python/capture/screen.py)

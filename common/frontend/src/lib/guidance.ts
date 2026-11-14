@@ -21,7 +21,10 @@ export function getPendingSteps(steps: TutorStep[], progress: CompletedGuideProg
   return getDisplaySteps(steps).filter((step) => !isCompletedStep(step, progress));
 }
 
-export function getCurrentGuideSteps(steps: TutorStep[], progress: CompletedGuideProgress): TutorStep[] {
+export function getCurrentGuideSteps(
+  steps: TutorStep[],
+  progress: CompletedGuideProgress
+): TutorStep[] {
   const pendingSteps = getPendingSteps(steps, progress);
   if (pendingSteps.length === 0) return [];
   return [pendingSteps[0]];
@@ -42,7 +45,10 @@ export function getWorkflowContinuationReadback(startedWithReadback: boolean): b
   return startedWithReadback;
 }
 
-export function shouldCompleteStepOnHighlightClick(step: Pick<TutorStep, 'instruction' | 'target_text' | 'match'>, originalQuery = ''): boolean {
+export function shouldCompleteStepOnHighlightClick(
+  step: Pick<TutorStep, 'instruction' | 'target_text' | 'match'>,
+  originalQuery = ''
+): boolean {
   if (isLocatorOnlyText(originalQuery)) return false;
 
   const instruction = normalizeGuideText(step.instruction);
@@ -61,7 +67,8 @@ export function shouldCompleteStepOnHighlightClick(step: Pick<TutorStep, 'instru
     'text field',
     'search bar',
   ].some((hint) => instruction.includes(hint));
-  const targetIsInput = controlType === 'edit' || controlType === 'textbox' || targetText.includes('search');
+  const targetIsInput =
+    controlType === 'edit' || controlType === 'textbox' || targetText.includes('search');
 
   return !(wantsTextEntry || targetIsInput);
 }
@@ -69,9 +76,11 @@ export function shouldCompleteStepOnHighlightClick(step: Pick<TutorStep, 'instru
 export function mergeGuideHistory(
   history: TutorStep[],
   currentSteps: TutorStep[],
-  progress: CompletedGuideProgress,
+  progress: CompletedGuideProgress
 ): TutorStep[] {
-  const completedHistory = getDisplaySteps(history).filter((step) => isCompletedStep(step, progress));
+  const completedHistory = getDisplaySteps(history).filter((step) =>
+    isCompletedStep(step, progress)
+  );
   const nextStep = getDisplaySteps(currentSteps)[0];
 
   if (!nextStep) {
@@ -130,10 +139,21 @@ function isSameGuideStep(left: TutorStep, right: TutorStep): boolean {
   const leftTarget = normalizeGuideText(left.target_text);
   const rightTarget = normalizeGuideText(right.target_text);
 
-  return Boolean(leftInstruction && rightInstruction && leftInstruction === rightInstruction && leftTarget === rightTarget);
+  return Boolean(
+    leftInstruction &&
+    rightInstruction &&
+    leftInstruction === rightInstruction &&
+    leftTarget === rightTarget
+  );
 }
 
-export function shouldShowSummaryBubble({ isRunning, status, defaultStatus, steps, forceShow }: SummaryVisibilityInput): boolean {
+export function shouldShowSummaryBubble({
+  isRunning,
+  status,
+  defaultStatus,
+  steps,
+  forceShow,
+}: SummaryVisibilityInput): boolean {
   if (isRunning) return true;
   if (forceShow) return status !== defaultStatus;
   if (steps.length > 0) return false;

@@ -51,23 +51,27 @@ bun run linux:setup:python   # runs ./linux/scripts/setup-python.sh
 ### Additional Linux Requirements
 
 #### 1. Audio Support (GStreamer)
+
 To prevent WebKit audio context initialization failures, install the GStreamer good plugins:
-* **Arch Linux**:
+
+- **Arch Linux**:
   ```bash
   sudo pacman -S gst-plugins-good
   ```
-* **Ubuntu/Debian**:
+- **Ubuntu/Debian**:
   ```bash
   sudo apt-get install gstreamer1.0-plugins-good
   ```
 
 #### 2. OCR Language Data (Tesseract)
+
 Although `tesseract` is a system requirement, some Linux distributions (like Arch) package the language data separately.
-* **Option A (System install)**:
+
+- **Option A (System install)**:
   ```bash
   sudo pacman -S tesseract-data-eng  # Arch Linux
   ```
-* **Option B (Local user install - no sudo needed)**:
+- **Option B (Local user install - no sudo needed)**:
   Download the dataset directly to your workspace:
   ```bash
   mkdir -p common/tessdata

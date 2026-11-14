@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  disconnectedConnectionState,
-  type ConnectionStatus,
-} from './connectionState';
+import { disconnectedConnectionState, type ConnectionStatus } from './connectionState';
 import { saveSyncedApiKeys } from './lib/secure_keys';
 import { syncPcNotebooks } from './lib/mobile_rag_db';
 import { AttachmentPlanner } from './lib/attachmentRouting';
@@ -36,8 +33,10 @@ export type FileTransferMessage = {
   message?: string;
 };
 
-const isProduction = typeof __DEV__ !== 'undefined' ? !__DEV__ : process.env.NODE_ENV === 'production';
-const RELEASE_TRANSPORT = isProduction || process.env.EXPO_PUBLIC_BLINKY_TRANSPORT_MODE === 'release';
+const isProduction =
+  typeof __DEV__ !== 'undefined' ? !__DEV__ : process.env.NODE_ENV === 'production';
+const RELEASE_TRANSPORT =
+  isProduction || process.env.EXPO_PUBLIC_BLINKY_TRANSPORT_MODE === 'release';
 
 function loadNativeSecureSocketModule(): NativeSecureSocketModule | null {
   try {
@@ -241,419 +240,478 @@ export function usePCWebSocket() {
   }, []);
 
   /** Opens a WebSocket connection and authenticates it when a token is provided. */
-  const connect = useCallback(async (ipAddress: string, token?: string, certificatePin?: string, options?: { secure?: boolean }) => {
-    disconnect();
-    
-    // Clean IP Address and default to port 9001 if no port is specified
-    let formattedIp = ipAddress
-      .trim()
-      .replace(/^https?:\/\//i, '')
-      .replace(/^wss?:\/\//i, '')
-      .replace(/\/+$/, '');
+  const connect = useCallback(
+    async (
+      ipAddress: string,
+      token?: string,
+      certificatePin?: string,
+      options?: { secure?: boolean }
+    ) => {
+      disconnect();
 
-    if (!formattedIp) {
-      setStatus('error');
-      setErrorMsg('IP Address cannot be empty');
-      return;
-    }
+      // Clean IP Address and default to port 9001 if no port is specified
+      let formattedIp = ipAddress
+        .trim()
+        .replace(/^https?:\/\//i, '')
+        .replace(/^wss?:\/\//i, '')
+        .replace(/\/+$/, '');
 
-    if (!formattedIp.includes(':')) {
-      formattedIp = `${formattedIp}:9001`;
-    }
-
-    // Release builds never downgrade; a scanned QR can only upgrade a
-    // connection to the secure channel, never downgrade one.
-    const useSecure = RELEASE_TRANSPORT || options?.secure === true;
-    secureRef.current = useSecure;
-
-    if (useSecure) {
-      const nativeModule = loadNativeSecureSocketModule();
-      if (!nativeModule || ('isNative' in nativeModule && !(nativeModule as any).isNative)) {
-        secureRef.current = false;
+      if (!formattedIp) {
         setStatus('error');
-        setErrorMsg(!RELEASE_TRANSPORT
-          ? 'This pairing code requires the release build. Install the release APK to use QR pairing.'
-          : 'The release secure socket module is missing. Install a release/internal development build.');
-        return;
-      }
-      if (!certificatePin?.trim()) {
-        setStatus('error');
-        setErrorMsg('Certificate pin is required for the release connection.');
+        setErrorMsg('IP Address cannot be empty');
         return;
       }
 
-      const socketId = `pc-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      setStatus('connecting');
-      setErrorMsg(null);
-      let connectTimeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-        if (nativeRef.current?.id === socketId && !nativeRef.current.authenticated) {
-          disconnect(`Secure connection timed out (${formattedIp}). Check the PC address, token, and certificate pin.`);
-        }
-      }, 7000);
-
-      const subscription = nativeModule.addListener('onOpen', (event) => {
-        if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
-        if (token?.trim()) {
-          void nativeModule.sendText(socketId, JSON.stringify({ type: 'auth', token: token.trim() }))
-            .catch((error: any) => {
-              if (nativeRef.current?.id === socketId) {
-                disconnect(error?.message || 'Failed to send the remote token.');
-              }
-            });
-        } else {
-          disconnect('A remote token is required for release connections.');
-        }
-      });
-      const messageSubscription = nativeModule.addListener('onMessage', (event) => {
-        if (event.id !== socketId || nativeRef.current?.id !== socketId || !event.data) return;
-        try {
-          const parsed = JSON.parse(event.data);
-          if (parsed.type === 'auth_result') {
-            if (parsed.ok === true) {
-              if (connectTimeout) clearTimeout(connectTimeout);
-              nativeRef.current.authenticated = true;
-              setStatus('connected');
-              setErrorMsg(null);
-              setTimeout(() => {
-                if (nativeRef.current?.authenticated) {
-                  void nativeModule.sendText(socketId, 'get_system_info');
-                  void nativeModule.sendText(socketId, JSON.stringify({ type: 'fs_get_quick_access' }));
-                  void nativeModule.sendText(socketId, JSON.stringify({ type: 'fs_get_recent' }));
-                  void nativeModule.sendText(socketId, JSON.stringify({ type: 'get_api_keys' }));
-                  void nativeModule.sendText(socketId, JSON.stringify({ type: 'notebook_sync_pull' }));
-                }
-              }, 300);
-            } else {
-              disconnect('The PC rejected the remote token.');
-            }
-          } else if (nativeRef.current.authenticated) {
-            if (attachmentPlannerRef.current.handle(parsed)) {
-              // Planning responses are consumed by their matching request.
-            } else if (typeof parsed.type === 'string' && parsed.type.startsWith('file_')) {
-              setFileTransferMessage(parsed as FileTransferMessage);
-            } else if (parsed.type === 'system_info') {
-              setSystemInfo(parsed as SystemInfo);
-            } else if (parsed.type === 'api_keys_sync') {
-              if (parsed.keys) {
-                void saveSyncedApiKeys(parsed.keys);
-              }
-            } else if (parsed.type === 'notebook_sync_data') {
-              if (parsed.notebooks) {
-                void syncPcNotebooks(parsed.notebooks);
-              }
-            } else if (parsed.type === 'power_event') {
-              setLatestPowerEvent(parsed as PowerEvent);
-            } else if (parsed.type === 'antigravity_approval') {
-              setAntigravityApproval(parsed as AntigravityApproval);
-            } else if (parsed.type === 'antigravity_complete') {
-              setAntigravityComplete(parsed as AntigravityComplete);
-            } else if (parsed.type === 'antigravity_progress') {
-              setAntigravityProgress(parsed as AntigravityProgress);
-            } else if (parsed.type === 'fs_quick_access') {
-              if (Array.isArray(parsed.folders)) {
-                setQuickAccessFolders(parsed.folders);
-              }
-            } else if (parsed.type === 'fs_dir_contents') {
-              setCurrentDirectory({
-                currentPath: parsed.currentPath || '',
-                parentPath: parsed.parentPath || null,
-                entries: Array.isArray(parsed.entries) ? parsed.entries : [],
-              });
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_recent_files') {
-              if (Array.isArray(parsed.files)) {
-                setRecentFiles(parsed.files);
-              }
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_search_results') {
-              if (Array.isArray(parsed.results)) {
-                setFsSearchResults(parsed.results);
-              }
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_file_data') {
-              setFsFileData({
-                path: parsed.path || '',
-                name: parsed.name || '',
-                size: parsed.size || 0,
-                base64: parsed.base64 || '',
-              });
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_error') {
-              setFsError(parsed.message || 'Filesystem error');
-              setFsLoading(false);
-            } else if (parsed.type === 'light_event') {
-              setLatestLightEvent(parsed as LightEvent);
-            } else {
-              setLatestResponse(parsed);
-            }
-          }
-        } catch {
-          console.log('Received raw secure websocket message');
-        }
-      });
-      const closeSubscription = nativeModule.addListener('onClose', (event) => {
-        if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
-        disconnect(nativeRef.current.authenticated
-          ? undefined
-          : 'The PC closed the connection before authentication completed.');
-      });
-      const errorSubscription = nativeModule.addListener('onError', (event) => {
-        if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
-        disconnect(event.error || 'Secure WebSocket connection failed.');
-      });
-      nativeRef.current = {
-        id: socketId,
-        module: nativeModule,
-        authenticated: false,
-        subscription: {
-          remove() {
-            if (connectTimeout) clearTimeout(connectTimeout);
-            connectTimeout = null;
-            subscription.remove();
-            messageSubscription.remove();
-            closeSubscription.remove();
-            errorSubscription.remove();
-          },
-        },
-      };
-      void nativeModule.connect(socketId, `wss://${formattedIp}`, certificatePin.trim()).catch((error: any) => {
-        if (nativeRef.current?.id !== socketId) return;
-        disconnect(error?.message || 'Secure WebSocket connection failed.');
-      });
-      return;
-    }
-
-    const wsUrl = `ws://${formattedIp}`;
-    setStatus('connecting');
-    setErrorMsg(null);
-
-    let connectTimeout: any = null;
-
-    try {
-      console.log(`[WS] Connecting to ${wsUrl}`);
-      
-      // Always prefer a fresh token from the discovery endpoint: the saved/QR
-      // token may be stale after the PC regenerates it, and the desktop
-      // gateway answers every auth frame with an `auth_result` verdict.
-      // Fall back to the passed token only when discovery is unreachable.
-      let authToken = token?.trim();
-      try {
-        const res = await fetch(`http://${formattedIp.split(':')[0]}:9004/discover`, {
-          signal: AbortSignal.timeout(3000),
-          headers: { 'Accept': 'application/json' },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.token) {
-            if (authToken && authToken !== data.token) {
-              console.log('[WS] Saved token is stale, using fresh token from discovery endpoint');
-            } else {
-              console.log('[WS] Retrieved token from discovery endpoint');
-            }
-            authToken = data.token;
-          }
-        }
-      } catch (e) {
-        console.log('[WS] Discovery endpoint not available, connecting with saved token');
+      if (!formattedIp.includes(':')) {
+        formattedIp = `${formattedIp}:9001`;
       }
 
-      const ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
+      // Release builds never downgrade; a scanned QR can only upgrade a
+      // connection to the secure channel, never downgrade one.
+      const useSecure = RELEASE_TRANSPORT || options?.secure === true;
+      secureRef.current = useSecure;
 
-      connectTimeout = setTimeout(() => {
-        const stateStr = ws.readyState === WebSocket.CONNECTING ? 'CONNECTING' : ws.readyState === WebSocket.OPEN ? 'OPEN' : ws.readyState === WebSocket.CLOSING ? 'CLOSING' : 'CLOSED';
-        console.log(`[WS] Timeout triggered. readyState=${stateStr}, isCurrent=${wsRef.current === ws}`);
-        if (wsRef.current === ws && ws.readyState !== WebSocket.OPEN) {
-          try { ws.close(); } catch (e) {}
-          wsRef.current = null;
+      if (useSecure) {
+        const nativeModule = loadNativeSecureSocketModule();
+        if (!nativeModule || ('isNative' in nativeModule && !(nativeModule as any).isNative)) {
+          secureRef.current = false;
           setStatus('error');
-          setErrorMsg(`Connection timed out (${formattedIp}, state=${stateStr}). Ensure Blinky desktop app is running and port 9001 is open.`);
+          setErrorMsg(
+            !RELEASE_TRANSPORT
+              ? 'This pairing code requires the release build. Install the release APK to use QR pairing.'
+              : 'The release secure socket module is missing. Install a release/internal development build.'
+          );
+          return;
         }
-      }, 10000);
+        if (!certificatePin?.trim()) {
+          setStatus('error');
+          setErrorMsg('Certificate pin is required for the release connection.');
+          return;
+        }
 
-      ws.onopen = () => {
-        console.log(`[WS] ws.onopen successfully fired for ${wsUrl}`);
-        if (connectTimeout) clearTimeout(connectTimeout);
-        if (wsRef.current === ws) {
-          // Authenticate the remote connection before any commands are sent.
-          // The desktop gateway denies all commands from non-loopback peers
-          // unless the BLINKY_REMOTE_TOKEN is presented.
-          if (authToken) {
-            ws.send(`auth:${authToken}`);
+        const socketId = `pc-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        setStatus('connecting');
+        setErrorMsg(null);
+        let connectTimeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+          if (nativeRef.current?.id === socketId && !nativeRef.current.authenticated) {
+            disconnect(
+              `Secure connection timed out (${formattedIp}). Check the PC address, token, and certificate pin.`
+            );
           }
-          setStatus('connected');
-          setErrorMsg(null);
+        }, 7000);
 
-          // Request initial telemetry and filesystem snapshot upon connection
-          setTimeout(() => {
-            if (ws.readyState === WebSocket.OPEN) {
-              ws.send('get_system_info');
-              ws.send(JSON.stringify({ type: 'fs_get_quick_access' }));
-              ws.send(JSON.stringify({ type: 'fs_get_recent' }));
-              ws.send(JSON.stringify({ type: 'get_api_keys' }));
-              ws.send(JSON.stringify({ type: 'notebook_sync_pull' }));
-            }
-          }, 300);
-        }
-      };
-
-      ws.onmessage = (e) => {
-        if (wsRef.current === ws) {
+        const subscription = nativeModule.addListener('onOpen', (event) => {
+          if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
+          if (token?.trim()) {
+            void nativeModule
+              .sendText(socketId, JSON.stringify({ type: 'auth', token: token.trim() }))
+              .catch((error: any) => {
+                if (nativeRef.current?.id === socketId) {
+                  disconnect(error?.message || 'Failed to send the remote token.');
+                }
+              });
+          } else {
+            disconnect('A remote token is required for release connections.');
+          }
+        });
+        const messageSubscription = nativeModule.addListener('onMessage', (event) => {
+          if (event.id !== socketId || nativeRef.current?.id !== socketId || !event.data) return;
           try {
-            const parsed = JSON.parse(e.data);
+            const parsed = JSON.parse(event.data);
             if (parsed.type === 'auth_result') {
-              // The desktop gateway verdict on our `auth:` frame. A rejection
-              // must never look like a working connection: surface it so the
-              // app can rescan the PC QR instead of failing silently.
               if (parsed.ok === true) {
+                if (connectTimeout) clearTimeout(connectTimeout);
+                nativeRef.current.authenticated = true;
                 setStatus('connected');
                 setErrorMsg(null);
+                setTimeout(() => {
+                  if (nativeRef.current?.authenticated) {
+                    void nativeModule.sendText(socketId, 'get_system_info');
+                    void nativeModule.sendText(
+                      socketId,
+                      JSON.stringify({ type: 'fs_get_quick_access' })
+                    );
+                    void nativeModule.sendText(socketId, JSON.stringify({ type: 'fs_get_recent' }));
+                    void nativeModule.sendText(socketId, JSON.stringify({ type: 'get_api_keys' }));
+                    void nativeModule.sendText(
+                      socketId,
+                      JSON.stringify({ type: 'notebook_sync_pull' })
+                    );
+                  }
+                }, 300);
               } else {
-                try { ws.close(); } catch {}
-                wsRef.current = null;
-                setStatus('error');
-                setErrorMsg('The PC rejected the remote token. Open the Blinky PC app, tap the QR icon, and scan the fresh code.');
+                disconnect('The PC rejected the remote token.');
               }
-            } else if (parsed.type === 'system_info') {
-              setSystemInfo(parsed as SystemInfo);
-            } else if (parsed.type === 'api_keys_sync') {
-              if (parsed.keys) {
-                void saveSyncedApiKeys(parsed.keys);
+            } else if (nativeRef.current.authenticated) {
+              if (attachmentPlannerRef.current.handle(parsed)) {
+                // Planning responses are consumed by their matching request.
+              } else if (typeof parsed.type === 'string' && parsed.type.startsWith('file_')) {
+                setFileTransferMessage(parsed as FileTransferMessage);
+              } else if (parsed.type === 'system_info') {
+                setSystemInfo(parsed as SystemInfo);
+              } else if (parsed.type === 'api_keys_sync') {
+                if (parsed.keys) {
+                  void saveSyncedApiKeys(parsed.keys);
+                }
+              } else if (parsed.type === 'notebook_sync_data') {
+                if (parsed.notebooks) {
+                  void syncPcNotebooks(parsed.notebooks);
+                }
+              } else if (parsed.type === 'power_event') {
+                setLatestPowerEvent(parsed as PowerEvent);
+              } else if (parsed.type === 'antigravity_approval') {
+                setAntigravityApproval(parsed as AntigravityApproval);
+              } else if (parsed.type === 'antigravity_complete') {
+                setAntigravityComplete(parsed as AntigravityComplete);
+              } else if (parsed.type === 'antigravity_progress') {
+                setAntigravityProgress(parsed as AntigravityProgress);
+              } else if (parsed.type === 'fs_quick_access') {
+                if (Array.isArray(parsed.folders)) {
+                  setQuickAccessFolders(parsed.folders);
+                }
+              } else if (parsed.type === 'fs_dir_contents') {
+                setCurrentDirectory({
+                  currentPath: parsed.currentPath || '',
+                  parentPath: parsed.parentPath || null,
+                  entries: Array.isArray(parsed.entries) ? parsed.entries : [],
+                });
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_recent_files') {
+                if (Array.isArray(parsed.files)) {
+                  setRecentFiles(parsed.files);
+                }
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_search_results') {
+                if (Array.isArray(parsed.results)) {
+                  setFsSearchResults(parsed.results);
+                }
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_file_data') {
+                setFsFileData({
+                  path: parsed.path || '',
+                  name: parsed.name || '',
+                  size: parsed.size || 0,
+                  base64: parsed.base64 || '',
+                });
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_error') {
+                setFsError(parsed.message || 'Filesystem error');
+                setFsLoading(false);
+              } else if (parsed.type === 'light_event') {
+                setLatestLightEvent(parsed as LightEvent);
+              } else {
+                setLatestResponse(parsed);
               }
-            } else if (parsed.type === 'notebook_sync_data') {
-              if (parsed.notebooks) {
-                void syncPcNotebooks(parsed.notebooks);
-              }
-            } else if (attachmentPlannerRef.current.handle(parsed)) {
-              // Planning responses are consumed by their matching request.
-            } else if (typeof parsed.type === 'string' && parsed.type.startsWith('file_')) {
-              setFileTransferMessage(parsed as FileTransferMessage);
-            } else if (parsed.type === 'power_event') {
-              setLatestPowerEvent(parsed as PowerEvent);
-            } else if (parsed.type === 'light_event') {
-              setLatestLightEvent(parsed as LightEvent);
-            } else if (parsed.type === 'antigravity_approval') {
-              setAntigravityApproval(parsed as AntigravityApproval);
-            } else if (parsed.type === 'antigravity_complete') {
-              setAntigravityComplete(parsed as AntigravityComplete);
-            } else if (parsed.type === 'antigravity_progress') {
-              setAntigravityProgress(parsed as AntigravityProgress);
-            } else if (parsed.type === 'fs_quick_access') {
-              if (Array.isArray(parsed.folders)) {
-                setQuickAccessFolders(parsed.folders);
-              }
-            } else if (parsed.type === 'fs_dir_contents') {
-              setCurrentDirectory({
-                currentPath: parsed.currentPath || '',
-                parentPath: parsed.parentPath || null,
-                entries: Array.isArray(parsed.entries) ? parsed.entries : [],
-              });
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_recent_files') {
-              if (Array.isArray(parsed.files)) {
-                setRecentFiles(parsed.files);
-              }
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_search_results') {
-              if (Array.isArray(parsed.results)) {
-                setFsSearchResults(parsed.results);
-              }
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_file_data') {
-              setFsFileData({
-                path: parsed.path || '',
-                name: parsed.name || '',
-                size: parsed.size || 0,
-                base64: parsed.base64 || '',
-              });
-              setFsLoading(false);
-            } else if (parsed.type === 'fs_error') {
-              setFsError(parsed.message || 'Filesystem error');
-              setFsLoading(false);
-            } else {
-              setLatestResponse(parsed);
             }
-          } catch (err) {
-            console.log('Received raw websocket message:', e.data);
+          } catch {
+            console.log('Received raw secure websocket message');
           }
-        }
-      };
-
-      ws.onclose = (e) => {
-        console.log(`[WS] ws.onclose fired: code=${e?.code}, reason=${e?.reason}`);
-        if (connectTimeout) clearTimeout(connectTimeout);
-        if (wsRef.current === ws) {
-          attachmentPlannerRef.current.cancel();
-          setStatus('disconnected');
-          wsRef.current = null;
-        }
-      };
-
-      ws.onerror = (e: any) => {
-        console.log(`[WS] ws.onerror fired:`, e?.message || e);
-        if (connectTimeout) clearTimeout(connectTimeout);
-        if (wsRef.current === ws) {
-          attachmentPlannerRef.current.cancel();
-          setStatus('error');
-          setErrorMsg(`Failed to connect to ${formattedIp}. ${e?.message || 'Check Wi-Fi & PC firewall.'}`);
-          wsRef.current = null;
-        }
-      };
-    } catch (err: any) {
-      if (connectTimeout) clearTimeout(connectTimeout);
-      setStatus('error');
-      setErrorMsg(err?.message || 'WebSocket creation failed');
-      wsRef.current = null;
-    }
-  }, [disconnect]);
-
-  const sendNativeText = useCallback((data: string) => {
-    const socket = nativeRef.current;
-    if (!socket?.authenticated) return false;
-    void socket.module.sendText(socket.id, data).catch((error: any) => {
-      if (nativeRef.current === socket) {
-        disconnect(error?.message || 'Failed to send the message to the PC.');
+        });
+        const closeSubscription = nativeModule.addListener('onClose', (event) => {
+          if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
+          disconnect(
+            nativeRef.current.authenticated
+              ? undefined
+              : 'The PC closed the connection before authentication completed.'
+          );
+        });
+        const errorSubscription = nativeModule.addListener('onError', (event) => {
+          if (event.id !== socketId || nativeRef.current?.id !== socketId) return;
+          disconnect(event.error || 'Secure WebSocket connection failed.');
+        });
+        nativeRef.current = {
+          id: socketId,
+          module: nativeModule,
+          authenticated: false,
+          subscription: {
+            remove() {
+              if (connectTimeout) clearTimeout(connectTimeout);
+              connectTimeout = null;
+              subscription.remove();
+              messageSubscription.remove();
+              closeSubscription.remove();
+              errorSubscription.remove();
+            },
+          },
+        };
+        void nativeModule
+          .connect(socketId, `wss://${formattedIp}`, certificatePin.trim())
+          .catch((error: any) => {
+            if (nativeRef.current?.id !== socketId) return;
+            disconnect(error?.message || 'Secure WebSocket connection failed.');
+          });
+        return;
       }
-    });
-    return true;
-  }, [disconnect]);
 
-  const sendCommand = useCallback((command: PowerCommand | string) => {
-    if (RELEASE_TRANSPORT || secureRef.current) {
-      return sendNativeText(command);
-    }
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(command);
+      const wsUrl = `ws://${formattedIp}`;
+      setStatus('connecting');
+      setErrorMsg(null);
+
+      let connectTimeout: any = null;
+
+      try {
+        console.log(`[WS] Connecting to ${wsUrl}`);
+
+        // Always prefer a fresh token from the discovery endpoint: the saved/QR
+        // token may be stale after the PC regenerates it, and the desktop
+        // gateway answers every auth frame with an `auth_result` verdict.
+        // Fall back to the passed token only when discovery is unreachable.
+        let authToken = token?.trim();
+        try {
+          const res = await fetch(`http://${formattedIp.split(':')[0]}:9004/discover`, {
+            signal: AbortSignal.timeout(3000),
+            headers: { Accept: 'application/json' },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.token) {
+              if (authToken && authToken !== data.token) {
+                console.log('[WS] Saved token is stale, using fresh token from discovery endpoint');
+              } else {
+                console.log('[WS] Retrieved token from discovery endpoint');
+              }
+              authToken = data.token;
+            }
+          }
+        } catch (e) {
+          console.log('[WS] Discovery endpoint not available, connecting with saved token');
+        }
+
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        connectTimeout = setTimeout(() => {
+          const stateStr =
+            ws.readyState === WebSocket.CONNECTING
+              ? 'CONNECTING'
+              : ws.readyState === WebSocket.OPEN
+                ? 'OPEN'
+                : ws.readyState === WebSocket.CLOSING
+                  ? 'CLOSING'
+                  : 'CLOSED';
+          console.log(
+            `[WS] Timeout triggered. readyState=${stateStr}, isCurrent=${wsRef.current === ws}`
+          );
+          if (wsRef.current === ws && ws.readyState !== WebSocket.OPEN) {
+            try {
+              ws.close();
+            } catch (e) {}
+            wsRef.current = null;
+            setStatus('error');
+            setErrorMsg(
+              `Connection timed out (${formattedIp}, state=${stateStr}). Ensure Blinky desktop app is running and port 9001 is open.`
+            );
+          }
+        }, 10000);
+
+        ws.onopen = () => {
+          console.log(`[WS] ws.onopen successfully fired for ${wsUrl}`);
+          if (connectTimeout) clearTimeout(connectTimeout);
+          if (wsRef.current === ws) {
+            // Authenticate the remote connection before any commands are sent.
+            // The desktop gateway denies all commands from non-loopback peers
+            // unless the BLINKY_REMOTE_TOKEN is presented.
+            if (authToken) {
+              ws.send(`auth:${authToken}`);
+            }
+            setStatus('connected');
+            setErrorMsg(null);
+
+            // Request initial telemetry and filesystem snapshot upon connection
+            setTimeout(() => {
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send('get_system_info');
+                ws.send(JSON.stringify({ type: 'fs_get_quick_access' }));
+                ws.send(JSON.stringify({ type: 'fs_get_recent' }));
+                ws.send(JSON.stringify({ type: 'get_api_keys' }));
+                ws.send(JSON.stringify({ type: 'notebook_sync_pull' }));
+              }
+            }, 300);
+          }
+        };
+
+        ws.onmessage = (e) => {
+          if (wsRef.current === ws) {
+            try {
+              const parsed = JSON.parse(e.data);
+              if (parsed.type === 'auth_result') {
+                // The desktop gateway verdict on our `auth:` frame. A rejection
+                // must never look like a working connection: surface it so the
+                // app can rescan the PC QR instead of failing silently.
+                if (parsed.ok === true) {
+                  setStatus('connected');
+                  setErrorMsg(null);
+                } else {
+                  try {
+                    ws.close();
+                  } catch {}
+                  wsRef.current = null;
+                  setStatus('error');
+                  setErrorMsg(
+                    'The PC rejected the remote token. Open the Blinky PC app, tap the QR icon, and scan the fresh code.'
+                  );
+                }
+              } else if (parsed.type === 'system_info') {
+                setSystemInfo(parsed as SystemInfo);
+              } else if (parsed.type === 'api_keys_sync') {
+                if (parsed.keys) {
+                  void saveSyncedApiKeys(parsed.keys);
+                }
+              } else if (parsed.type === 'notebook_sync_data') {
+                if (parsed.notebooks) {
+                  void syncPcNotebooks(parsed.notebooks);
+                }
+              } else if (attachmentPlannerRef.current.handle(parsed)) {
+                // Planning responses are consumed by their matching request.
+              } else if (typeof parsed.type === 'string' && parsed.type.startsWith('file_')) {
+                setFileTransferMessage(parsed as FileTransferMessage);
+              } else if (parsed.type === 'power_event') {
+                setLatestPowerEvent(parsed as PowerEvent);
+              } else if (parsed.type === 'light_event') {
+                setLatestLightEvent(parsed as LightEvent);
+              } else if (parsed.type === 'antigravity_approval') {
+                setAntigravityApproval(parsed as AntigravityApproval);
+              } else if (parsed.type === 'antigravity_complete') {
+                setAntigravityComplete(parsed as AntigravityComplete);
+              } else if (parsed.type === 'antigravity_progress') {
+                setAntigravityProgress(parsed as AntigravityProgress);
+              } else if (parsed.type === 'fs_quick_access') {
+                if (Array.isArray(parsed.folders)) {
+                  setQuickAccessFolders(parsed.folders);
+                }
+              } else if (parsed.type === 'fs_dir_contents') {
+                setCurrentDirectory({
+                  currentPath: parsed.currentPath || '',
+                  parentPath: parsed.parentPath || null,
+                  entries: Array.isArray(parsed.entries) ? parsed.entries : [],
+                });
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_recent_files') {
+                if (Array.isArray(parsed.files)) {
+                  setRecentFiles(parsed.files);
+                }
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_search_results') {
+                if (Array.isArray(parsed.results)) {
+                  setFsSearchResults(parsed.results);
+                }
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_file_data') {
+                setFsFileData({
+                  path: parsed.path || '',
+                  name: parsed.name || '',
+                  size: parsed.size || 0,
+                  base64: parsed.base64 || '',
+                });
+                setFsLoading(false);
+              } else if (parsed.type === 'fs_error') {
+                setFsError(parsed.message || 'Filesystem error');
+                setFsLoading(false);
+              } else {
+                setLatestResponse(parsed);
+              }
+            } catch (err) {
+              console.log('Received raw websocket message:', e.data);
+            }
+          }
+        };
+
+        ws.onclose = (e) => {
+          console.log(`[WS] ws.onclose fired: code=${e?.code}, reason=${e?.reason}`);
+          if (connectTimeout) clearTimeout(connectTimeout);
+          if (wsRef.current === ws) {
+            attachmentPlannerRef.current.cancel();
+            setStatus('disconnected');
+            wsRef.current = null;
+          }
+        };
+
+        ws.onerror = (e: any) => {
+          console.log(`[WS] ws.onerror fired:`, e?.message || e);
+          if (connectTimeout) clearTimeout(connectTimeout);
+          if (wsRef.current === ws) {
+            attachmentPlannerRef.current.cancel();
+            setStatus('error');
+            setErrorMsg(
+              `Failed to connect to ${formattedIp}. ${e?.message || 'Check Wi-Fi & PC firewall.'}`
+            );
+            wsRef.current = null;
+          }
+        };
+      } catch (err: any) {
+        if (connectTimeout) clearTimeout(connectTimeout);
+        setStatus('error');
+        setErrorMsg(err?.message || 'WebSocket creation failed');
+        wsRef.current = null;
+      }
+    },
+    [disconnect]
+  );
+
+  const sendNativeText = useCallback(
+    (data: string) => {
+      const socket = nativeRef.current;
+      if (!socket?.authenticated) return false;
+      void socket.module.sendText(socket.id, data).catch((error: any) => {
+        if (nativeRef.current === socket) {
+          disconnect(error?.message || 'Failed to send the message to the PC.');
+        }
+      });
       return true;
-    }
-    return false;
-  }, [sendNativeText]);
+    },
+    [disconnect]
+  );
+
+  const sendCommand = useCallback(
+    (command: PowerCommand | string) => {
+      if (RELEASE_TRANSPORT || secureRef.current) {
+        return sendNativeText(command);
+      }
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(command);
+        return true;
+      }
+      return false;
+    },
+    [sendNativeText]
+  );
 
   /** Requests a fresh telemetry snapshot from the connected host. */
   const fetchSystemInfo = useCallback(() => {
     return sendCommand('get_system_info');
   }, [sendCommand]);
-  const sendQuery = useCallback((query: string, requestId: string, attachedImage?: string, attachedFile?: { name: string; base64: string; mimeType?: string; size?: number }) => {
-    const payload = JSON.stringify({ requestId, query, attachedImage, attachedFile });
-    if (RELEASE_TRANSPORT || secureRef.current) {
-      return sendNativeText(payload);
-    }
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(payload);
-      return true;
-    }
-    return false;
-  }, [sendNativeText]);
+  const sendQuery = useCallback(
+    (
+      query: string,
+      requestId: string,
+      attachedImage?: string,
+      attachedFile?: { name: string; base64: string; mimeType?: string; size?: number }
+    ) => {
+      const payload = JSON.stringify({ requestId, query, attachedImage, attachedFile });
+      if (RELEASE_TRANSPORT || secureRef.current) {
+        return sendNativeText(payload);
+      }
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(payload);
+        return true;
+      }
+      return false;
+    },
+    [sendNativeText]
+  );
 
-  const sendFileTransferMessage = useCallback((message: Record<string, unknown>) => {
-    const payload = JSON.stringify(message);
-    if (RELEASE_TRANSPORT || secureRef.current) return sendNativeText(payload);
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(payload);
-      return true;
-    }
-    return false;
-  }, [sendNativeText]);
+  const sendFileTransferMessage = useCallback(
+    (message: Record<string, unknown>) => {
+      const payload = JSON.stringify(message);
+      if (RELEASE_TRANSPORT || secureRef.current) return sendNativeText(payload);
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(payload);
+        return true;
+      }
+      return false;
+    },
+    [sendNativeText]
+  );
 
   const getFileTransferModule = useCallback(() => loadNativeSecureSocketModule(), []);
 
@@ -673,21 +731,31 @@ export function usePCWebSocket() {
     };
   }, []);
 
-  const sendAntigravityDecision = useCallback((actionId: string, decision: 'allow' | 'deny') => {
-    sendCommand(JSON.stringify({
-      type: 'antigravity_action',
-      actionId,
-      decision,
-    }));
-    setAntigravityApproval(null);
-  }, [sendCommand]);
+  const sendAntigravityDecision = useCallback(
+    (actionId: string, decision: 'allow' | 'deny') => {
+      sendCommand(
+        JSON.stringify({
+          type: 'antigravity_action',
+          actionId,
+          decision,
+        })
+      );
+      setAntigravityApproval(null);
+    },
+    [sendCommand]
+  );
 
-  const sendAntigravityPrompt = useCallback((prompt: string) => {
-    sendCommand(JSON.stringify({
-      type: 'antigravity_prompt',
-      prompt,
-    }));
-  }, [sendCommand]);
+  const sendAntigravityPrompt = useCallback(
+    (prompt: string) => {
+      sendCommand(
+        JSON.stringify({
+          type: 'antigravity_prompt',
+          prompt,
+        })
+      );
+    },
+    [sendCommand]
+  );
 
   const dismissAntigravityComplete = useCallback(() => {
     setAntigravityComplete(null);
@@ -699,35 +767,47 @@ export function usePCWebSocket() {
     sendCommand(JSON.stringify({ type: 'fs_get_quick_access' }));
   }, [sendCommand]);
 
-  const listDirectory = useCallback((path?: string) => {
-    setFsLoading(true);
-    setFsError(null);
-    sendCommand(JSON.stringify({ type: 'fs_list_dir', path: path || '' }));
-  }, [sendCommand]);
+  const listDirectory = useCallback(
+    (path?: string) => {
+      setFsLoading(true);
+      setFsError(null);
+      sendCommand(JSON.stringify({ type: 'fs_list_dir', path: path || '' }));
+    },
+    [sendCommand]
+  );
 
   const fetchRecentFiles = useCallback(() => {
     sendCommand(JSON.stringify({ type: 'fs_get_recent' }));
   }, [sendCommand]);
 
-  const searchFiles = useCallback((query: string, path?: string) => {
-    if (!query.trim()) {
-      setFsSearchResults([]);
-      return;
-    }
-    setFsLoading(true);
-    sendCommand(JSON.stringify({ type: 'fs_search', query: query.trim(), path: path || '' }));
-  }, [sendCommand]);
+  const searchFiles = useCallback(
+    (query: string, path?: string) => {
+      if (!query.trim()) {
+        setFsSearchResults([]);
+        return;
+      }
+      setFsLoading(true);
+      sendCommand(JSON.stringify({ type: 'fs_search', query: query.trim(), path: path || '' }));
+    },
+    [sendCommand]
+  );
 
-  const openFileOnPC = useCallback((path: string) => {
-    sendCommand(JSON.stringify({ type: 'fs_open_file', path }));
-  }, [sendCommand]);
+  const openFileOnPC = useCallback(
+    (path: string) => {
+      sendCommand(JSON.stringify({ type: 'fs_open_file', path }));
+    },
+    [sendCommand]
+  );
 
-  const readFileForMobile = useCallback((path: string) => {
-    setFsLoading(true);
-    setFsError(null);
-    setFsFileData(null);
-    sendCommand(JSON.stringify({ type: 'fs_read_file', path }));
-  }, [sendCommand]);
+  const readFileForMobile = useCallback(
+    (path: string) => {
+      setFsLoading(true);
+      setFsError(null);
+      setFsFileData(null);
+      sendCommand(JSON.stringify({ type: 'fs_read_file', path }));
+    },
+    [sendCommand]
+  );
 
   const clearFsFileData = useCallback(() => {
     setFsFileData(null);
@@ -773,8 +853,10 @@ export function usePCWebSocket() {
     sendCommand,
     sendQuery,
     sendFileTransferMessage,
-    planAttachments: (prompt: string, files: { name: string; type?: string; mimeType?: string }[]) =>
-      attachmentPlannerRef.current.request(prompt, files, sendFileTransferMessage),
+    planAttachments: (
+      prompt: string,
+      files: { name: string; type?: string; mimeType?: string }[]
+    ) => attachmentPlannerRef.current.request(prompt, files, sendFileTransferMessage),
     cancelAttachmentPlanning: () => attachmentPlannerRef.current.cancel(),
     getFileTransferModule,
     fetchSystemInfo,

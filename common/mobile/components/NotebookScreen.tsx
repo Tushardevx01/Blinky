@@ -113,7 +113,10 @@ export const NotebookScreen: React.FC = () => {
         const added = await addSourceToMobileNotebook(activeNotebook.id, fileName, content);
         if (added) {
           await loadNotebooks();
-          Alert.alert('Document Attached', `Successfully indexed "${fileName}" into mobile vector database.`);
+          Alert.alert(
+            'Document Attached',
+            `Successfully indexed "${fileName}" into mobile vector database.`
+          );
         }
       }
     } catch (err: any) {
@@ -160,7 +163,10 @@ export const NotebookScreen: React.FC = () => {
     try {
       const keys = await getSyncedApiKeys();
       if (!keys.groq_key && !keys.gemini_key) {
-        Alert.alert('No API Keys', 'Please pair with PC Blinky to sync your Groq or Gemini API key.');
+        Alert.alert(
+          'No API Keys',
+          'Please pair with PC Blinky to sync your Groq or Gemini API key.'
+        );
         return;
       }
       const t0 = Date.now();
@@ -180,7 +186,10 @@ export const NotebookScreen: React.FC = () => {
         const latency = Date.now() - t0;
         const data = await resp.json().catch(() => ({}));
         if (resp.ok) {
-          Alert.alert('Groq Online ⚡', `Connection OK (${latency}ms)!\nActive Model: qwen/qwen3.8-27b`);
+          Alert.alert(
+            'Groq Online ⚡',
+            `Connection OK (${latency}ms)!\nActive Model: qwen/qwen3.8-27b`
+          );
         } else {
           Alert.alert('Groq Ping Error', data?.error?.message || `HTTP ${resp.status}`);
         }
@@ -198,7 +207,10 @@ export const NotebookScreen: React.FC = () => {
         );
         const latency = Date.now() - t0;
         if (resp.ok) {
-          Alert.alert('Gemini Online ⚡', `Connection OK (${latency}ms)!\nActive Model: gemini-2.5-flash`);
+          Alert.alert(
+            'Gemini Online ⚡',
+            `Connection OK (${latency}ms)!\nActive Model: gemini-2.5-flash`
+          );
         } else {
           const data = await resp.json().catch(() => ({}));
           Alert.alert('Gemini Ping Error', data?.error?.message || `HTTP ${resp.status}`);
@@ -253,7 +265,8 @@ export const NotebookScreen: React.FC = () => {
         if (data?.error) {
           const errMsg = JSON.stringify(data.error).toLowerCase();
           if (errMsg.includes('rate_limit') || errMsg.includes('tpm') || resp.status === 429) {
-            answer = "⚠️ **Groq Rate Limit Exceeded (TPM Exhausted)**: If you are on the free tier, please try again in a few moments, reduce active document context, or upgrade your plan.";
+            answer =
+              '⚠️ **Groq Rate Limit Exceeded (TPM Exhausted)**: If you are on the free tier, please try again in a few moments, reduce active document context, or upgrade your plan.';
           } else if (
             errMsg.includes('decommissioned') ||
             errMsg.includes('deprecated') ||
@@ -285,7 +298,10 @@ export const NotebookScreen: React.FC = () => {
             }
           );
           const data: any = await resp.json();
-          const geminiText = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || '').join('')?.trim();
+          const geminiText = data?.candidates?.[0]?.content?.parts
+            ?.map((p: any) => p?.text || '')
+            .join('')
+            ?.trim();
           if (geminiText) {
             answer = `[Vector Match Mode: ${useVectorSearch ? 'Top-K Mobile Search' : 'Full Context'} (${matchCount} chunk matches)]\n\n${geminiText}`;
           } else {
@@ -329,15 +345,15 @@ export const NotebookScreen: React.FC = () => {
       {/* NOTEBOOK SELECTOR & VECTOR RAG TOGGLE */}
       {activeNotebook && (
         <View style={styles.subHeader}>
-          <Text style={styles.activeNbTitle} numberOfLines={1}>{activeNotebook.title}</Text>
+          <Text style={styles.activeNbTitle} numberOfLines={1}>
+            {activeNotebook.title}
+          </Text>
           <View style={styles.controlsRow}>
             <TouchableOpacity
               style={[styles.toggleBtn, useVectorSearch ? styles.toggleBtnActive : null]}
               onPress={() => setUseVectorSearch(!useVectorSearch)}
             >
-              <Text style={styles.toggleBtnText}>
-                {useVectorSearch ? '⚡ Vector' : '📄 Full'}
-              </Text>
+              <Text style={styles.toggleBtnText}>{useVectorSearch ? '⚡ Vector' : '📄 Full'}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.attachBtn} onPress={handlePickDocument}>
               <Text style={styles.attachBtnText}>📎 File</Text>
@@ -355,7 +371,10 @@ export const NotebookScreen: React.FC = () => {
       {/* CHAT STREAM */}
       <ScrollView style={styles.chatStream} contentContainerStyle={styles.chatContent}>
         {messages.map((msg) => (
-          <View key={msg.id} style={[styles.bubble, msg.sender === 'user' ? styles.userBubble : styles.aiBubble]}>
+          <View
+            key={msg.id}
+            style={[styles.bubble, msg.sender === 'user' ? styles.userBubble : styles.aiBubble]}
+          >
             <Text style={styles.bubbleText}>{msg.text}</Text>
           </View>
         ))}
@@ -395,7 +414,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e293b',
   },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#f8fafc' },
-  addNbBtn: { backgroundColor: '#3b82f6', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  addNbBtn: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
   addNbBtnText: { color: '#ffffff', fontWeight: '600', fontSize: 13 },
   subHeader: {
     paddingHorizontal: 16,
@@ -416,17 +440,39 @@ const styles = StyleSheet.create({
   },
   toggleBtnActive: { backgroundColor: '#8b5cf6' },
   toggleBtnText: { color: '#ffffff', fontSize: 11, fontWeight: '600' },
-  attachBtn: { backgroundColor: '#0284c7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, marginRight: 8 },
+  attachBtn: {
+    backgroundColor: '#0284c7',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 8,
+  },
   attachBtnText: { color: '#ffffff', fontSize: 12, fontWeight: '600' },
-  pingBtn: { backgroundColor: '#f59e0b', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, marginRight: 8 },
+  pingBtn: {
+    backgroundColor: '#f59e0b',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 8,
+  },
   pingBtnText: { color: '#ffffff', fontSize: 12, fontWeight: '600' },
-  resetBtn: { backgroundColor: '#ef4444', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  resetBtn: {
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
   resetBtnText: { color: '#ffffff', fontSize: 12, fontWeight: '600' },
   chatStream: { flex: 1 },
   chatContent: { padding: 16 },
   bubble: { padding: 12, borderRadius: 12, marginBottom: 12, maxWidth: '85%' },
   userBubble: { alignSelf: 'flex-end', backgroundColor: '#2563eb' },
-  aiBubble: { alignSelf: 'flex-start', backgroundColor: '#1e293b', borderWidth: 1, borderColor: '#334155' },
+  aiBubble: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#1e293b',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
   bubbleText: { color: '#f8fafc', fontSize: 14, lineHeight: 20 },
   inputBar: {
     flexDirection: 'row',
@@ -445,6 +491,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginRight: 8,
   },
-  sendBtn: { backgroundColor: '#3b82f6', justifyContent: 'center', paddingHorizontal: 16, borderRadius: 8 },
+  sendBtn: {
+    backgroundColor: '#3b82f6',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
   sendBtnText: { color: '#ffffff', fontWeight: '600' },
 });

@@ -66,10 +66,10 @@ Prompt selection rules:
 
 `common/python/ai/client.py` selects the provider from `BLINKY_AI_PROVIDER`.
 
-| Function | Ollama | Groq |
-| :--- | :--- | :--- |
-| `ask_model(prompt, screenshot_path)` | `ask_ollama(prompt)` | `ask_groq_vision(prompt, screenshot_path)` |
-| `ask_text_model(prompt, max_tokens=300)` | `ask_ollama_text(prompt, max_tokens)` | `ask_groq_text(prompt, max_tokens)` |
+| Function                                 | Ollama                                | Groq                                       |
+| :--------------------------------------- | :------------------------------------ | :----------------------------------------- |
+| `ask_model(prompt, screenshot_path)`     | `ask_ollama(prompt)`                  | `ask_groq_vision(prompt, screenshot_path)` |
+| `ask_text_model(prompt, max_tokens=300)` | `ask_ollama_text(prompt, max_tokens)` | `ask_groq_text(prompt, max_tokens)`        |
 
 Unsupported values raise `RuntimeError("Unsupported BLINKY_AI_PROVIDER...")`.
 
@@ -77,18 +77,18 @@ Unsupported values raise `RuntimeError("Unsupported BLINKY_AI_PROVIDER...")`.
 
 Source: `common/python/ai/ollama_client.py`
 
-| Setting | Value |
-| :--- | :--- |
-| URL env | `BLINKY_OLLAMA_URL` |
-| Default URL | `http://localhost:11434/api/generate` |
-| Model env | `BLINKY_OLLAMA_MODEL` |
-| Default model | `gemma4:e4b` |
-| Timeout env | `BLINKY_OLLAMA_TIMEOUT` |
-| Default timeout | `35` seconds |
-| Main output cap | `num_predict: 350` |
-| Text output cap | caller default `300` |
-| Format | `json` |
-| Temperature | `0.1` |
+| Setting         | Value                                 |
+| :-------------- | :------------------------------------ |
+| URL env         | `BLINKY_OLLAMA_URL`                   |
+| Default URL     | `http://localhost:11434/api/generate` |
+| Model env       | `BLINKY_OLLAMA_MODEL`                 |
+| Default model   | `gemma4:e4b`                          |
+| Timeout env     | `BLINKY_OLLAMA_TIMEOUT`               |
+| Default timeout | `35` seconds                          |
+| Main output cap | `num_predict: 350`                    |
+| Text output cap | caller default `300`                  |
+| Format          | `json`                                |
+| Temperature     | `0.1`                                 |
 
 The main guidance call retries twice for non-timeout failures and validates the final payload into `{ summary, steps, warnings }`.
 
@@ -96,18 +96,18 @@ The main guidance call retries twice for non-timeout failures and validates the 
 
 Source: `common/python/ai/groq_client.py`
 
-| Setting | Value |
-| :--- | :--- |
-| URL env | `BLINKY_GROQ_URL` |
-| Default URL | `https://api.groq.com/openai/v1/chat/completions` |
-| Model env | `BLINKY_GROQ_MODEL` |
-| Default model | `llama-3.3-70b-versatile` |
-| Timeout env | `BLINKY_GROQ_TIMEOUT` |
-| Default timeout | `90` seconds |
-| Main output cap | `max_tokens: 350` |
-| Text output cap | caller default `300` |
-| Response format | JSON object |
-| Temperature | `0.1` |
+| Setting         | Value                                             |
+| :-------------- | :------------------------------------------------ |
+| URL env         | `BLINKY_GROQ_URL`                                 |
+| Default URL     | `https://api.groq.com/openai/v1/chat/completions` |
+| Model env       | `BLINKY_GROQ_MODEL`                               |
+| Default model   | `llama-3.3-70b-versatile`                         |
+| Timeout env     | `BLINKY_GROQ_TIMEOUT`                             |
+| Default timeout | `90` seconds                                      |
+| Main output cap | `max_tokens: 350`                                 |
+| Text output cap | caller default `300`                              |
+| Response format | JSON object                                       |
+| Temperature     | `0.1`                                             |
 
 Groq vision sends the screenshot as a base64 JPEG data URL. The decommissioned `llama-3.2-90b-vision-preview` model is ignored and replaced with the default model.
 

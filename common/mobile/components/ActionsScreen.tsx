@@ -14,13 +14,49 @@ interface ActionItem {
 
 const QUICK_ACTIONS: ActionItem[] = [
   { id: 'music', title: 'Play/Pause', icon: 'play', color: '#10B981', command: 'media_play_pause' },
-  { id: 'volume_up', title: 'Volume Up', icon: 'volume-high', color: '#38BDF8', command: 'volume_up' },
-  { id: 'volume_down', title: 'Volume Down', icon: 'volume-low', color: '#818CF8', command: 'volume_down' },
-  { id: 'mute', title: 'Mute Audio', icon: 'volume-mute', color: '#EF4444', command: 'volume_mute' },
-  { id: 'screenshot', title: 'Screenshot', icon: 'camera', color: '#3B82F6', command: 'screenshot' },
+  {
+    id: 'volume_up',
+    title: 'Volume Up',
+    icon: 'volume-high',
+    color: '#38BDF8',
+    command: 'volume_up',
+  },
+  {
+    id: 'volume_down',
+    title: 'Volume Down',
+    icon: 'volume-low',
+    color: '#818CF8',
+    command: 'volume_down',
+  },
+  {
+    id: 'mute',
+    title: 'Mute Audio',
+    icon: 'volume-mute',
+    color: '#EF4444',
+    command: 'volume_mute',
+  },
+  {
+    id: 'screenshot',
+    title: 'Screenshot',
+    icon: 'camera',
+    color: '#3B82F6',
+    command: 'screenshot',
+  },
   { id: 'chrome', title: 'Open Browser', icon: 'globe', color: '#06B6D4', command: 'open_browser' },
-  { id: 'lights', title: 'Toggle Lights', icon: 'bulb', color: '#FCD34D', command: 'toggle_lights' },
-  { id: 'terminal', title: 'Terminal', icon: 'terminal', color: '#6B7280', command: 'open_terminal' },
+  {
+    id: 'lights',
+    title: 'Toggle Lights',
+    icon: 'bulb',
+    color: '#FCD34D',
+    command: 'toggle_lights',
+  },
+  {
+    id: 'terminal',
+    title: 'Terminal',
+    icon: 'terminal',
+    color: '#6B7280',
+    command: 'open_terminal',
+  },
 ];
 
 interface ActionsScreenProps {
@@ -39,24 +75,26 @@ export function ActionsScreen({ onExecuteAction, isConnected, isLightOn }: Actio
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.headerTitle}>Quick Actions</Text>
       <Text style={styles.headerSubtitle}>Tap to execute commands instantly on your PC.</Text>
-      
+
       <View style={styles.grid}>
         {QUICK_ACTIONS.map((action) => {
           const isLightsCard = action.id === 'lights';
           const cardTitle = isLightsCard
-            ? (isLightOn ? 'Turn Off Light' : 'Toggle Lights')
+            ? isLightOn
+              ? 'Turn Off Light'
+              : 'Toggle Lights'
             : action.title;
           const iconColor = isLightsCard && isLightOn ? '#FBBF24' : action.color;
           const iconBg = isLightsCard && isLightOn ? '#FBBF2435' : `${action.color}15`;
           const iconBorder = isLightsCard && isLightOn ? '#FBBF2480' : `${action.color}30`;
 
           return (
-            <TouchableOpacity 
-              key={action.id} 
+            <TouchableOpacity
+              key={action.id}
               style={[
                 styles.card,
                 isLightsCard && isLightOn && styles.cardActiveLight,
-                !isConnected && styles.cardDisabled
+                !isConnected && styles.cardDisabled,
               ]}
               disabled={!isConnected}
               activeOpacity={0.7}

@@ -19,7 +19,7 @@ Install these before you build the project:
 
 On Windows, you can use Visual Studio Build Tools, Visual Studio Community, or
 another C++ compiler that works with CMake.
-  aicut trim --input "sample\input\dance.mp4" --output "sample\output\dance-trimmed.mp4" --start 10 --end 25
+aicut trim --input "sample\input\dance.mp4" --output "sample\output\dance-trimmed.mp4" --start 10 --end 25
 
 Check that FFmpeg is installed by running:
 
@@ -141,10 +141,10 @@ AiCut can be controlled using **Blinky** as an AI voice/desktop user interface.
 
 - **MCP Server**: `aicut_mcp.py` implements standard JSON-RPC 2.0 stdio Model Context Protocol.
 - **Windows File Explorer Context**: When you have File Explorer open, you can ask Blinky:
-  - *"Trim this video from 10 to 25 seconds"* (automatically detects selected video in Explorer)
-  - *"Add song edm.mp3 to this video with 30% volume"*
-  - *"Merge these selected clips"*
-  - *"Inspect media info"*
+  - _"Trim this video from 10 to 25 seconds"_ (automatically detects selected video in Explorer)
+  - _"Add song edm.mp3 to this video with 30% volume"_
+  - _"Merge these selected clips"_
+  - _"Inspect media info"_
 - **MCP Config**: Use `mcp_config.json` to register AiCut with any MCP client.
 
 ## Run The Tests

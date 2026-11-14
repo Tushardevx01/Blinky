@@ -29,11 +29,12 @@ graph TD
 ```
 
 ### Detailed Desktop Execution Example:
+
 1. User highlights `report.docx` or opens a folder with 3 PDF files in Windows File Explorer.
-2. User triggers Blinky (`Win+Space` or *"Hey Blinky"*) and says:
-   * *"Convert this Word document to PDF"*
-   * *"Merge all PDFs in this folder and add a CONFIDENTIAL watermark"*
-   * *"Extract tables on page 2 to CSV"*
+2. User triggers Blinky (`Win+Space` or _"Hey Blinky"_) and says:
+   - _"Convert this Word document to PDF"_
+   - _"Merge all PDFs in this folder and add a CONFIDENTIAL watermark"_
+   - _"Extract tables on page 2 to CSV"_
 3. Blinky executes the operation locally in sub-second time, opens the target directory, and visually highlights the generated output file.
 
 ---
@@ -41,63 +42,76 @@ graph TD
 ## 3. Complete Feature Matrix
 
 ### A. Universal Format Conversion Engine
-* **TXT to PDF:** Convert plain text / Markdown files to formatted PDF.
-* **DOCX / Word to PDF:** Native conversion of `.docx` files to PDF.
-* **PDF to DOCX / Word:** Extract PDF text and layout into editable `.docx`.
-* **PDF to Images (PNG/JPG):** Render PDF pages as high-resolution image files.
-* **Images to PDF:** Combine multiple PNG/JPG/WEBP images into a single formatted PDF document.
+
+- **TXT to PDF:** Convert plain text / Markdown files to formatted PDF.
+- **DOCX / Word to PDF:** Native conversion of `.docx` files to PDF.
+- **PDF to DOCX / Word:** Extract PDF text and layout into editable `.docx`.
+- **PDF to Images (PNG/JPG):** Render PDF pages as high-resolution image files.
+- **Images to PDF:** Combine multiple PNG/JPG/WEBP images into a single formatted PDF document.
 
 ### B. Page Manipulation & Editing
-* **Smart Merging:** Combine multiple PDFs in custom sequence.
-* **Range Extraction / Splitting:** Extract specific page ranges (e.g., *"Extract pages 1-3 and 8-10"*).
-* **Page Rotation & Reordering:** Fix rotated or upside-down pages (*"Rotate page 3 by 90 degrees clockwise"*).
+
+- **Smart Merging:** Combine multiple PDFs in custom sequence.
+- **Range Extraction / Splitting:** Extract specific page ranges (e.g., _"Extract pages 1-3 and 8-10"_).
+- **Page Rotation & Reordering:** Fix rotated or upside-down pages (_"Rotate page 3 by 90 degrees clockwise"_).
 
 ### C. Data Extraction & OCR
-* **Structured Table Extraction:** Detect tables in invoices, receipts, or bank statements and export to `.csv` or `.xlsx`.
-* **Scanned Image PDF OCR:** Run built-in OCR (Pytesseract / OmniParser) to convert scanned PDF images into searchable, copyable text PDFs.
+
+- **Structured Table Extraction:** Detect tables in invoices, receipts, or bank statements and export to `.csv` or `.xlsx`.
+- **Scanned Image PDF OCR:** Run built-in OCR (Pytesseract / OmniParser) to convert scanned PDF images into searchable, copyable text PDFs.
 
 ### D. Watermarking, Security & Redaction
-* **Text Watermarking:** Stamp custom text (*"CONFIDENTIAL"*, *"DRAFT"*, *"FOR INTERNAL USE ONLY"*) across all pages.
-* **Page Numbering:** Add dynamic *"Page X of Y"* or custom title headers/footers.
-* **Sensitive Data Redaction:** Automatically black out sensitive terms (credit cards, passwords, SSNs, phone numbers) before sharing.
+
+- **Text Watermarking:** Stamp custom text (_"CONFIDENTIAL"_, _"DRAFT"_, _"FOR INTERNAL USE ONLY"_) across all pages.
+- **Page Numbering:** Add dynamic _"Page X of Y"_ or custom title headers/footers.
+- **Sensitive Data Redaction:** Automatically black out sensitive terms (credit cards, passwords, SSNs, phone numbers) before sharing.
 
 ### E. OKF Notebook Integration
-* **Direct Notebook Ingestion:** Command any PDF in File Explorer to instantly import into the **Blinky OKF Notebook Hub** for grounded Q&A and summary generation.
+
+- **Direct Notebook Ingestion:** Command any PDF in File Explorer to instantly import into the **Blinky OKF Notebook Hub** for grounded Q&A and summary generation.
 
 ---
 
 ## 4. Multi-Phase Implementation Plan
 
 ### Phase 1: Universal Conversion Engine (`common/python/tools/pdf_converter.py`)
-* Implement TXT to PDF converter (`reportlab` / `fpdf2`).
-* Implement DOCX to PDF and PDF to DOCX converter (`docx2pdf` / `pdf2docx` / `python-docx`).
-* Implement PDF to Image (PNG/JPG) converter (`pdf2image` / `pymupdf`).
-* Implement Images to PDF converter (`PIL` / `Pillow`).
+
+- Implement TXT to PDF converter (`reportlab` / `fpdf2`).
+- Implement DOCX to PDF and PDF to DOCX converter (`docx2pdf` / `pdf2docx` / `python-docx`).
+- Implement PDF to Image (PNG/JPG) converter (`pdf2image` / `pymupdf`).
+- Implement Images to PDF converter (`PIL` / `Pillow`).
 
 ### Phase 2: Page Manipulation Engine (`common/python/tools/pdf_manipulator.py`)
-* Implement PDF merging (`pypdf.PdfMerger`).
-* Implement range extraction and page splitting (`pypdf.PdfWriter`).
-* Implement page rotation (90°, 180°, 270°) and reordering.
+
+- Implement PDF merging (`pypdf.PdfMerger`).
+- Implement range extraction and page splitting (`pypdf.PdfWriter`).
+- Implement page rotation (90°, 180°, 270°) and reordering.
 
 ### Phase 3: Data Extraction & Table Parser (`common/python/tools/pdf_extractor.py`)
-* Implement structured table extraction to CSV/Excel (`pdfplumber` / `pypdf`).
-* Implement OCR scanner for non-searchable image PDFs using Pytesseract / OmniParser.
+
+- Implement structured table extraction to CSV/Excel (`pdfplumber` / `pypdf`).
+- Implement OCR scanner for non-searchable image PDFs using Pytesseract / OmniParser.
 
 ### Phase 4: Watermarking, Security & Redaction (`common/python/tools/pdf_security.py`)
-* Implement text watermark stamping with opacity and angle controls.
-* Implement dynamic page numbering (*"Page X of Y"*).
-* Implement text redaction (blacking out sensitive regex patterns like SSNs, credit card numbers).
+
+- Implement text watermark stamping with opacity and angle controls.
+- Implement dynamic page numbering (_"Page X of Y"_).
+- Implement text redaction (blacking out sensitive regex patterns like SSNs, credit card numbers).
 
 ### Phase 5: Agent Tooling & Intent Routing (`common/python/tools/pdf_tool.py` & `main.py`)
-* Create unified entry point `pdf_tool.py` routing all PDF operations.
-* Add `PDF_ENGINE` intent classification in `main.py` for automatic prompt routing.
+
+- Create unified entry point `pdf_tool.py` routing all PDF operations.
+- Add `PDF_ENGINE` intent classification in `main.py` for automatic prompt routing.
 
 ### Phase 6: Windows File Explorer Context Integration (`app_context/registry.py`)
-* Integrate Windows UIA selected file detector to resolve highlighted PDF/DOCX files directly from File Explorer.
-* Add automatic file selection highlighting after generation.
+
+- Integrate Windows UIA selected file detector to resolve highlighted PDF/DOCX files directly from File Explorer.
+- Add automatic file selection highlighting after generation.
 
 ### Phase 7: Mobile Companion File Transfer Integration (`common/mobile/`)
-* Extend mobile File Transfer Panel to support instant PDF conversion and editing requests over WebSocket Port 9001.
+
+- Extend mobile File Transfer Panel to support instant PDF conversion and editing requests over WebSocket Port 9001.
 
 ### Phase 8: Automated Test Suite (`common/python/tests/test_pdf_engine.py`)
-* Comprehensive unit test suite testing conversion, merging, splitting, watermarking, and table extraction.
+
+- Comprehensive unit test suite testing conversion, merging, splitting, watermarking, and table extraction.

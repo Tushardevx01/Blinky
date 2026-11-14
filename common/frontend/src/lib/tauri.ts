@@ -11,7 +11,7 @@ export async function runTutor(
   agentMode?: boolean,
   attachedImage?: string,
   attachedFile?: unknown,
-  runId?: string,
+  runId?: string
 ): Promise<TutorResult> {
   return invoke<TutorResult>('run_tutor', {
     request: {
@@ -84,7 +84,7 @@ export function regenerateRemoteToken(): Promise<string> {
 export function connectSecureSocket(
   socketId: string,
   url: string,
-  expectedPin?: string | null,
+  expectedPin?: string | null
 ): Promise<void> {
   return invoke('secure_socket_connect', {
     socketId,
@@ -113,15 +113,17 @@ export function closeSecureSocket(socketId: string): Promise<void> {
 }
 
 export async function listenForSecureSocketEvents(
-  handler: (event: SecureSocketEvent) => void,
+  handler: (event: SecureSocketEvent) => void
 ): Promise<UnlistenFn> {
   const subscriptions: UnlistenFn[] = [];
   const cleanup = () => subscriptions.splice(0).forEach((unlisten) => unlisten());
   try {
     for (const name of ['open', 'message', 'close', 'error']) {
-      subscriptions.push(await listen<SecureSocketEvent>(
-        `blinky://secure-socket-${name}`, (event) => handler(event.payload),
-      ));
+      subscriptions.push(
+        await listen<SecureSocketEvent>(`blinky://secure-socket-${name}`, (event) =>
+          handler(event.payload)
+        )
+      );
     }
     return cleanup;
   } catch (error) {
@@ -150,7 +152,12 @@ export async function setCommandWindowSize(width: number, height: number): Promi
   return invoke('set_command_window_size', { width, height });
 }
 
-export async function resizeAndMoveCommandWindow(x: number, y: number, width: number, height: number): Promise<void> {
+export async function resizeAndMoveCommandWindow(
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): Promise<void> {
   return invoke('resize_and_move_command_window', { x, y, width, height });
 }
 
@@ -193,7 +200,7 @@ export async function saveSettings(
     deepseekApiKey,
     customUrl,
     customModel,
-    customApiKey
+    customApiKey,
   });
 }
 
@@ -225,7 +232,12 @@ export async function clickElement(x: number, y: number, label: string): Promise
   return invoke('click_element', { x, y, label });
 }
 
-export async function scrollAtPoint(x: number, y: number, direction: 'down' | 'up', amount: number = 3): Promise<void> {
+export async function scrollAtPoint(
+  x: number,
+  y: number,
+  direction: 'down' | 'up',
+  amount: number = 3
+): Promise<void> {
   return invoke('scroll_at_point', { x, y, direction, amount });
 }
 
@@ -235,7 +247,12 @@ export async function scrollAtPoint(x: number, y: number, direction: 'down' | 'u
  * `x`/`y` are required: the background path needs them to address the target window,
  * and cua-driver refuses a `type_text` that names no target.
  */
-export async function typeText(x: number, y: number, text: string, pressEnter: boolean): Promise<void> {
+export async function typeText(
+  x: number,
+  y: number,
+  text: string,
+  pressEnter: boolean
+): Promise<void> {
   return invoke('type_text', { x, y, text, pressEnter });
 }
 
@@ -295,4 +312,3 @@ export async function closeNotebookWindow(): Promise<void> {
     return invoke('close_notebook_window');
   }
 }
-

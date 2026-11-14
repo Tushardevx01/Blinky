@@ -6,7 +6,7 @@
     "output": ".archify/architecture-blinky-map-20261015-110400/blinky-map.html",
     "quality_profile": "showcase",
     "repository": {
-      "url": "https://github.com/KingSahil/Blinky.git",
+      "url": "https://github.com/Tushardevx01/Blinky.git",
       "revision": "950e0f4508e820e15d8b2c4b3db6fffdddb0ef6a",
       "provider": "github",
       "link_mode": "web"
@@ -22,8 +22,18 @@
       "pos": [40, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/mobile/App.tsx", "line": 1, "end_line": 40, "label": "Mobile Companion UI" },
-        { "path": "common/mobile/usePCWebSocket.ts", "line": 1, "end_line": 40, "label": "BlinkySecureSocket Transport" }
+        {
+          "path": "common/mobile/App.tsx",
+          "line": 1,
+          "end_line": 40,
+          "label": "Mobile Companion UI"
+        },
+        {
+          "path": "common/mobile/usePCWebSocket.ts",
+          "line": 1,
+          "end_line": 40,
+          "label": "BlinkySecureSocket Transport"
+        }
       ]
     },
     {
@@ -34,8 +44,18 @@
       "pos": [40, 440],
       "size": [140, 64],
       "sources": [
-        { "path": "esp32_firmware/BlinkyUniversalDaemon/BlinkyUniversalDaemon.ino", "line": 1, "end_line": 30, "label": "ESP32 Micro-Daemon Firmware" },
-        { "path": "common/whatsapp_backend/server.js", "line": 1, "end_line": 35, "label": "WhatsApp Bridge Server" }
+        {
+          "path": "esp32_firmware/BlinkyUniversalDaemon/BlinkyUniversalDaemon.ino",
+          "line": 1,
+          "end_line": 30,
+          "label": "ESP32 Micro-Daemon Firmware"
+        },
+        {
+          "path": "common/whatsapp_backend/server.js",
+          "line": 1,
+          "end_line": 35,
+          "label": "WhatsApp Bridge Server"
+        }
       ]
     },
     {
@@ -47,7 +67,12 @@
       "pos": [230, 80],
       "size": [140, 64],
       "sources": [
-        { "path": "common/frontend/src/App.tsx", "line": 1, "end_line": 35, "label": "CommandBar & Overlay UI" }
+        {
+          "path": "common/frontend/src/App.tsx",
+          "line": 1,
+          "end_line": 35,
+          "label": "CommandBar & Overlay UI"
+        }
       ]
     },
     {
@@ -59,7 +84,12 @@
       "pos": [230, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/src-tauri/src/websocket.rs", "line": 430, "end_line": 445, "label": "WSS Listener Bind 9001" }
+        {
+          "path": "common/src-tauri/src/websocket.rs",
+          "line": 430,
+          "end_line": 445,
+          "label": "WSS Listener Bind 9001"
+        }
       ]
     },
     {
@@ -70,7 +100,12 @@
       "pos": [230, 440],
       "size": [140, 64],
       "sources": [
-        { "path": "common/src-tauri/src/file_transfer.rs", "line": 70, "end_line": 85, "label": "File Server Bind 9002" }
+        {
+          "path": "common/src-tauri/src/file_transfer.rs",
+          "line": 70,
+          "end_line": 85,
+          "label": "File Server Bind 9002"
+        }
       ]
     },
     {
@@ -81,8 +116,18 @@
       "pos": [430, 80],
       "size": [140, 64],
       "sources": [
-        { "path": "common/src-tauri/src/main.rs", "line": 1, "end_line": 23, "label": "Tauri Entry & CursorGuard" },
-        { "path": "common/src-tauri/src/lib.rs", "line": 20, "end_line": 60, "label": "IPC Commands & Python Process" }
+        {
+          "path": "common/src-tauri/src/main.rs",
+          "line": 1,
+          "end_line": 23,
+          "label": "Tauri Entry & CursorGuard"
+        },
+        {
+          "path": "common/src-tauri/src/lib.rs",
+          "line": 20,
+          "end_line": 60,
+          "label": "IPC Commands & Python Process"
+        }
       ]
     },
     {
@@ -93,7 +138,12 @@
       "pos": [430, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/main.py", "line": 1, "end_line": 40, "label": "Python Daemon Entry" }
+        {
+          "path": "common/python/main.py",
+          "line": 1,
+          "end_line": 40,
+          "label": "Python Daemon Entry"
+        }
       ]
     },
     {
@@ -105,8 +155,18 @@
       "pos": [650, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/ai/laya_router.py", "line": 95, "end_line": 120, "label": "Preflight Intent Classification" },
-        { "path": "common/python/agent_router.py", "line": 955, "end_line": 975, "label": "Multi-Tool Router Dispatch" }
+        {
+          "path": "common/python/ai/laya_router.py",
+          "line": 95,
+          "end_line": 120,
+          "label": "Preflight Intent Classification"
+        },
+        {
+          "path": "common/python/agent_router.py",
+          "line": 955,
+          "end_line": 975,
+          "label": "Multi-Tool Router Dispatch"
+        }
       ]
     },
     {
@@ -118,8 +178,18 @@
       "pos": [860, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/computer_use/actuator.py", "line": 1, "end_line": 30, "label": "Platform Actuator Facade" },
-        { "path": "common/python/computer_use/loop.py", "line": 1, "end_line": 35, "label": "Bounded Execution Loop" }
+        {
+          "path": "common/python/computer_use/actuator.py",
+          "line": 1,
+          "end_line": 30,
+          "label": "Platform Actuator Facade"
+        },
+        {
+          "path": "common/python/computer_use/loop.py",
+          "line": 1,
+          "end_line": 35,
+          "label": "Bounded Execution Loop"
+        }
       ]
     },
     {
@@ -130,7 +200,12 @@
       "pos": [650, 440],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/capture/__init__.py", "line": 1, "end_line": 35, "label": "Hardware Frame Grabber" }
+        {
+          "path": "common/python/capture/__init__.py",
+          "line": 1,
+          "end_line": 35,
+          "label": "Hardware Frame Grabber"
+        }
       ]
     },
     {
@@ -141,7 +216,12 @@
       "pos": [860, 440],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/ocr/omniparser.py", "line": 15, "end_line": 35, "label": "OmniParser Icon Grounder" }
+        {
+          "path": "common/python/ocr/omniparser.py",
+          "line": 15,
+          "end_line": 35,
+          "label": "OmniParser Icon Grounder"
+        }
       ]
     },
     {
@@ -153,7 +233,12 @@
       "pos": [1060, 80],
       "size": [140, 64],
       "sources": [
-        { "path": "common/src-tauri/src/websocket.rs", "line": 2195, "end_line": 2205, "label": "Sarvam STT WebSocket Route" }
+        {
+          "path": "common/src-tauri/src/websocket.rs",
+          "line": 2195,
+          "end_line": 2205,
+          "label": "Sarvam STT WebSocket Route"
+        }
       ]
     },
     {
@@ -164,7 +249,12 @@
       "pos": [1060, 260],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/browser_agent.py", "line": 1, "end_line": 30, "label": "Browser Agent Planning" }
+        {
+          "path": "common/python/browser_agent.py",
+          "line": 1,
+          "end_line": 30,
+          "label": "Browser Agent Planning"
+        }
       ]
     },
     {
@@ -175,7 +265,12 @@
       "pos": [1060, 440],
       "size": [140, 64],
       "sources": [
-        { "path": "common/python/main.py", "line": 50, "end_line": 70, "label": "Dynamic App Context Knowledge" }
+        {
+          "path": "common/python/main.py",
+          "line": 50,
+          "end_line": 70,
+          "label": "Dynamic App Context Knowledge"
+        }
       ]
     }
   ],

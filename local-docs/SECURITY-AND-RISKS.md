@@ -4,16 +4,16 @@ This is a source-based development risk register, not a claim that the product h
 
 ## Trust boundaries
 
-| Boundary | Sensitive capability/data |
-|---|---|
-| React -> Tauri invoke | native clicks, typing, URLs, settings/secrets, window control |
-| Rust -> Python | screenshots, accessibility text, user requests, arbitrary tool execution paths |
-| LAN client -> port 9001 | power/media/lock, screenshots, assistant queries, Sarvam key retrieval |
-| LAN client -> port 9002 | uploaded user files, temporary transfer capabilities, edited output downloads |
-| Python -> model/search providers | user text, sometimes screenshots/UI content, acquired web content |
-| WhatsApp session -> local service/model | messages, chat metadata, media, summary memory, browser auth |
-| Generated tool/recipe persistence | executable Python source and reusable action sequences |
-| AiCut -> filesystem/FFmpeg | user media paths, output overwrite/creation, external processes |
+| Boundary                                | Sensitive capability/data                                                      |
+| --------------------------------------- | ------------------------------------------------------------------------------ |
+| React -> Tauri invoke                   | native clicks, typing, URLs, settings/secrets, window control                  |
+| Rust -> Python                          | screenshots, accessibility text, user requests, arbitrary tool execution paths |
+| LAN client -> port 9001                 | power/media/lock, screenshots, assistant queries, Sarvam key retrieval         |
+| LAN client -> port 9002                 | uploaded user files, temporary transfer capabilities, edited output downloads  |
+| Python -> model/search providers        | user text, sometimes screenshots/UI content, acquired web content              |
+| WhatsApp session -> local service/model | messages, chat metadata, media, summary memory, browser auth                   |
+| Generated tool/recipe persistence       | executable Python source and reusable action sequences                         |
+| AiCut -> filesystem/FFmpeg              | user media paths, output overwrite/creation, external processes                |
 
 ## Critical/high-priority findings
 

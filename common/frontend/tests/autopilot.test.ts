@@ -1,5 +1,15 @@
 import { describe, expect, test } from 'bun:test';
-import { getClickablePoint, getPhysicalClickablePoint, isSafeAutopilotStep, runAutopilotLoop, extractTextToType, shouldPressEnterAfterTyping, isScrollAction, getScrollDirection, isSingleActionQuery } from '../src/lib/autopilot';
+import {
+  getClickablePoint,
+  getPhysicalClickablePoint,
+  isSafeAutopilotStep,
+  runAutopilotLoop,
+  extractTextToType,
+  shouldPressEnterAfterTyping,
+  isScrollAction,
+  getScrollDirection,
+  isSingleActionQuery,
+} from '../src/lib/autopilot';
 
 import type { TutorResult, TutorStep } from '../src/lib/types';
 
@@ -69,7 +79,7 @@ describe('isSafeAutopilotStep', () => {
   });
 
   test('allows fuzzy text entry into a matched search input', () => {
-    const searchStep = step("Type ‘cats’ in the search bar.", 'Search Reddit');
+    const searchStep = step('Type ‘cats’ in the search bar.', 'Search Reddit');
     searchStep.match = {
       ...searchStep.match!,
       text: 'Search Reddit',
@@ -89,7 +99,7 @@ describe('extractTextToType', () => {
   test('extracts text inside quotes', () => {
     expect(extractTextToType("Type 'I love pizza' in the search bar")).toBe('I love pizza');
     expect(extractTextToType('Type "milk" into search box')).toBe('milk');
-    expect(extractTextToType("Type ‘cats’ in the search bar.")).toBe('cats');
+    expect(extractTextToType('Type ‘cats’ in the search bar.')).toBe('cats');
   });
 
   test('extracts text without quotes using prepositions as boundary', () => {
@@ -308,6 +318,3 @@ describe('isSingleActionQuery', () => {
     expect(autopilot.stopReason).toBe('complete');
   });
 });
-
-
-

@@ -1,6 +1,6 @@
 /**
  * AssemblyAI Voice Integration for Blinky AI Desktop Tutor
- * 
+ *
  * Supports both hackathon paths:
  * 1. Voice Agent API (End-to-End Voice Agent):
  *    - Universal-3 Pro STT + Turn-Taking + VAD + LLM + Voice Output + JSON-Schema Tool Calling
@@ -170,52 +170,57 @@ Keep your spoken responses natural, concise, friendly, and under 2 sentences whe
       type: 'session.update',
       session: {
         system_prompt: this.config.systemPrompt || defaultSystemPrompt,
-        greeting: this.config.greeting || "Hi, I'm Blinky powered by AssemblyAI Universal-3 Pro. How can I guide you on your PC?",
+        greeting:
+          this.config.greeting ||
+          "Hi, I'm Blinky powered by AssemblyAI Universal-3 Pro. How can I guide you on your PC?",
         input: {
           format: {
             encoding: 'audio/pcm16',
-            sample_rate: 16000
-          }
+            sample_rate: 16000,
+          },
         },
         output: {
           voice: this.config.voice || 'ivy',
           format: {
             encoding: 'audio/pcm16',
-            sample_rate: 24000
-          }
+            sample_rate: 24000,
+          },
         },
         tools: [
           {
             type: 'function',
             name: 'control_desktop',
-            description: 'Execute a desktop action or UI automation query on the user\'s PC, such as clicking a button, opening an app, typing, or finding UI elements on screen.',
+            description:
+              "Execute a desktop action or UI automation query on the user's PC, such as clicking a button, opening an app, typing, or finding UI elements on screen.",
             parameters: {
               type: 'object',
               properties: {
                 action: {
                   type: 'string',
-                  description: 'The user query or desktop action (e.g., "click the Chrome icon", "open Notepad", "where is the search bar")'
-                }
+                  description:
+                    'The user query or desktop action (e.g., "click the Chrome icon", "open Notepad", "where is the search bar")',
+                },
               },
-              required: ['action']
-            }
+              required: ['action'],
+            },
           },
           {
             type: 'function',
             name: 'cancel_desktop_action',
-            description: 'Cancel or stop any currently running desktop automation or guide on the PC.',
+            description:
+              'Cancel or stop any currently running desktop automation or guide on the PC.',
             parameters: {
               type: 'object',
               properties: {
                 reason: {
                   type: 'string',
-                  description: 'Reason for stopping'
-                }
-              }
-            }
-          }
-        ]
-      }
+                  description: 'Reason for stopping',
+                },
+              },
+            },
+          },
+        ],
+      },
     };
 
     this.ws.send(JSON.stringify(sessionUpdate));
@@ -279,7 +284,7 @@ Keep your spoken responses natural, concise, friendly, and under 2 sentences whe
           } catch (toolErr: any) {
             this.sendToolResult(callId, {
               status: 'error',
-              error: toolErr?.message || String(toolErr)
+              error: toolErr?.message || String(toolErr),
             });
           } finally {
             this.pendingTools.delete(callId);
@@ -321,7 +326,7 @@ Keep your spoken responses natural, concise, friendly, and under 2 sentences whe
     const base64Audio = arrayBufferToBase64(pcmChunk);
     const audioEvent = {
       type: 'input.audio',
-      audio: base64Audio
+      audio: base64Audio,
     };
 
     try {
@@ -337,7 +342,7 @@ Keep your spoken responses natural, concise, friendly, and under 2 sentences whe
     const resultPayload = {
       type: 'tool.result',
       call_id: callId,
-      result: typeof result === 'string' ? result : JSON.stringify(result)
+      result: typeof result === 'string' ? result : JSON.stringify(result),
     };
 
     try {
@@ -419,7 +424,9 @@ export class AssemblyAIRealtimeSTT {
 
     this.ws.onmessage = (event) => {
       try {
-        const data = JSON.parse(typeof event.data === 'string' ? event.data : new TextDecoder().decode(event.data));
+        const data = JSON.parse(
+          typeof event.data === 'string' ? event.data : new TextDecoder().decode(event.data)
+        );
 
         // AssemblyAI v3 WebSocket returns 'Turn' events or transcript objects
         if (data.type === 'Turn') {
@@ -484,10 +491,7 @@ export class AssemblyAIRealtimeSTT {
  * Path 3: AssemblyAI REST Audio Transcription Fallback
  * Direct upload and Universal-3 Pro transcription polling.
  */
-export async function transcribeAudioWithAssemblyAI(
-  blob: Blob,
-  apiKey: string
-): Promise<string> {
+export async function transcribeAudioWithAssemblyAI(blob: Blob, apiKey: string): Promise<string> {
   if (!apiKey) {
     throw new Error('AssemblyAI API Key is required');
   }

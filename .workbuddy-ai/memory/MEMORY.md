@@ -59,7 +59,7 @@
   `common/frontend/src/CommandBar.tsx` all vanished mid-session → `error[E0583]`).
   - **Recovery order:** (1) `git ls-files -s <path>` — the INDEX is the authority and is often
     newer than HEAD; (2) `git cat-file -e <blob>` → if present, `git cat-file blob <blob> > <path>`;
-    (3) only then fall back to `git clone --depth 1 https://github.com/KingSahil/Blinky.git <dir>`;
+    (3) only then fall back to `git clone --depth 1 https://github.com/Tushardevx01/Blinky.git <dir>`;
     (4) verify `git hash-object <path>` == index blob AND `git diff --stat -- <path>` is empty —
     **`git status --porcelain` can print `MM` from a stale stat cache even when bytes match.**
   - Find everything that vanished: `git ls-files -z | while IFS= read -r -d '' f; do [ -e "$f" ] || echo "$f"; done`
@@ -67,13 +67,13 @@
   - Helpers: `tmp/check_index.py` (scans `git ls-files -s` for unreadable blobs — 19 on
     2026-09-16), `tmp/walk_head.py` (verifies HEAD's tree is complete).
 - **`git commit` fails outright when the parent's tree is incomplete** (`fatal: unable to read
-  tree`). Build the commit object directly instead — additive, does not touch the worktree:
+tree`). Build the commit object directly instead — additive, does not touch the worktree:
   `TREE=$(git write-tree); COMMIT=$(git commit-tree "$TREE" -p HEAD -F <msgfile>);
-  git update-ref refs/heads/main "$COMMIT"`.
+git update-ref refs/heads/main "$COMMIT"`.
 - **`git add` does NOT repair a missing index blob** (trusts the stat cache, exits 0). Repair
   without touching the worktree:
   `sha=$(git hash-object -w --path=<p> <p>); mode=$(git ls-files -s <p> | awk '{print $1}');
-  git update-index --cacheinfo "$mode,$sha,<p>"`. `touch <files> && git add` also works but
+git update-index --cacheinfo "$mode,$sha,<p>"`. `touch <files> && git add` also works but
   **bumps mtimes and fires file watchers** — it once triggered a Tauri rebuild and restarted
   `blinky.exe` mid-session. Never `touch` files under a watched tree while a dev server runs.
 - The full `pytest common/python/tests/` run hangs on a pre-existing test — run files
@@ -88,7 +88,7 @@
 - **Three-tier check for `common/mobile` (Expo), in increasing cost:** (1) `tmp/jsxcheck.js`
   parses a `.tsx` with `@babel/parser` (`node tmp/jsxcheck.js <files>`) — use it to bisect which
   revision of a file is syntactically valid; (2) `node node_modules/typescript/bin/tsc --noEmit
-  -p tsconfig.json` — Babel only catches syntax, so this is what finds the undefined identifiers
+-p tsconfig.json` — Babel only catches syntax, so this is what finds the undefined identifiers
   a bad merge leaves behind (invisible to the bundler until runtime); (3) `bun test` (23 tests)
   then `./node_modules/.bin/expo.exe export --platform android` for a real Metro bundle.
   `npx tsc` does **not** work here — point node at `node_modules/typescript/bin/tsc` directly.

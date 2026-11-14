@@ -13,6 +13,7 @@
 ### Task 1: Safe Browser Planner
 
 **Files:**
+
 - Create: `python/browser_agent.py`
 - Test: `python/tests/test_browser_agent.py`
 
@@ -24,6 +25,7 @@
 ### Task 2: Router Integration
 
 **Files:**
+
 - Modify: `python/agent_router.py`
 - Test: `python/tests/test_agent_router_open_url.py`
 
@@ -35,6 +37,7 @@
 ### Task 3: Verification
 
 **Files:**
+
 - Verify: `python/tests/test_browser_agent.py`
 - Verify: `python/tests/test_agent_router_open_url.py`
 

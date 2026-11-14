@@ -29,8 +29,8 @@
     },
     "extra": {
       "eas": {
-              "projectId": "afbfa0ff-70c3-4e96-9215-5a98981af54e"
-            }
+        "projectId": "afbfa0ff-70c3-4e96-9215-5a98981af54e"
+      }
     },
     "plugins": [
       "expo-audio",

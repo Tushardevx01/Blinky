@@ -71,7 +71,6 @@ for (const dll of msvcDlls) {
   }
 }
 
-
 // ── 2. Wipe pre-existing site-packages (from system Python) ──────────────────
 const libDir = path.join(runtimeDir, 'Lib');
 const sitePackages = path.join(libDir, 'site-packages');
@@ -85,26 +84,26 @@ execFileSync(runtimePython, ['-m', 'pip', 'install', '--upgrade', 'pip'], { stdi
 
 // ── 4. Install production dependencies ───────────────────────────────────────
 console.log('Installing production dependencies...');
-execFileSync(runtimePython, [
-  '-m', 'pip', 'install',
-  '--no-warn-script-location',
-  '-r', requirementsPath,
-], { stdio: 'inherit' });
+execFileSync(
+  runtimePython,
+  ['-m', 'pip', 'install', '--no-warn-script-location', '-r', requirementsPath],
+  { stdio: 'inherit' }
+);
 
 // ── 5. Prune stdlib bloat (NOW it's safe to remove ensurepip etc.) ─────────────
 console.log('Pruning stdlib bloat...');
 const stdlibPruneList = [
-  path.join(libDir, 'test'),          // Python's own test suite (~28 MB)
-  path.join(libDir, 'idlelib'),       // IDLE IDE (~2.5 MB)
-  path.join(libDir, 'ensurepip'),     // bundled pip wheels — no longer needed (~1.7 MB)
-  path.join(libDir, 'pydoc_data'),    // HTML templates for pydoc server (~1 MB)
-  path.join(libDir, 'turtledemo'),    // Turtle graphics demo
-  path.join(libDir, 'lib2to3'),       // Python 2->3 converter
-  path.join(runtimeDir, 'Doc'),       // Python documentation (~58 MB)
-  path.join(runtimeDir, 'images'),    // Misc images
-  path.join(runtimeDir, 'NEWS.txt'),  // Changelog (~1.9 MB)
-  path.join(runtimeDir, 'include'),   // C headers (only needed for building extensions)
-  path.join(runtimeDir, 'libs'),      // .lib files (only needed for building extensions)
+  path.join(libDir, 'test'), // Python's own test suite (~28 MB)
+  path.join(libDir, 'idlelib'), // IDLE IDE (~2.5 MB)
+  path.join(libDir, 'ensurepip'), // bundled pip wheels — no longer needed (~1.7 MB)
+  path.join(libDir, 'pydoc_data'), // HTML templates for pydoc server (~1 MB)
+  path.join(libDir, 'turtledemo'), // Turtle graphics demo
+  path.join(libDir, 'lib2to3'), // Python 2->3 converter
+  path.join(runtimeDir, 'Doc'), // Python documentation (~58 MB)
+  path.join(runtimeDir, 'images'), // Misc images
+  path.join(runtimeDir, 'NEWS.txt'), // Changelog (~1.9 MB)
+  path.join(runtimeDir, 'include'), // C headers (only needed for building extensions)
+  path.join(runtimeDir, 'libs'), // .lib files (only needed for building extensions)
   path.join(runtimeDir, 'share'),
   path.join(runtimeDir, 'etc'),
   // NOTE: tcl/ is intentionally kept — tkinter (used by post_install.py) requires Tcl/Tk
@@ -117,7 +116,13 @@ for (const p of stdlibPruneList) {
 console.log('Pruning site-packages bloat...');
 
 // Remove Playwright browser binaries (~100 MB) — post_install.py downloads them on first run
-const playwrightBrowsers = path.join(sitePackages, 'playwright', 'driver', 'package', '.local-browsers');
+const playwrightBrowsers = path.join(
+  sitePackages,
+  'playwright',
+  'driver',
+  'package',
+  '.local-browsers'
+);
 await rm(playwrightBrowsers, { recursive: true, force: true });
 console.log('  Removed Playwright bundled browsers.');
 
@@ -127,7 +132,11 @@ const testDirNames = new Set(['test', 'tests', '_test', '__tests__', 'testing'])
 
 function pruneTestDirs(dir) {
   let entries;
-  try { entries = readdirSync(dir); } catch { return; }
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return;
+  }
   for (const entry of entries) {
     const fullPath = path.join(dir, entry);
     const stat = statSync(fullPath, { throwIfNoEntry: false });
@@ -141,7 +150,7 @@ function pruneTestDirs(dir) {
   }
 }
 
-const fs = (await import('fs'));
+const fs = await import('fs');
 const siteEntries = readdirSync(sitePackages);
 for (const entry of siteEntries) {
   const entryPath = path.join(sitePackages, entry);
@@ -151,7 +160,7 @@ for (const entry of siteEntries) {
 }
 
 // Remove specific known-bloat files
-await rm(path.join(sitePackages, 'PyWin32.chm'), { force: true });    // Win32 help file (~2.5 MB)
+await rm(path.join(sitePackages, 'PyWin32.chm'), { force: true }); // Win32 help file (~2.5 MB)
 await rm(path.join(sitePackages, 'pip'), { recursive: true, force: true }); // pip itself (~10 MB)
 await rm(path.join(sitePackages, '_pytest'), { recursive: true, force: true }); // pytest internals
 

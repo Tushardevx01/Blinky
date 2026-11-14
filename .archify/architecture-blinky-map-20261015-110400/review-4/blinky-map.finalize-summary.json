@@ -41,9 +41,7 @@
         "lineCount": 6,
         "revision": "950e0f4508e820e15d8b2c4b3db6fffdddb0ef6a"
       },
-      "supportedFixes": [
-        "use a line range that exists at the pinned revision"
-      ]
+      "supportedFixes": ["use a line range that exists at the pinned revision"]
     },
     {
       "code": "repository-evidence/line-out-of-range",
@@ -63,9 +61,7 @@
         "lineCount": 23,
         "revision": "950e0f4508e820e15d8b2c4b3db6fffdddb0ef6a"
       },
-      "supportedFixes": [
-        "use a line range that exists at the pinned revision"
-      ]
+      "supportedFixes": ["use a line range that exists at the pinned revision"]
     }
   ],
   "diagnosticSummary": {

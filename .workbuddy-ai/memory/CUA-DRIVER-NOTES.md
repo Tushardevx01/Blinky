@@ -60,16 +60,16 @@ Installed at `%LOCALAPPDATA%\Programs\Cua\cua-driver\bin\cua-driver.exe`, daemon
   1707×1067 instead of 2560×1600 and `WindowFromPoint` returned NULL).
 - **`z_index` IS a faithful stacking order** — verified against `EnumWindows` top→bottom, exact
   match; a faithful A/B replay against the hit-test over six points gave `agree=6, disagree=0`.
-  So treat the hit-test as *robustness*, not as the fix for the Settings misclick — that was the
+  So treat the hit-test as _robustness_, not as the fix for the Settings misclick — that was the
   coordinate space and the `select` filter.
 - Blinky's own highlight overlay sat at `z_index` 18, **above Edge at 15**; exclude Blinky's own
   windows **by pid** (`std::process::id()`) — exact — plus a title list as backstop.
 - A covered window stays unreachable: with the IDE maximised over Settings, `points hit-testing
-  to Settings: 0` is the *correct* answer, and a test point belonging to another window proves
+to Settings: 0` is the _correct_ answer, and a test point belonging to another window proves
   nothing about Settings.
 - **Trap: omitting `window_id` lets the driver auto-resolve a pid's window and pick the wrong
   one.** A window-scope click at `(700,400)` reported landing at screen `(710,1890)`, which
-  looked like a broken coordinate formula. The real cause: pid 37932 owned *two* windows and the
+  looked like a broken coordinate formula. The real cause: pid 37932 owned _two_ windows and the
   driver chose a phantom `219x30@9,1489` one — `9+700=709`, `1489+400=1889`. The formula was
   right; the window was wrong. **Always pass an explicit `window_id`.**
 
@@ -93,14 +93,14 @@ Installed at `%LOCALAPPDATA%\Programs\Cua\cua-driver\bin\cua-driver.exe`, daemon
 ## Reading driver responses
 
 - **A refusal arrives as a SUCCESSFUL tool call**: `{"refusal": {"code","message"}, "status":
-  "refused"}`, often with `isError` unset. Checking `isError` alone reads a refused click as a
+"refused"}`, often with `isError` unset. Checking `isError` alone reads a refused click as a
   completed one and suppresses the fallback that would have made it work. Check `refusal` /
   bad `status` explicitly.
 - **`get_window_state` errors put the human reason in `content[].text`**, with only a machine
   code in `structuredContent` (`{"code": "tool_invocation_failed"}`). Read the text block.
 - **`degraded` is not `empty`.** A minimized window reports `x/y = -32000` and
   `get_window_state` returns `degraded: true` + `ax_tree_empty` + `screenshot_error: cannot
-  capture minimized window`. Check `WindowInfo.supported` (False for minimized/off-screen) and
+capture minimized window`. Check `WindowInfo.supported` (False for minimized/off-screen) and
   `last_snapshot_degraded`; `get_app_state` surfaces `degraded` / `degraded_reason` so callers
   fall back to OCR.
 - **The `query` projection is unreliable for picking a control.** Measured on Chromium:
@@ -153,16 +153,16 @@ bare `{"key": ...}` — no `pid`, no `window_id`, no `scope`. The driver accepts
 docs say that without them it falls back to the **focused** window. So typing is not reliably
 targeted. Measured against Notepad (pid 40936, wid 5178132):
 
-| variant | isError | route | text landed |
-|---|---|---|---|
-| bare `{"text":…}` (what Blinky does today) | **True** `tool_invocation_failed` | — | **no** |
-| `+pid +window_id +scope` | None | `synthetic_events` (+ `escalation: {reason: delivery_failed}`) | yes — appended in place |
-| `set_value` on the field's element token | None | **`accessibility`** | yes — replaced content |
+| variant                                    | isError                           | route                                                          | text landed             |
+| ------------------------------------------ | --------------------------------- | -------------------------------------------------------------- | ----------------------- |
+| bare `{"text":…}` (what Blinky does today) | **True** `tool_invocation_failed` | —                                                              | **no**                  |
+| `+pid +window_id +scope`                   | None                              | `synthetic_events` (+ `escalation: {reason: delivery_failed}`) | yes — appended in place |
+| `set_value` on the field's element token   | None                              | **`accessibility`**                                            | yes — replaced content  |
 
 `debug_window_info` reported `host exe=notepad.exe, xaml_routing_recommended=True`, so the
 "Win32 vs XAML" heuristic is **wrong** — the driver keys on **EXE basename**, not toolkit.
 Conclusion: bare `type_text` is simply broken; targeting fixes it; `set_value` is the cleanest
-rung. Blinky's realistic use is typing into a *focused empty* field, where escalating to global
+rung. Blinky's realistic use is typing into a _focused empty_ field, where escalating to global
 input is acceptable.
 
 ## The typed `browser_*` family
@@ -183,20 +183,20 @@ Whole ladder ≈ 0.35s.
 ## UWP hosting determines what is possible — and it varies within one app
 
 - Measured: a Settings window hosted by `ApplicationFrameHost.exe` returned **79–85 elements**
-  on the first call, so the element rung *is* viable. A Settings window hosted by
+  on the first call, so the element rung _is_ viable. A Settings window hosted by
   `SystemSettings.exe` returned **0 elements** on every attempt with `degraded: true`,
   `degraded_reason: "ax_tree_empty"`, `escalation.recommended: "px"` — the driver's own advice
   is to **re-snapshot**, which `window_tree()` now does once after a 150ms settle.
 - For pixel input the split is by window class: an **`ApplicationFrameWindow`** accepts
   window-scope synthetic clicks; a bare **`Windows.UI.Core.CoreWindow`** refuses them
   (`tool_invocation_failed`, with the contradictory message `"The operation completed
-  successfully. (0x00000000)"` — not a units problem; downscaled px, physical px and an
+successfully. (0x00000000)"` — not a units problem; downscaled px, physical px and an
   out-of-bounds point all fail identically). Chromium is fine (Edge: 115–324 elements).
 - **Correction:** an earlier note concluded Settings has **no** background path, assuming it is
   always a bare CoreWindow. Wrong for the case that matters. On a live
   `ApplicationFrameHost.exe` instance (2560×1528, **84 elements**) the **element rung works
   fully in the background** — nav items resolve by `select`, the driver drives them by token
-  with `route: "accessibility"`, the real cursor stays put, the page navigates. Only the *pixel*
+  with `route: "accessibility"`, the real cursor stays put, the page navigates. Only the _pixel_
   rung is inert there. Accurate statement: **Settings is reachable in the background, but only
   through the element rung.** `SystemSettings.exe`-hosted instances still return 0 elements.
 

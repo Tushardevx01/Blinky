@@ -45,9 +45,34 @@ interface FilesScreenProps {
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'];
 const TEXT_EXTENSIONS = [
-  'txt', 'md', 'json', 'py', 'js', 'ts', 'jsx', 'tsx', 'html', 'css',
-  'scss', 'rs', 'sh', 'bat', 'ps1', 'xml', 'yaml', 'yml', 'toml',
-  'ini', 'cfg', 'log', 'sql', 'c', 'cpp', 'h', 'java', 'kt'
+  'txt',
+  'md',
+  'json',
+  'py',
+  'js',
+  'ts',
+  'jsx',
+  'tsx',
+  'html',
+  'css',
+  'scss',
+  'rs',
+  'sh',
+  'bat',
+  'ps1',
+  'xml',
+  'yaml',
+  'yml',
+  'toml',
+  'ini',
+  'cfg',
+  'log',
+  'sql',
+  'c',
+  'cpp',
+  'h',
+  'java',
+  'kt',
 ];
 
 function isImageFile(ext: string): boolean {
@@ -66,34 +91,60 @@ function isViewableFile(ext: string): boolean {
 function getMimeType(ext: string): string {
   const clean = (ext || '').toLowerCase();
   switch (clean) {
-    case 'pdf': return 'application/pdf';
-    case 'png': return 'image/png';
+    case 'pdf':
+      return 'application/pdf';
+    case 'png':
+      return 'image/png';
     case 'jpg':
-    case 'jpeg': return 'image/jpeg';
-    case 'gif': return 'image/gif';
-    case 'webp': return 'image/webp';
-    case 'svg': return 'image/svg+xml';
-    case 'bmp': return 'image/bmp';
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'gif':
+      return 'image/gif';
+    case 'webp':
+      return 'image/webp';
+    case 'svg':
+      return 'image/svg+xml';
+    case 'bmp':
+      return 'image/bmp';
     case 'txt':
-    case 'log': return 'text/plain';
-    case 'json': return 'application/json';
-    case 'html': return 'text/html';
-    case 'css': return 'text/css';
-    case 'js': return 'application/javascript';
-    case 'ts': return 'application/typescript';
-    case 'mp4': return 'video/mp4';
-    case 'mkv': return 'video/x-matroska';
-    case 'mov': return 'video/quicktime';
-    case 'mp3': return 'audio/mpeg';
-    case 'wav': return 'audio/wav';
-    case 'doc': return 'application/msword';
-    case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    case 'xls': return 'application/vnd.ms-excel';
-    case 'xlsx': return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    case 'ppt': return 'application/vnd.ms-powerpoint';
-    case 'pptx': return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-    case 'zip': return 'application/zip';
-    default: return '*/*';
+    case 'log':
+      return 'text/plain';
+    case 'json':
+      return 'application/json';
+    case 'html':
+      return 'text/html';
+    case 'css':
+      return 'text/css';
+    case 'js':
+      return 'application/javascript';
+    case 'ts':
+      return 'application/typescript';
+    case 'mp4':
+      return 'video/mp4';
+    case 'mkv':
+      return 'video/x-matroska';
+    case 'mov':
+      return 'video/quicktime';
+    case 'mp3':
+      return 'audio/mpeg';
+    case 'wav':
+      return 'audio/wav';
+    case 'doc':
+      return 'application/msword';
+    case 'docx':
+      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    case 'xls':
+      return 'application/vnd.ms-excel';
+    case 'xlsx':
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    case 'ppt':
+      return 'application/vnd.ms-powerpoint';
+    case 'pptx':
+      return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    case 'zip':
+      return 'application/zip';
+    default:
+      return '*/*';
   }
 }
 
@@ -130,7 +181,10 @@ function formatDate(ts: number): string {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
-function getFileIcon(ext: string, is_dir?: boolean): { name: keyof typeof Ionicons.glyphMap; color: string } {
+function getFileIcon(
+  ext: string,
+  is_dir?: boolean
+): { name: keyof typeof Ionicons.glyphMap; color: string } {
   if (is_dir) {
     return { name: 'folder', color: '#FFB020' };
   }
@@ -291,7 +345,9 @@ export function FilesScreen({
             encoding: FileSystem.EncodingType.Base64,
           });
 
-          const ext = (fsFileData.name.includes('.') ? fsFileData.name.split('.').pop() || '' : '').toLowerCase();
+          const ext = (
+            fsFileData.name.includes('.') ? fsFileData.name.split('.').pop() || '' : ''
+          ).toLowerCase();
           const targetMode = mobileActionMode;
           setSelectedFile(null);
           onClearFsFileData?.();
@@ -311,7 +367,8 @@ export function FilesScreen({
           if (targetMode === 'save_device') {
             try {
               if (Platform.OS === 'android' && FileSystem.StorageAccessFramework) {
-                const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                const permissions =
+                  await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
                 if (permissions.granted) {
                   const newFileUri = await FileSystem.StorageAccessFramework.createFileAsync(
                     permissions.directoryUri,
@@ -625,7 +682,8 @@ export function FilesScreen({
           />
           <Text style={styles.emptyTitle}>PC Disconnected</Text>
           <Text style={styles.emptySubtitle}>
-            Connect your mobile companion to your PC to browse, search, and launch desktop files remotely.
+            Connect your mobile companion to your PC to browse, search, and launch desktop files
+            remotely.
           </Text>
         </View>
       ) : (
@@ -646,9 +704,7 @@ export function FilesScreen({
           {isSearching ? (
             <View style={styles.sectionContainer}>
               <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>
-                  SEARCH RESULTS ({searchResults.length})
-                </Text>
+                <Text style={styles.sectionTitle}>SEARCH RESULTS ({searchResults.length})</Text>
                 {isLoading && <ActivityIndicator size="small" color={colors.accent} />}
               </View>
 
@@ -666,10 +722,14 @@ export function FilesScreen({
                       <TouchableOpacity
                         key={`${item.path}-${idx}`}
                         style={styles.listItem}
-                        onPress={() => (item.is_dir ? handleOpenFolder(item.path) : handlePressFile(item))}
+                        onPress={() =>
+                          item.is_dir ? handleOpenFolder(item.path) : handlePressFile(item)
+                        }
                         activeOpacity={0.7}
                       >
-                        <View style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}>
+                        <View
+                          style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}
+                        >
                           <Ionicons name={iconInfo.name} size={22} color={iconInfo.color} />
                         </View>
                         <View style={styles.fileDetails}>
@@ -677,7 +737,9 @@ export function FilesScreen({
                             {item.name}
                           </Text>
                           <Text style={styles.fileMeta} numberOfLines={1}>
-                            {item.is_dir ? 'Folder' : `${formatBytes(item.size_bytes)} • ${formatDate(item.modified_ts)}`}
+                            {item.is_dir
+                              ? 'Folder'
+                              : `${formatBytes(item.size_bytes)} • ${formatDate(item.modified_ts)}`}
                           </Text>
                           <Text style={styles.filePathTiny} numberOfLines={1}>
                             {item.path}
@@ -711,7 +773,8 @@ export function FilesScreen({
                 </Text>
               </View>
 
-              {(!currentDirectory?.entries || currentDirectory.entries.length === 0) && !isLoading ? (
+              {(!currentDirectory?.entries || currentDirectory.entries.length === 0) &&
+              !isLoading ? (
                 <View style={styles.emptyFolderBox}>
                   <Ionicons name="folder-open-outline" size={36} color={colors.textMuted} />
                   <Text style={styles.emptyFolderTitle}>This folder is empty</Text>
@@ -724,10 +787,14 @@ export function FilesScreen({
                       <TouchableOpacity
                         key={`${item.path}-${idx}`}
                         style={styles.listItem}
-                        onPress={() => (item.is_dir ? handleOpenFolder(item.path) : handlePressFile(item))}
+                        onPress={() =>
+                          item.is_dir ? handleOpenFolder(item.path) : handlePressFile(item)
+                        }
                         activeOpacity={0.7}
                       >
-                        <View style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}>
+                        <View
+                          style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}
+                        >
                           <Ionicons name={iconInfo.name} size={22} color={iconInfo.color} />
                         </View>
                         <View style={styles.fileDetails}>
@@ -756,7 +823,10 @@ export function FilesScreen({
             <>
               <View style={styles.sectionHeaderRow}>
                 <Text style={styles.sectionTitle}>QUICK ACCESS</Text>
-                <TouchableOpacity onPress={handleRefresh} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <TouchableOpacity
+                  onPress={handleRefresh}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                   <Text style={styles.sectionActionText}>Sync</Text>
                 </TouchableOpacity>
               </View>
@@ -787,7 +857,9 @@ export function FilesScreen({
 
               {recentFiles.length === 0 ? (
                 <View style={styles.emptyRecentBox}>
-                  <Text style={styles.emptyFolderSubtitle}>Pull down to sync recent files from PC</Text>
+                  <Text style={styles.emptyFolderSubtitle}>
+                    Pull down to sync recent files from PC
+                  </Text>
                 </View>
               ) : (
                 <View style={styles.list}>
@@ -800,7 +872,9 @@ export function FilesScreen({
                         onPress={() => handlePressFile(file)}
                         activeOpacity={0.7}
                       >
-                        <View style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}>
+                        <View
+                          style={[styles.fileIconBox, { backgroundColor: `${iconInfo.color}15` }]}
+                        >
                           <Ionicons name={iconInfo.name} size={22} color={iconInfo.color} />
                         </View>
                         <View style={styles.fileDetails}>
@@ -854,7 +928,9 @@ export function FilesScreen({
                   <View
                     style={[
                       styles.modalIconBox,
-                      { backgroundColor: `${getFileIcon(selectedFile.ext, selectedFile.is_dir).color}20` },
+                      {
+                        backgroundColor: `${getFileIcon(selectedFile.ext, selectedFile.is_dir).color}20`,
+                      },
                     ]}
                   >
                     <Ionicons
@@ -868,13 +944,19 @@ export function FilesScreen({
                       {selectedFile.name}
                     </Text>
                     <Text style={styles.modalFileMeta}>
-                      {formatBytes(selectedFile.size_bytes)} • {formatDate(selectedFile.modified_ts)}
+                      {formatBytes(selectedFile.size_bytes)} •{' '}
+                      {formatDate(selectedFile.modified_ts)}
                     </Text>
                   </View>
                 </View>
 
                 <View style={styles.pathBadge}>
-                  <Ionicons name="desktop-outline" size={14} color={colors.textMuted} style={{ marginRight: 6 }} />
+                  <Ionicons
+                    name="desktop-outline"
+                    size={14}
+                    color={colors.textMuted}
+                    style={{ marginRight: 6 }}
+                  />
                   <Text style={styles.pathBadgeText} numberOfLines={2}>
                     {selectedFile.path}
                   </Text>
@@ -890,17 +972,21 @@ export function FilesScreen({
                       disabled={isDownloading}
                     >
                       {isDownloading && mobileActionMode === 'open' ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" style={{ marginRight: 8 }} />
+                        <ActivityIndicator
+                          size="small"
+                          color="#FFFFFF"
+                          style={{ marginRight: 8 }}
+                        />
                       ) : (
                         <Ionicons
                           name={
                             isImageFile(selectedFile.ext)
                               ? 'image-outline'
                               : selectedFile.ext.toLowerCase() === 'pdf'
-                              ? 'document-text-outline'
-                              : isTextFile(selectedFile.ext)
-                              ? 'reader-outline'
-                              : 'open-outline'
+                                ? 'document-text-outline'
+                                : isTextFile(selectedFile.ext)
+                                  ? 'reader-outline'
+                                  : 'open-outline'
                           }
                           size={18}
                           color="#FFFFFF"
@@ -911,12 +997,12 @@ export function FilesScreen({
                         {isDownloading && mobileActionMode === 'open'
                           ? 'Opening...'
                           : isImageFile(selectedFile.ext)
-                          ? 'Open in Image Viewer'
-                          : selectedFile.ext.toLowerCase() === 'pdf'
-                          ? 'Open PDF Directly'
-                          : isTextFile(selectedFile.ext)
-                          ? 'Read File Directly'
-                          : 'Open File with...'}
+                            ? 'Open in Image Viewer'
+                            : selectedFile.ext.toLowerCase() === 'pdf'
+                              ? 'Open PDF Directly'
+                              : isTextFile(selectedFile.ext)
+                                ? 'Read File Directly'
+                                : 'Open File with...'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -930,12 +1016,23 @@ export function FilesScreen({
                       disabled={isDownloading}
                     >
                       {isDownloading && mobileActionMode === 'send' ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" style={{ marginRight: 8 }} />
+                        <ActivityIndicator
+                          size="small"
+                          color="#FFFFFF"
+                          style={{ marginRight: 8 }}
+                        />
                       ) : (
-                        <Ionicons name="share-social-outline" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
+                        <Ionicons
+                          name="share-social-outline"
+                          size={18}
+                          color="#FFFFFF"
+                          style={{ marginRight: 8 }}
+                        />
                       )}
                       <Text style={styles.sendActionBtnText}>
-                        {isDownloading && mobileActionMode === 'send' ? 'Preparing to send...' : 'Send / Share File'}
+                        {isDownloading && mobileActionMode === 'send'
+                          ? 'Preparing to send...'
+                          : 'Send / Share File'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -949,12 +1046,23 @@ export function FilesScreen({
                       disabled={isDownloading}
                     >
                       {isDownloading && mobileActionMode === 'save_device' ? (
-                        <ActivityIndicator size="small" color="#10B981" style={{ marginRight: 8 }} />
+                        <ActivityIndicator
+                          size="small"
+                          color="#10B981"
+                          style={{ marginRight: 8 }}
+                        />
                       ) : (
-                        <Ionicons name="download-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                        <Ionicons
+                          name="download-outline"
+                          size={18}
+                          color="#10B981"
+                          style={{ marginRight: 8 }}
+                        />
                       )}
                       <Text style={styles.saveGalleryActionBtnText}>
-                        {isDownloading && mobileActionMode === 'save_device' ? 'Saving to Device...' : 'Save to Device'}
+                        {isDownloading && mobileActionMode === 'save_device'
+                          ? 'Saving to Device...'
+                          : 'Save to Device'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -965,7 +1073,12 @@ export function FilesScreen({
                     onPress={() => handleOpenOnPC(selectedFile)}
                     activeOpacity={0.8}
                   >
-                    <Ionicons name="open-outline" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
+                    <Ionicons
+                      name="open-outline"
+                      size={18}
+                      color="#FFFFFF"
+                      style={{ marginRight: 8 }}
+                    />
                     <Text style={styles.primaryActionBtnText}>Open on PC</Text>
                   </TouchableOpacity>
 
@@ -975,7 +1088,12 @@ export function FilesScreen({
                     onPress={() => handleAskAboutFile(selectedFile)}
                     activeOpacity={0.8}
                   >
-                    <Ionicons name="sparkles" size={18} color={colors.accent} style={{ marginRight: 8 }} />
+                    <Ionicons
+                      name="sparkles"
+                      size={18}
+                      color={colors.accent}
+                      style={{ marginRight: 8 }}
+                    />
                     <Text style={styles.secondaryActionBtnText}>Ask Blinky about this file</Text>
                   </TouchableOpacity>
 
@@ -1004,17 +1122,22 @@ export function FilesScreen({
         <View style={styles.textPreviewContainer}>
           <View style={styles.textPreviewHeader}>
             <View style={{ flex: 1, marginRight: spacing.sm }}>
-              <Text style={styles.textPreviewTitle} numberOfLines={1}>{textPreview?.name}</Text>
+              <Text style={styles.textPreviewTitle} numberOfLines={1}>
+                {textPreview?.name}
+              </Text>
               <Text style={styles.textPreviewSub}>In-app Reader</Text>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.textPreviewCloseBtn}
               onPress={() => setTextPreview(null)}
             >
               <Ionicons name="close" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
           </View>
-          <ScrollView style={styles.textPreviewScroll} contentContainerStyle={{ padding: spacing.md, paddingBottom: 60 }}>
+          <ScrollView
+            style={styles.textPreviewScroll}
+            contentContainerStyle={{ padding: spacing.md, paddingBottom: 60 }}
+          >
             <Text style={styles.textPreviewBody} selectable={true}>
               {textPreview?.content}
             </Text>

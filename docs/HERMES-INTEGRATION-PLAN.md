@@ -14,15 +14,15 @@ machine: `cua-driver` was already installed and its daemon is running.
 
 **What changed**
 
-| File | Change |
-| --- | --- |
-| `common/python/computer_use/backends/base.py` | **New.** Canonical `ComputerUseBackend` ABC + dataclasses (`UIElement`, `Screenshot`, `WindowInfo`, `ActionResult`). |
-| `common/python/computer_use/backends/cua_driver.py` | **New.** `CuaDriverBackend` — background desktop control over cua-driver. |
-| `common/python/computer_use/backends/__init__.py` | **New.** Backend registry with platform-aware selection and native fallback. |
-| `common/python/computer_use/actuator.py` | **New.** Platform-neutral facade exposing the old `linux_mcp` signatures. |
-| `common/python/computer_use/tools.py` | `list_windows`, `get_app_state`, `click_element`, `type_text`, `press_key`, `mouse` now route through the actuator on Windows instead of returning "supported on Linux only". |
-| `linux/python/backend/abc.py` | Now a re-export shim over the shared ABC (same convention as `computer_use/linux_mcp.py`). Linux behaviour unchanged. |
-| `common/python/tests/test_cua_backend.py` | **New.** 28 tests, driver-independent. |
+| File                                                | Change                                                                                                                                                                        |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `common/python/computer_use/backends/base.py`       | **New.** Canonical `ComputerUseBackend` ABC + dataclasses (`UIElement`, `Screenshot`, `WindowInfo`, `ActionResult`).                                                          |
+| `common/python/computer_use/backends/cua_driver.py` | **New.** `CuaDriverBackend` — background desktop control over cua-driver.                                                                                                     |
+| `common/python/computer_use/backends/__init__.py`   | **New.** Backend registry with platform-aware selection and native fallback.                                                                                                  |
+| `common/python/computer_use/actuator.py`            | **New.** Platform-neutral facade exposing the old `linux_mcp` signatures.                                                                                                     |
+| `common/python/computer_use/tools.py`               | `list_windows`, `get_app_state`, `click_element`, `type_text`, `press_key`, `mouse` now route through the actuator on Windows instead of returning "supported on Linux only". |
+| `linux/python/backend/abc.py`                       | Now a re-export shim over the shared ABC (same convention as `computer_use/linux_mcp.py`). Linux behaviour unchanged.                                                         |
+| `common/python/tests/test_cua_backend.py`           | **New.** 28 tests, driver-independent.                                                                                                                                        |
 
 **Capability gained**
 
@@ -45,12 +45,12 @@ Selection is `auto` by default: `cua` when the driver is reachable, otherwise
 `native`, which restores the legacy Rust `SendInput` path exactly. Force it with
 `BLINKY_COMPUTER_USE_BACKEND=cua|native|hyprland|gnome|kde`.
 
-| Env var | Default | Meaning |
-| --- | --- | --- |
-| `BLINKY_COMPUTER_USE_BACKEND` | `auto` | Backend key. `native` disables the Python actuator entirely. |
-| `CUA_DRIVER_CMD` | unset | Override the driver binary path. `HERMES_CUA_DRIVER_CMD` also honoured. |
-| `BLINKY_CUA_ALLOW_FOREGROUND` | `1` | Allow escalation to `foreground` **only** after cua-driver reports `background_unavailable`. |
-| `BLINKY_CUA_SESSION` | unset | Optional named cua-driver lifecycle session. Leave unset — named sessions expire and can disable the backend. |
+| Env var                       | Default | Meaning                                                                                                       |
+| ----------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `BLINKY_COMPUTER_USE_BACKEND` | `auto`  | Backend key. `native` disables the Python actuator entirely.                                                  |
+| `CUA_DRIVER_CMD`              | unset   | Override the driver binary path. `HERMES_CUA_DRIVER_CMD` also honoured.                                       |
+| `BLINKY_CUA_ALLOW_FOREGROUND` | `1`     | Allow escalation to `foreground` **only** after cua-driver reports `background_unavailable`.                  |
+| `BLINKY_CUA_SESSION`          | unset   | Optional named cua-driver lifecycle session. Leave unset — named sessions expire and can disable the backend. |
 
 **Escalation policy.** We never pass `foreground` preemptively — fronting a
 window needlessly steals the user's focus and is a bug, not a shortcut. The
@@ -65,13 +65,13 @@ when allowed, do we retry.
    `is_available()` fail and the whole backend silently drop to the native path.
    Fixed two ways: sessions are now **opt-in** (`BLINKY_CUA_SESSION`, unset by
    default so each call uses the transport's implicit session), and when a
-   session *is* configured, a dead-session error triggers `start_session` plus
+   session _is_ configured, a dead-session error triggers `start_session` plus
    one automatic retry.
 
 2. **Degraded snapshots are not empty snapshots.** A minimized window reports
    `window_bounds` of `x/y = -32000` and `get_window_state` comes back with
    `degraded: true`, `ax_tree_empty`, and `screenshot_error: cannot capture
-   minimized window`. Returning `[]` silently would make callers believe the app
+minimized window`. Returning `[]` silently would make callers believe the app
    genuinely has no elements. Now:
    - `WindowInfo.supported` is `False` for minimized/off-screen windows, and
      `_resolve_target_window` prefers an actionable one.
@@ -106,14 +106,14 @@ Rust. Routing those through the Python sidecar would cost a fresh interpreter
 startup per click (`run_python_worker` spawns one process per request), so the
 driver is bridged from Rust instead.
 
-| File | Change |
-| --- | --- |
-| `windows/src-tauri/src/platform/cua.rs` | **New.** Rust cua-driver bridge: session lifecycle, background-first dispatch, window discovery, element resolution. |
-| `common/src-tauri/src/platform/mod.rs` | Registers the `cua` module (Windows-only) and re-exports `click_element_impl`. |
+| File                                        | Change                                                                                                                                     |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `windows/src-tauri/src/platform/cua.rs`     | **New.** Rust cua-driver bridge: session lifecycle, background-first dispatch, window discovery, element resolution.                       |
+| `common/src-tauri/src/platform/mod.rs`      | Registers the `cua` module (Windows-only) and re-exports `click_element_impl`.                                                             |
 | `windows/src-tauri/src/platform/windows.rs` | `click_screen_point_impl`, `scroll_at_point_impl`, `type_text_impl` try cua first and fall back to `SendInput`. Adds `click_element_impl`. |
-| `common/src-tauri/src/lib.rs` | New `click_element(x, y, label)` Tauri command. |
-| `common/frontend/src/lib/tauri.ts` | New `clickElement(x, y, label)` wrapper. |
-| `common/frontend/src/CommandBar.tsx` | Autopilot acts now call `clickElement(point.x, point.y, step.target_text)`. |
+| `common/src-tauri/src/lib.rs`               | New `click_element(x, y, label)` Tauri command.                                                                                            |
+| `common/frontend/src/lib/tauri.ts`          | New `clickElement(x, y, label)` wrapper.                                                                                                   |
+| `common/frontend/src/CommandBar.tsx`        | Autopilot acts now call `clickElement(point.x, point.y, step.target_text)`.                                                                |
 
 ### Why the driver's own cursor had to go
 
@@ -123,7 +123,7 @@ driver's `Cua.AgentCursorOverlay` is a **second** pointer, and it showed up
 because of a schema bug:
 
 - `set_agent_cursor_enabled` **requires** `session` (`"required":
-  ["session", "enabled"]`). The first cut called it with `{"enabled": false}`,
+["session", "enabled"]`). The first cut called it with `{"enabled": false}`,
   which fails validation — so the suppression never happened and the driver's
   cursor appeared alongside Blinky's.
 - Sessions also had to stop being per-invocation. Omitting `session` makes the
@@ -161,7 +161,7 @@ click:
    UIA tree.
 3. Pick an invokable, **labelled** element; `click` it by
    `element_index` + `snapshot_id`.
-4. Otherwise re-snapshot *with* the screenshot and click the point in **window
+4. Otherwise re-snapshot _with_ the screenshot and click the point in **window
    scope** — still background, and it covers surfaces with no usable element.
 5. Only if all of that fails does `click_element_impl` drop to the desktop
    `SendInput` point click.
@@ -180,7 +180,7 @@ Two deliberate choices:
 ### Window-scope coordinates are physical, not downscaled
 
 This note previously said the opposite, and believing it was the cause of the
-reported *"the cursor goes in the right position / it clicks something else"*.
+reported _"the cursor goes in the right position / it clicks something else"_.
 
 The driver's prose says window-scope `x, y` are "window-local screenshot pixels,
 same space as the PNG `get_window_state` returns". Its own data says otherwise.
@@ -202,7 +202,7 @@ window scope @ screenshot  (855,316) -> route "synthetic_events" page delta   0 
 desktop scope @ screen    (1505,557) -> route "global_input"     page delta   0   0   cursor MOVED
 ```
 
-Only the physical one acted, and it acted *without* moving the pointer. So the
+Only the physical one acted, and it acted _without_ moving the pointer. So the
 correct conversion is subtracting the window origin and nothing else. Scaling by
 `min(1, max_image_dimension / max(width, height))` — 0.56875 here — put every
 window-scope click **1.758× too close to the window's top-left**:
@@ -220,10 +220,10 @@ what".
 
 Two consequences worth noting:
 
-* `frame_distance` had the same mismatch, and in a *directional* way: frames near
+- `frame_distance` had the same mismatch, and in a _directional_ way: frames near
   the top-left always looked closer than they were, which is exactly where a
   sidebar lives. Element ranking was therefore biased toward the sidebar.
-* `max_image_dimension` existed **only** to serve this conversion, so the fix also
+- `max_image_dimension` existed **only** to serve this conversion, so the fix also
   removes a blocking `get_config` round trip from the click path.
 
 The screenshot's own dimensions are still what they are (`shot_h` derived from
@@ -267,10 +267,10 @@ global input injection and moves the real pointer — the "spawned a new cursor"
 complaint, and an inconsistency with `scroll`, which had already been moved to
 window scope). But window scope is not universally effective:
 
-| route | meaning | XAML |
-| --- | --- | --- |
-| `accessibility` | the driver hit-tested and drove an element | works |
-| `synthetic_events` | raw mouse events posted to the window | **silently ignored** |
+| route              | meaning                                    | XAML                 |
+| ------------------ | ------------------------------------------ | -------------------- |
+| `accessibility`    | the driver hit-tested and drove an element | works                |
+| `synthetic_events` | raw mouse events posted to the window      | **silently ignored** |
 
 Both report `effect: "unverifiable"`, so the route is the only signal. Measured: a
 window-scope pixel click over a Settings nav item reported success and changed
@@ -278,7 +278,7 @@ nothing.
 
 This is deliberately **not** auto-escalated to desktop scope. Escalating means a
 global click, which moves the real cursor — the thing the background path exists
-to avoid — and it would double-act on Win32 apps where `synthetic_events` *does*
+to avoid — and it would double-act on Win32 apps where `synthetic_events` _does_
 work. Instead `warn_inert_pixel_click` logs it, so the limitation is visible
 rather than silent. The practical answer for XAML is the element rung, which now
 covers `select`.
@@ -287,7 +287,7 @@ covers `select`.
 
 Adding the driver bridge made Blinky's window intermittently **non-responsive**,
 alongside clicks that felt much slower than the ~0.4s the driver was actually
-taking. One cause: Tauri executes *synchronous* commands inline, on the thread
+taking. One cause: Tauri executes _synchronous_ commands inline, on the thread
 that dispatched the IPC message — the UI thread on Windows. The generated wrapper
 (tauri-macros) is:
 
@@ -314,13 +314,13 @@ The first cut bridged to the driver by spawning `cua-driver call <tool> <json>`
 per action. Measured, that costs **~1.45s per call before any work happens** —
 `get_cursor_position` returning 28 bytes still took 1.45s:
 
-| call | `cua-driver call` (per-spawn) | `cua-driver mcp` (persistent) |
-| --- | --- | --- |
-| `get_cursor_position` | 1.45 s | 0.006 s |
-| `list_windows` | 1.80 s | 0.10–0.14 s |
-| `get_window_state` (tree) | 2.40 s | 0.10–0.19 s |
-| `get_window_state` (capture-only) | 2.40 s | **0.4–0.9 s** |
-| `click` | ~1.80 s | 0.09 s |
+| call                              | `cua-driver call` (per-spawn) | `cua-driver mcp` (persistent) |
+| --------------------------------- | ----------------------------- | ----------------------------- |
+| `get_cursor_position`             | 1.45 s                        | 0.006 s                       |
+| `list_windows`                    | 1.80 s                        | 0.10–0.14 s                   |
+| `get_window_state` (tree)         | 2.40 s                        | 0.10–0.19 s                   |
+| `get_window_state` (capture-only) | 2.40 s                        | **0.4–0.9 s**                 |
+| `click`                           | ~1.80 s                       | 0.09 s                        |
 
 The whole ladder (list windows → walk tree → click) was therefore **~8 seconds**,
 which is exactly the "so much lag" a user sees between the AI cursor arriving and
@@ -337,10 +337,10 @@ so no branch of the click path requests a screenshot at all.
 
 Two consequences for the bridge:
 
-* The child must be drained on **both** pipes continuously. A child that blocks
+- The child must be drained on **both** pipes continuously. A child that blocks
   on a full stdout buffer never exits — which is what turned large
   `get_window_state` payloads into `unparseable driver output`.
-* `cua-driver mcp` exits cleanly (code 0) on stdin EOF, so closing Blinky reaps
+- `cua-driver mcp` exits cleanly (code 0) on stdin EOF, so closing Blinky reaps
   it without any explicit teardown.
 
 ### Bounds containment is not visibility — resolve the window with a hit-test
@@ -409,8 +409,8 @@ during testing). `cua-driver stop` clears them.
 **discarded the click point whenever a label was present** — which is always,
 because the frontend supplies one. So the AI cursor glided to the control the
 planner aimed at while a different control was invoked. That is exactly the
-reported symptom: *"the cursor goes in the right position … it clicks something
-else"*.
+reported symptom: _"the cursor goes in the right position … it clicks something
+else"_.
 
 Worse, the proximity signal was consulted **only when there was no label** — and
 the frontend always supplies one, so it effectively never ran. Ranking was pure
@@ -425,7 +425,7 @@ which is why the conversion is now pinned by measurement in `window_local()`
 rather than by prose.
 
 Now `frame_distance()` converts the point with `window_local()` first and returns
-`0` when the point lies *inside* the frame, and `pick_element()` ranks
+`0` when the point lies _inside_ the frame, and `pick_element()` ranks
 `(exactness, distance, length, role)` — proximity breaks ties, while exactness still
 outranks proximity so a precise text match is never displaced by a looser-but-closer
 one. Duplicate labels make the tie the common case: Windows Settings alone has
@@ -435,11 +435,11 @@ one. Duplicate labels make the tie the common case: Windows Settings alone has
 ### Not every app exposes an element tree
 
 An earlier version of this note said Settings exposes no tree. That was too broad —
-it varies between windows of the *same* app:
+it varies between windows of the _same_ app:
 
 - A Settings window hosted by **`ApplicationFrameHost.exe`** returned **79–85
   elements** on the first call (a freshly launched one returned 79 immediately), so
-  the element rung *is* viable there.
+  the element rung _is_ viable there.
 - A Settings window hosted by **`SystemSettings.exe`** returned **0 elements** on
   every attempt: `degraded: true`, `degraded_reason: "ax_tree_empty"`,
   `escalation.recommended: "px"`.
@@ -468,14 +468,14 @@ instance (2560×1528, 84 elements):
 - The **pixel rung does not** — `route: "synthetic_events"` over a nav item
   changed nothing.
 
-So the honest statement is narrower and more useful: *Settings is reachable in the
-background, but only through the element rung.* `SystemSettings.exe`-hosted
+So the honest statement is narrower and more useful: _Settings is reachable in the
+background, but only through the element rung._ `SystemSettings.exe`-hosted
 instances still return 0 elements and still have no element rung, so for those the
 limit stands.
 
 The driver also ships a typed `browser_*` family (`browser_prepare`,
 `browser_click`, `browser_type`, `browser_pointer`, `get_browser_state`) that
-drives Chromium over CDP — genuinely background *and* reliable, with
+drives Chromium over CDP — genuinely background _and_ reliable, with
 `browser_click` taking viewport CSS px or a page `ref`. It is the right rung for
 Edge/Chrome/Discord/Spotify, but `browser_prepare` refuses without an explicit
 launch grant (`--grant existing-profile`), so it is **Phase 2 work**, not
@@ -485,7 +485,7 @@ launch grant (`--grant existing-profile`), so it is **Phase 2 work**, not
 A refusal arrives as a **successful** tool call:
 
 ```json
-{"refusal": {"code": "snapshot_id_required", "message": "..."}, "status": "refused"}
+{ "refusal": { "code": "snapshot_id_required", "message": "..." }, "status": "refused" }
 ```
 
 Trusting `isError` alone would read a refused click as a completed one and
@@ -495,7 +495,7 @@ opaque `element_token` (preferred; it carries the window and snapshot with it).
 
 The driver also ships a typed `browser_*` family (`browser_prepare`,
 `browser_click`, `browser_type`, `browser_pointer`, `get_browser_state`) that
-drives Chromium over CDP — genuinely background *and* reliable, with
+drives Chromium over CDP — genuinely background _and_ reliable, with
 `browser_click` taking viewport CSS px or a page `ref`. It is the right rung for
 Edge/Chrome/Discord/Spotify, but `browser_prepare` refuses without an explicit
 launch grant (`--grant existing-profile`), so it is **Phase 2 work**, not
@@ -518,8 +518,8 @@ swallowing clicks, despite being fullscreen and always-on-top.
 Independently of the backend, the frontend added ~1.2s of deliberate delay per
 step before the click was even dispatched:
 
-* `autopilot.ts` awaited `setTimeout(..., 620)` after emitting the cursor move.
-* `Overlay.tsx` then ran a **600ms** glide whose `onfinish` only *then* triggered
+- `autopilot.ts` awaited `setTimeout(..., 620)` after emitting the cursor move.
+- `Overlay.tsx` then ran a **600ms** glide whose `onfinish` only _then_ triggered
   the click ripple.
 
 The glide is a GPU-composited CSS animation in a separate overlay window, so it
@@ -527,9 +527,7 @@ never needed to gate the action. The artificial wait is gone and the glide is
 220ms, which reads as a fast snap and keeps the ripple roughly in step with the
 actual click.
 
-
 ---
-
 
 ## 1. What "Hermes" is
 
@@ -546,10 +544,7 @@ terminal-native autonomous agent. Key facts that matter for us:
 | Computer use     | `computer_use` toolset → **`cua-driver`** over MCP stdio (trycua/cua) | Background control, no cursor movement, no focus steal.                                                                   |
 | Skills           | `SKILL.md`, agentskills.io-compatible                                 | ~90 bundled + ~60 optional skills we inherit for free.                                                                    |
 
-
-
 ---
-
 
 ## 2. Capability parity matrix
 
@@ -574,8 +569,8 @@ Where Blinky stands today, based on the actual tree.
 | **Sandboxed execution** (Docker/SSH/Modal/Singularity)       | None                                                                     | Large                                      | Skip unless needed     |
 | **Approval / capability-manifest guardrails**                | None on `computer_use`                                                   | Large (safety)                             | Medium                 |
 
-**Read this as:** Blinky is *ahead* on screen understanding, overlay, and voice. Hermes is  
-*ahead* on agent plumbing (memory, skills, cron, subagents, MCP, gateway). Don't rebuild  
+**Read this as:** Blinky is _ahead_ on screen understanding, overlay, and voice. Hermes is  
+_ahead_ on agent plumbing (memory, skills, cron, subagents, MCP, gateway). Don't rebuild  
 the plumbing. Don't give up the overlay.
 
 ---
@@ -630,7 +625,7 @@ brain. If Phase 3's dependency reconciliation turns out to be painful, fall back
 without losing Phases 1–2.
 
 **Hard rule:** exactly one agent loop runs at a time. Blinky's `computer_use/loop.py` becomes  
-a *tool* the brain calls, not a competing loop. Two loops = duplicate clicks and runaway  
+a _tool_ the brain calls, not a competing loop. Two loops = duplicate clicks and runaway  
 iterations.
 
 ---
@@ -646,14 +641,13 @@ Write down, in `common/docs/`, who owns what:
 
 Everything after this follows from that split.
 
-
 ### Phase 1 — Swap the computer-use actuator to `cua-driver` (highest value, lowest risk)
 
 This is the single biggest capability upgrade and needs no Hermes at all.
 
 - **Keep:** `computer_use/loop.py` (931 L), `step_planner.py`, `vision_planner.py`,  
-  `text_grounder.py`, `recipes.py`, `recovery.py`, `metrics.py` — the *planner*.
-- **Replace:** the *actuator*. Today it goes through Rust `SendInput`  
+  `text_grounder.py`, `recipes.py`, `recovery.py`, `metrics.py` — the _planner_.
+- **Replace:** the _actuator_. Today it goes through Rust `SendInput`  
   (`src-tauri/src/lib.rs`) and `computer_use/tools.py` (2479 L) in the foreground.
 - **With:** `cua-driver` over MCP stdio. You already have the pattern —  
   `computer_use/linux_mcp.py` is a re-export shim over `backend.linux_mcp_compat`  
@@ -731,7 +725,6 @@ Blinky's `computer_use` currently has **no approval gate**. Port Hermes' model:
 
 ---
 
-
 ## 5. Gotchas
 
 1. **stdout is a wire protocol — Hermes will corrupt it.**  
@@ -767,7 +760,7 @@ Phase 5  cron + surfaces     ── last, it's the least differentiated
 ```
 
 Phases 1, 2 and 4 deliver most of the visible parity with none of the embedding risk.  
-Phase 3 is what makes it *literally* everything Hermes can do — but it's also the only phase  
+Phase 3 is what makes it _literally_ everything Hermes can do — but it's also the only phase  
 that can be blocked by packaging.
 
 ---
@@ -777,5 +770,5 @@ that can be blocked by packaging.
 - [ ] Embed (Route A) or drive (Route B)? Depends on appetite for `uv` ↔ `.venv` reconciliation.
 - [ ] Does `cua-driver` work standalone over MCP, outside Hermes? (spike)
 - [ ] Does Blinky ship to users as a single binary? If so, vendoring a `uv` env inside a Tauri  
-  bundle is a packaging problem worth solving early.
+      bundle is a packaging problem worth solving early.
 - [ ] Keep or drop Blinky's foreground `SendInput` path as a fallback for apps with no AX tree?

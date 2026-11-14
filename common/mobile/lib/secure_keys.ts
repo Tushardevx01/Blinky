@@ -21,8 +21,10 @@ export interface SyncedApiKeys {
 export async function saveSyncedApiKeys(keys: SyncedApiKeys): Promise<void> {
   try {
     const payload = JSON.stringify(keys);
-    const isSecureAvailable = SecureStore ? await SecureStore.isAvailableAsync().catch(() => false) : false;
-    
+    const isSecureAvailable = SecureStore
+      ? await SecureStore.isAvailableAsync().catch(() => false)
+      : false;
+
     if (isSecureAvailable) {
       await SecureStore.setItemAsync(SECURE_KEYS_STORAGE_KEY, payload, {
         keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
@@ -47,7 +49,9 @@ export async function saveSyncedApiKeys(keys: SyncedApiKeys): Promise<void> {
  */
 export async function getSyncedApiKeys(): Promise<SyncedApiKeys> {
   try {
-    const isSecureAvailable = SecureStore ? await SecureStore.isAvailableAsync().catch(() => false) : false;
+    const isSecureAvailable = SecureStore
+      ? await SecureStore.isAvailableAsync().catch(() => false)
+      : false;
     let data: string | null = null;
 
     if (isSecureAvailable) {
@@ -79,7 +83,9 @@ export async function hasSyncedApiKeys(): Promise<boolean> {
  */
 export async function clearSyncedApiKeys(): Promise<void> {
   try {
-    const isSecureAvailable = SecureStore ? await SecureStore.isAvailableAsync().catch(() => false) : false;
+    const isSecureAvailable = SecureStore
+      ? await SecureStore.isAvailableAsync().catch(() => false)
+      : false;
     if (isSecureAvailable) {
       await SecureStore.deleteItemAsync(SECURE_KEYS_STORAGE_KEY).catch(() => {});
     }

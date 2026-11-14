@@ -1,6 +1,7 @@
 # Blinky Build, Compilation & Markdown Authoring Guide
 
 This guide provides end-to-end instructions for:
+
 1. **Compiling the Desktop Windows App (`.exe` / `.msi`)**
 2. **Compiling the Mobile Android App (`.apk`)**
 3. **Step-by-Step Guide on Creating and Editing Markdown (`.md`) Files**
@@ -13,6 +14,7 @@ This guide provides end-to-end instructions for:
 Blinky Desktop is built using [Tauri v2](https://v2.tauri.app/) (Rust backend) with a React/TypeScript frontend (bundled via Vite and Bun).
 
 ### Prerequisites
+
 - **Bun runtime**: Installed and on system PATH (`bun --version`).
 - **Rust toolchain**: Installed via `rustup` (`rustc --version`, `cargo --version`).
 - **Visual Studio C++ Build Tools**: C++ build environment with Windows 10/11 SDK.
@@ -21,6 +23,7 @@ Blinky Desktop is built using [Tauri v2](https://v2.tauri.app/) (Rust backend) w
 ### Steps to Build `.exe`
 
 #### Option A: One-Command Production Build (Recommended)
+
 From the root repository directory (`c:\Users\khann\Projects\Blinky`):
 
 ```bash
@@ -28,6 +31,7 @@ bun run build:release
 ```
 
 #### Option B: Direct Tauri Build Command
+
 ```bash
 # 1. Typecheck the frontend
 bun run typecheck
@@ -40,7 +44,9 @@ bun run tauri:build
 ```
 
 ### Where to Find the Output Files
+
 Once the build completes successfully:
+
 - **Standalone Portable `.exe`**:
   `common\src-tauri\target\release\blinky.exe`
 - **Windows MSI Installer (`.msi`)**:
@@ -59,21 +65,25 @@ The mobile companion app is located inside `common/mobile/` and is built using [
 If you have Android Studio and the Android SDK installed:
 
 1. **Navigate to the mobile directory**:
+
    ```bash
    cd common/mobile
    ```
 
 2. **Generate Native Android Project**:
+
    ```bash
    bunx expo prebuild -p android
    ```
 
 3. **Compile the APK with Gradle**:
+
    ```powershell
    cd android
    .\gradlew assembleRelease
    ```
-   *(On Linux/macOS: `./gradlew assembleRelease`)*
+
+   _(On Linux/macOS: `./gradlew assembleRelease`)_
 
 4. **Where to Find the `.apk`**:
    `common\mobile\android\app\build\outputs\apk\release\app-release.apk`
@@ -86,21 +96,25 @@ If you have Android Studio and the Android SDK installed:
 If you do not have Android SDK configured locally:
 
 1. **Install EAS CLI**:
+
    ```bash
    bun add -g eas-cli
    ```
 
 2. **Log into Expo** (free account):
+
    ```bash
    eas login
    ```
 
 3. **Trigger the Preview APK Build**:
+
    ```bash
    cd common/mobile
    eas build -p android --profile preview
    ```
-   *Note: The `preview` profile in `common/mobile/eas.json` is pre-configured with `"buildType": "apk"`.*
+
+   _Note: The `preview` profile in `common/mobile/eas.json` is pre-configured with `"buildType": "apk"`._
 
 4. **Download the APK**:
    EAS will generate a direct download link and QR code in your terminal. Open the link on your phone to download `blinky-companion.apk`.
@@ -112,14 +126,17 @@ If you do not have Android SDK configured locally:
 A Markdown (`.md`) file is a lightweight plain-text file formatted using simple punctuation marks to render structured headings, code blocks, tables, and links.
 
 ### Step 1: Create the `.md` File
+
 You can create a `.md` file anywhere in your workspace using your editor or terminal:
 
 **In PowerShell / CMD:**
+
 ```powershell
 New-Item -Path "docs\my-new-feature.md" -ItemType File
 ```
 
 **In VS Code / Antigravity IDE:**
+
 1. Right-click any folder in the Explorer sidebar.
 2. Click **New File**.
 3. Type the filename ending in `.md` (e.g. `NOTES.md` or `GUIDE.md`) and press <kbd>Enter</kbd>.
@@ -130,29 +147,36 @@ New-Item -Path "docs\my-new-feature.md" -ItemType File
 
 Here is a standard template showing essential markdown syntax:
 
-```markdown
+````markdown
 # Level 1 Heading (Document Title)
+
 ## Level 2 Heading (Major Section)
+
 ### Level 3 Heading (Subsection)
 
-This is a regular paragraph. You can format text as **bold**, *italic*, or `inline code`.
+This is a regular paragraph. You can format text as **bold**, _italic_, or `inline code`.
 
 ### Bulleted and Numbered Lists
+
 - First bullet item
 - Second bullet item
   - Nested sub-item
+
 1. Numbered step 1
 2. Numbered step 2
 
 ### Hyperlinks and File References
+
 [Visit Blinky Repo](https://github.com/KingSahil/Blinky)
 [Open Tauri Config](file:///c:/Users/khann/Projects/Blinky/common/src-tauri/tauri.conf.json)
 
 ### Code Blocks with Syntax Highlighting
+
 ```python
 def greet(name: str) -> str:
     return f"Hello, {name}!"
 ```
+````
 
 ```powershell
 # PowerShell script block
@@ -160,18 +184,21 @@ bun run dev
 ```
 
 ### Tables
-| Feature | Status | Provider |
-| :--- | :---: | :--- |
-| STT Transcription | Active | Groq / Sarvam |
-| Wake Word Detection | Active | OpenWakeWord ONNX |
-| Desktop Automation | Active | Windows UIA / Tauri |
+
+| Feature             | Status | Provider            |
+| :------------------ | :----: | :------------------ |
+| STT Transcription   | Active | Groq / Sarvam       |
+| Wake Word Detection | Active | OpenWakeWord ONNX   |
+| Desktop Automation  | Active | Windows UIA / Tauri |
 
 ### Alerts & Callouts
+
 > [!NOTE]
 > This is a helpful tip or contextual note.
 
 > [!WARNING]
 > This is an important warning.
+
 ```
 
 ---
@@ -201,3 +228,4 @@ On many Windows laptops with Realtek Audio drivers, **Stereo Mix** is configured
    - Right-click it and click **Set as Default Device** and **Set as Default Communication Device**.
 5. Right-click **Stereo Mix** and click **Disable** (so Windows apps don't accidentally prioritize it over your voice).
 6. Verify your hardware microphone mute hotkey (often <kbd>Fn</kbd> + <kbd>F4</kbd> or <kbd>F4</kbd>) is not active.
+```

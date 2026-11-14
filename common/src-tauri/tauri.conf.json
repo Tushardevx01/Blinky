@@ -62,13 +62,8 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis"
-    ],
-    "icon": [
-      "icons/icon.ico",
-      "icons/icon.png"
-    ],
+    "targets": ["nsis"],
+    "icon": ["icons/icon.ico", "icons/icon.png"],
     "resources": {
       "../../common/python_runtime/Python313/": "python_runtime/Python313/",
       "../../common/python/": "common/python/",

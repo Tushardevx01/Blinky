@@ -1,0 +1,44 @@
+# Version control and dependencies
+.git/
+node_modules/
+bun.lock
+Cargo.lock
+package-lock.json
+
+# Build outputs and targets
+dist/
+build/
+target/
+src-tauri/target/
+common/src-tauri/target/
+common/src-tauri/target-nsis-release/
+.next/
+.expo/
+out/
+
+# Python caches and virtual environments
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Models, weights, and binaries
+*.onnx
+*.pt
+*.bin
+*.safetensors
+weights/
+python/hey_blinky.onnx
+
+# Cache, temp, and logs
+*.log
+.pytest_cache/
+.mypy_cache/
+cache/
+.wwebjs_auth/
+.wwebjs_cache/
+screenshots/
+screenshots_parsed/
+data/
+tmp/

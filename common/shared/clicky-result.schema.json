@@ -3,14 +3,7 @@
   "$id": "https://blinky.local/schemas/blinky-result.schema.json",
   "title": "BlinkyTutorResult",
   "type": "object",
-  "required": [
-    "summary",
-    "steps",
-    "active_app",
-    "ocr",
-    "elapsed_ms",
-    "warnings"
-  ],
+  "required": ["summary", "steps", "active_app", "ocr", "elapsed_ms", "warnings"],
   "properties": {
     "summary": {
       "type": "string"
@@ -20,11 +13,7 @@
       "maxItems": 6,
       "items": {
         "type": "object",
-        "required": [
-          "step",
-          "instruction",
-          "target_text"
-        ],
+        "required": ["step", "instruction", "target_text"],
         "properties": {
           "step": {
             "type": "integer",
@@ -51,11 +40,7 @@
     },
     "active_app": {
       "type": "object",
-      "required": [
-        "title",
-        "process",
-        "supported"
-      ],
+      "required": ["title", "process", "supported"],
       "properties": {
         "title": {
           "type": "string"
@@ -70,10 +55,7 @@
     },
     "ocr": {
       "type": "object",
-      "required": [
-        "count",
-        "items"
-      ],
+      "required": ["count", "items"],
       "properties": {
         "count": {
           "type": "integer"
@@ -88,11 +70,7 @@
     },
     "screenshot": {
       "type": "object",
-      "required": [
-        "path",
-        "width",
-        "height"
-      ],
+      "required": ["path", "width", "height"],
       "properties": {
         "path": {
           "type": "string"
@@ -124,14 +102,7 @@
   "$defs": {
     "ocrItem": {
       "type": "object",
-      "required": [
-        "text",
-        "x",
-        "y",
-        "width",
-        "height",
-        "confidence"
-      ],
+      "required": ["text", "x", "y", "width", "height", "confidence"],
       "properties": {
         "text": {
           "type": "string"

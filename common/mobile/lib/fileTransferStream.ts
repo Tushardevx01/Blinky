@@ -79,7 +79,8 @@ export function readBlobSliceAsArrayBuffer(
         reject(new Error('Unexpected FileReader result type'));
       }
     };
-    reader.onerror = () => reject(reader.error || new Error('FileReader failed to read blob slice'));
+    reader.onerror = () =>
+      reject(reader.error || new Error('FileReader failed to read blob slice'));
     reader.readAsArrayBuffer(slice);
   });
 }
@@ -306,7 +307,7 @@ export async function uploadFileStreaming(
       const uploadRes = await fetch(options.url, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${options.token}`,
+          Authorization: `Bearer ${options.token}`,
           'Upload-Offset': String(offset),
           'Content-Length': String(chunkBytes.length),
           'Content-Type': 'application/octet-stream',

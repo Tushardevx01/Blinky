@@ -9,9 +9,11 @@ import {
 } from './tauri';
 
 function shouldUseNativeSecureTransport(): boolean {
-  return import.meta.env.VITE_BLINKY_TRANSPORT_MODE === 'release'
-    && typeof window !== 'undefined'
-    && Boolean((window as any).__TAURI_INTERNALS__);
+  return (
+    import.meta.env.VITE_BLINKY_TRANSPORT_MODE === 'release' &&
+    typeof window !== 'undefined' &&
+    Boolean((window as any).__TAURI_INTERNALS__)
+  );
 }
 
 function releaseGatewayUrl(path: string, configuredUrl: string | undefined): string {
@@ -47,7 +49,9 @@ export class SarvamSpeechToTextStream {
 
   get isClosedOrClosing(): boolean {
     return this.nativeSocketId === null
-      ? this.ws === null || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING
+      ? this.ws === null ||
+          this.ws.readyState === WebSocket.CLOSED ||
+          this.ws.readyState === WebSocket.CLOSING
       : false;
   }
 
@@ -62,7 +66,7 @@ export class SarvamSpeechToTextStream {
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
-      console.log("SarvamSTT: WebSocket connection opened.");
+      console.log('SarvamSTT: WebSocket connection opened.');
       if (this.sessionNeedsStart) {
         this.sendStartFrame();
         this.sessionNeedsStart = false;
@@ -91,7 +95,7 @@ export class SarvamSpeechToTextStream {
 
     this.ws.onerror = (event) => this.onError(event);
     this.ws.onclose = () => {
-      console.log("SarvamSTT: WebSocket connection closed.");
+      console.log('SarvamSTT: WebSocket connection closed.');
       this.ws = null;
     };
   }
@@ -108,10 +112,10 @@ export class SarvamSpeechToTextStream {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(chunk);
     } else if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
-      console.log("SarvamSTT: Connection is connecting. Queueing audio chunk.");
+      console.log('SarvamSTT: Connection is connecting. Queueing audio chunk.');
       this.queuedChunks.push(chunk);
     } else {
-      console.warn("SarvamSTT: Cannot send audio chunk, WebSocket is closed or closing.");
+      console.warn('SarvamSTT: Cannot send audio chunk, WebSocket is closed or closing.');
     }
   }
 
@@ -119,20 +123,20 @@ export class SarvamSpeechToTextStream {
     if (this.isConnected) {
       this.sendStartFrame();
     } else {
-      console.log("SarvamSTT: startSession called while connecting. Queueing session start.");
+      console.log('SarvamSTT: startSession called while connecting. Queueing session start.');
       this.sessionNeedsStart = true;
     }
   }
 
   private sendStartFrame() {
     if (this.isConnected) {
-      console.log("SarvamSTT: Sending start frame...");
+      console.log('SarvamSTT: Sending start frame...');
       const initFrame = {
-        action: "start",
-        model: "saaras:v3",
-        language_code: "en-IN",
-        encoding: "LINEAR16",
-        sample_rate: 16000
+        action: 'start',
+        model: 'saaras:v3',
+        language_code: 'en-IN',
+        encoding: 'LINEAR16',
+        sample_rate: 16000,
       };
       this.sendText(JSON.stringify(initFrame));
     }
@@ -150,7 +154,7 @@ export class SarvamSpeechToTextStream {
     if (this.ws) {
       if (this.ws.readyState === WebSocket.OPEN) {
         try {
-          this.ws.send(JSON.stringify({ action: "stop" }));
+          this.ws.send(JSON.stringify({ action: 'stop' }));
         } catch {}
       }
       this.ws.close();
@@ -201,15 +205,19 @@ export class SarvamSpeechToTextStream {
         this.disconnect();
         this.onError(new Error(event.message || 'Native secure socket error'));
       }
-    }).then(async (unlisten) => {
-      if (this.nativeSocketId !== socketId) { unlisten(); return; }
-      this.nativeUnlisten = unlisten;
-      const info = await getSecureTransportInfo();
-      if (this.nativeSocketId !== socketId) return;
-      const url = releaseGatewayUrl('/sarvam-stt', configuredUrl);
-      await connectSecureSocket(socketId, url, info.certificate_pin);
-      if (this.nativeSocketId !== socketId) await closeSecureSocket(socketId);
     })
+      .then(async (unlisten) => {
+        if (this.nativeSocketId !== socketId) {
+          unlisten();
+          return;
+        }
+        this.nativeUnlisten = unlisten;
+        const info = await getSecureTransportInfo();
+        if (this.nativeSocketId !== socketId) return;
+        const url = releaseGatewayUrl('/sarvam-stt', configuredUrl);
+        await connectSecureSocket(socketId, url, info.certificate_pin);
+        if (this.nativeSocketId !== socketId) await closeSecureSocket(socketId);
+      })
       .catch((error) => {
         if (this.nativeSocketId !== socketId) return;
         this.disconnect();
@@ -241,7 +249,9 @@ export class SarvamTextToSpeechStream {
 
   get isClosedOrClosing(): boolean {
     return this.nativeSocketId === null
-      ? this.ws === null || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING
+      ? this.ws === null ||
+          this.ws.readyState === WebSocket.CLOSED ||
+          this.ws.readyState === WebSocket.CLOSING
       : false;
   }
 
@@ -274,14 +284,14 @@ export class SarvamTextToSpeechStream {
 
   sendText(text: string) {
     const payload = JSON.stringify({
-        text,
-        model: "bulbul:v3",
-        target_language_code: "en-IN",
-        speaker: "ratan",
-        pace: 1.05,
-        output_audio_codec: "pcm",
-        speech_sample_rate: 16000
-      });
+      text,
+      model: 'bulbul:v3',
+      target_language_code: 'en-IN',
+      speaker: 'ratan',
+      pace: 1.05,
+      output_audio_codec: 'pcm',
+      speech_sample_rate: 16000,
+    });
     if (this.nativeSocketId && this.nativeOpen) {
       void sendSecureSocketText(this.nativeSocketId, payload).catch(this.onError);
     } else if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -329,15 +339,19 @@ export class SarvamTextToSpeechStream {
         this.disconnect();
         this.onError(new Error(event.message || 'Native secure socket error'));
       }
-    }).then(async (unlisten) => {
-      if (this.nativeSocketId !== socketId) { unlisten(); return; }
-      this.nativeUnlisten = unlisten;
-      const info = await getSecureTransportInfo();
-      if (this.nativeSocketId !== socketId) return;
-      const url = releaseGatewayUrl('/sarvam-tts', configuredUrl);
-      await connectSecureSocket(socketId, url, info.certificate_pin);
-      if (this.nativeSocketId !== socketId) await closeSecureSocket(socketId);
     })
+      .then(async (unlisten) => {
+        if (this.nativeSocketId !== socketId) {
+          unlisten();
+          return;
+        }
+        this.nativeUnlisten = unlisten;
+        const info = await getSecureTransportInfo();
+        if (this.nativeSocketId !== socketId) return;
+        const url = releaseGatewayUrl('/sarvam-tts', configuredUrl);
+        await connectSecureSocket(socketId, url, info.certificate_pin);
+        if (this.nativeSocketId !== socketId) await closeSecureSocket(socketId);
+      })
       .catch((error) => {
         if (this.nativeSocketId !== socketId) return;
         this.disconnect();

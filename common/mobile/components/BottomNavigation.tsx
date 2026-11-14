@@ -19,7 +19,11 @@ const TABS: { id: TabScreen; icon: keyof typeof Ionicons.glyphMap; label: string
   { id: 'PC', icon: 'grid-outline', label: 'PC' },
 ];
 
-export function BottomNavigation({ activeTab, onTabChange, isPcLocked = false }: BottomNavigationProps) {
+export function BottomNavigation({
+  activeTab,
+  onTabChange,
+  isPcLocked = false,
+}: BottomNavigationProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -40,7 +44,7 @@ export function BottomNavigation({ activeTab, onTabChange, isPcLocked = false }:
             >
               <View style={styles.iconWrapper}>
                 <Ionicons
-                  name={isActive ? tab.icon.replace('-outline', '') as any : tab.icon}
+                  name={isActive ? (tab.icon.replace('-outline', '') as any) : tab.icon}
                   size={24}
                   color={isActive ? colors.accent : colors.textMuted}
                 />
@@ -50,9 +54,7 @@ export function BottomNavigation({ activeTab, onTabChange, isPcLocked = false }:
                   </View>
                 )}
               </View>
-              <Text style={[styles.label, isActive && styles.labelActive]}>
-                {tab.label}
-              </Text>
+              <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
             </TouchableOpacity>
           );
         })}
