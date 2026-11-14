@@ -2,6 +2,8 @@
 
 > **Ask. Learn. Automate. Control from anywhere.**
 
+[![Presentation](https://img.shields.io/badge/Presentation-Google%20Slides-orange?style=for-the-badge&logo=googleslides&logoColor=white)](https://docs.google.com/presentation/d/12IBFa4wRiu3QzJU5wYAxLGaUe1tZ2g4d/edit?usp=sharing&ouid=112498577575841599207&rtpof=true&sd=true)
+
 Blinky is an intelligent, privacy-first AI desktop tutor and autonomous computer-use agent for Windows and Linux, accompanied by a React Native (Expo) mobile companion, a pure-Rust agent & OS daemon, a local System 1 neural decision engine, an Offline Knowledge Format (OKF) notebook workspace, and an AiCut C++17 video processing suite.
 
 ---
@@ -210,6 +212,7 @@ cargo tauri build
 
 ## Documentation
 
+- [Project Presentation & Slide Deck (Google Slides)](https://docs.google.com/presentation/d/12IBFa4wRiu3QzJU5wYAxLGaUe1tZ2g4d/edit?usp=sharing&ouid=112498577575841599207&rtpof=true&sd=true)
 - [Binary Releases & Installation Guide (releases/README.md)](./releases/README.md)
 - [Project Summary & Architecture Map (BLINKY_SUMMARY.md)](./BLINKY_SUMMARY.md)
 - [Blinky Notebook Hub & OKF Specification (docs/OKF.md)](./docs/OKF.md)
