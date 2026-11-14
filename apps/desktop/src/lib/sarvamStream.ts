@@ -9,7 +9,7 @@ import {
 } from './tauri';
 
 function shouldUseNativeSecureTransport(): boolean {
-  return import.meta.env.VITE_BLINKY_TRANSPORT_MODE === 'release'
+  return import.meta.env.VITE_SUTRA_TRANSPORT_MODE === 'release'
     && typeof window !== 'undefined'
     && Boolean((window as any).__TAURI_INTERNALS__);
 }

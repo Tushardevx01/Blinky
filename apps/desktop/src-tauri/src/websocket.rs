@@ -824,7 +824,7 @@ pub async fn run_agent_query(app: &AppHandle, query: &str) -> Result<serde_json:
         return Err("Question is required.".to_string());
     }
 
-    if std::env::var("BLINKY_USE_NATIVE_AGENT")
+    if std::env::var("SUTRA_USE_NATIVE_AGENT")
         .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
         .unwrap_or(false)
     {
@@ -1004,7 +1004,7 @@ where
             "data": {},
             "error": {
                 "code": "UNAUTHORIZED",
-                "message": "This connection is not authenticated with a BLINKY_REMOTE_TOKEN",
+                "message": "This connection is not authenticated with a SUTRA_REMOTE_TOKEN",
                 "details": ""
             }
         })
@@ -2261,10 +2261,10 @@ fn get_assemblyai_api_key() -> String {
 }
 
 fn get_voice_provider() -> String {
-    if let Ok(val) = std::env::var("BLINKY_VOICE_PROVIDER") {
+    if let Ok(val) = std::env::var("SUTRA_VOICE_PROVIDER") {
         let trimmed = val.trim().to_string();
         if !trimmed.is_empty() {
-            eprintln!("get_voice_provider: found in env var BLINKY_VOICE_PROVIDER = {}", trimmed);
+            eprintln!("get_voice_provider: found in env var SUTRA_VOICE_PROVIDER = {}", trimmed);
             return trimmed;
         }
     }
@@ -2276,7 +2276,7 @@ fn get_voice_provider() -> String {
 
     let provider = envs
         .into_iter()
-        .find(|(k, _)| k == "BLINKY_VOICE_PROVIDER")
+        .find(|(k, _)| k == "SUTRA_VOICE_PROVIDER")
         .map(|(_, v)| v.trim().to_string())
         .unwrap_or_else(|| {
             eprintln!("get_voice_provider: not found, defaulting to assemblyai");
@@ -2297,7 +2297,7 @@ fn get_remote_token() -> String {
 }
 
 fn load_or_create_remote_token() -> String {
-    if let Ok(val) = std::env::var("BLINKY_REMOTE_TOKEN") {
+    if let Ok(val) = std::env::var("SUTRA_REMOTE_TOKEN") {
         let trimmed = val.trim().to_string();
         if !trimmed.is_empty() {
             return trimmed;
@@ -2305,7 +2305,7 @@ fn load_or_create_remote_token() -> String {
     }
     let root = project_root();
     let mut envs = read_env_file(&root);
-    if let Some((_, v)) = envs.iter().find(|(k, _)| k == "BLINKY_REMOTE_TOKEN") {
+    if let Some((_, v)) = envs.iter().find(|(k, _)| k == "SUTRA_REMOTE_TOKEN") {
         let trimmed = v.trim().to_string();
         if !trimmed.is_empty() {
             return trimmed;
@@ -2316,9 +2316,9 @@ fn load_or_create_remote_token() -> String {
     if mode.is_release() {
         let token = generate_remote_token();
         // Persist to .env file
-        envs.push(("BLINKY_REMOTE_TOKEN".to_string(), token.clone()));
+        envs.push(("SUTRA_REMOTE_TOKEN".to_string(), token.clone()));
         let _ = write_env_file(&root, &envs);
-        println!("Generated and saved BLINKY_REMOTE_TOKEN to .env");
+        println!("Generated and saved SUTRA_REMOTE_TOKEN to .env");
         return token;
     }
     String::new()

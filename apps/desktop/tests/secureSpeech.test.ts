@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, expect, mock, test } from 'bun:test';
+import { afterEach, beforeEach, expect, mock, test } from './test-framework';
 
-const oldMode = process.env.VITE_BLINKY_TRANSPORT_MODE;
-process.env.VITE_BLINKY_TRANSPORT_MODE = 'release';
+const oldMode = process.env.VITE_SUTRA_TRANSPORT_MODE;
+process.env.VITE_SUTRA_TRANSPORT_MODE = 'release';
 const previousWindow = globalThis.window;
 (globalThis as any).window = { __TAURI_INTERNALS__: {} };
 let handler: (event: any) => void;

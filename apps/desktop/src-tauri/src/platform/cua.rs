@@ -30,7 +30,7 @@
 //!
 //! Always try `delivery_mode="background"` first. Only retry with `foreground`
 //! when the driver explicitly reports `background_unavailable`, and only when
-//! `BLINKY_CUA_ALLOW_FOREGROUND` is not `0` — fronting a window needlessly
+//! `SUTRA_CUA_ALLOW_FOREGROUND` is not `0` — fronting a window needlessly
 //! steals focus and is a bug, not a shortcut.
 //!
 //! Note that desktop scope is *not* a background path: the driver serves it
@@ -149,9 +149,9 @@ fn resolve_binary() -> Option<PathBuf> {
     None
 }
 
-/// Backend key from `BLINKY_COMPUTER_USE_BACKEND` — `auto` (default) | `cua` | `native`.
+/// Backend key from `SUTRA_COMPUTER_USE_BACKEND` — `auto` (default) | `cua` | `native`.
 fn backend_key() -> String {
-    std::env::var("BLINKY_COMPUTER_USE_BACKEND")
+    std::env::var("SUTRA_COMPUTER_USE_BACKEND")
         .unwrap_or_else(|_| "auto".to_string())
         .trim()
         .to_ascii_lowercase()
@@ -164,7 +164,7 @@ pub fn is_disabled() -> bool {
 
 fn allow_foreground() -> bool {
     !matches!(
-        std::env::var("BLINKY_CUA_ALLOW_FOREGROUND")
+        std::env::var("SUTRA_CUA_ALLOW_FOREGROUND")
             .unwrap_or_else(|_| "1".to_string())
             .trim()
             .to_ascii_lowercase()
