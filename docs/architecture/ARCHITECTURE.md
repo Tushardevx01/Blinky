@@ -41,8 +41,8 @@ AiCut is invoked from Python and shells out to its C++ executable and/or FFmpeg 
 
 ## Deployment units
 
-- **Desktop dev process:** Vite plus Tauri, launched through `scripts/dev.ts` or `bun run tauri:dev`.
-- **Desktop release process:** the Tauri bundle built by `bun run build:release`; Rust serves WSS on port 9001 using its persisted self-signed P-256 identity. Desktop queries use Tauri IPC; current speech uses direct provider HTTPS. A native WSS speech bridge is available but not instantiated by CommandBar.
+- **Desktop dev process:** Vite plus Tauri, launched through `scripts/dev.ts` or `npm run tauri:dev`.
+- **Desktop release process:** the Tauri bundle built by `npm run build:release`; Rust serves WSS on port 9001 using its persisted self-signed P-256 identity. Desktop queries use Tauri IPC; current speech uses direct provider HTTPS. A native WSS speech bridge is available but not instantiated by CommandBar.
 - **File transfer listener:** the Rust host binds port 9002 on LAN interfaces. Development uses HTTP; release wraps the listener in TLS with the same persisted P-256 identity as WSS. Authenticated WebSocket control creates short-lived transfer capabilities; HTTP(S) carries bounded file chunks.
 - **Python one-shot worker:** `common/python/main.py`, spawned per `run_tutor` request. Input is one JSON document on stdin; output is line-oriented status/chunk records plus a final result.
 - **Python persistent daemon:** `common/python/agent_router.py`, owned by the WebSocket server. Each input and output line is JSON keyed by `requestId`; Rust restarts the daemon once after failure.
@@ -92,7 +92,7 @@ The optional release desktop speech stream classes use the Tauri native bridge (
 
 `common/mobile/FileTransferPanel.tsx` selects mixed file batches and hashes each file in the native module, then sends a `file_offer` per file over the port-9001 WebSocket. The offer carries an optional absolute PC `destinationPath`; a blank value defaults to `Downloads/sutra`. Rust validates the filename, destination folder, size, free space, and SHA-256 metadata; it returns a random transfer ID and per-transfer 256-bit bearer capability, reused for chunk uploads and resume requests. The native mobile bridge streams up to 16 MiB per request to `POST /upload/{transferId}` on port 9002 with an `Upload-Offset`. Rust stages under `Downloads/sutra/.staging`, checks the final size and SHA-256, then finalizes in the selected folder with a collision-safe name, including across filesystems.
 
-While the sutra app and desktop process remain alive, `file_resume` reports the server's acknowledged offset after a Wi-Fi interruption. The transfer map and temporary capability are in memory, so restarting either process does not resume a transfer. The default cap is 20 GiB and `BLINKY_FILE_TRANSFER_MAX_BYTES` overrides it in bytes. Release HTTP requests use HTTPS pinned to the same desktop identity as WSS; native code rejects unpinned HTTPS and pinned HTTP.
+While the sutra app and desktop process remain alive, `file_resume` reports the server's acknowledged offset after a Wi-Fi interruption. The transfer map and temporary capability are in memory, so restarting either process does not resume a transfer. The default cap is 20 GiB and `SUTRA_FILE_TRANSFER_MAX_BYTES` overrides it in bytes. Release HTTP requests use HTTPS pinned to the same desktop identity as WSS; native code rejects unpinned HTTPS and pinned HTTP.
 
 Only an explicit AiCut instruction sends a separate `file_edit` control request after the full batch uploads. Rust starts `common/python/file_transfer_aicut.py` with a structured JSON request. That worker supplies only uploaded paths and an empty Explorer context to the deterministic AiCut resolver, disables implicit operations inferred from multiple selected files, and restricts output to the chosen destination folder. PDF and image files transfer but are not AiCut edit inputs. The phone downloads the result by HTTP Range requests, verifies SHA-256, stores it under app files, and offers the OS share sheet. Expo Go cannot load the project-local native file streaming module; install a custom development or release build.
 
@@ -101,7 +101,7 @@ The listener is not merely local IPC: it binds all interfaces. See [SECURITY-AND
 ## Architectural invariants
 
 1. **Rust is the privileged shell.** React invokes native work; Python returns plans/results; platform-specific privilege stays in Rust or platform adapters.
-2. **Python protocols are stdout-sensitive.** Human/debug logs belong on stderr or log files. JSON control messages and `__BLINKY_CAPTURED__` must remain machine-readable.
+2. **Python protocols are stdout-sensitive.** Human/debug logs belong on stderr or log files. JSON control messages and `__SUTRA_CAPTURED__` must remain machine-readable.
 3. **Observe before acting.** Tutor matching and the Linux computer-use loop ground actions against current UI evidence; verification observes the post-action screen.
 4. **One UI action at a time.** Python normally slices guidance to one step and the React autopilot loops through fresh observations. This limits stale-coordinate cascades.
 5. **Coordinates retain their space.** Captured image size, physical screen size, active-window bounds, scale factor, and overlay offset are carried through conversions.

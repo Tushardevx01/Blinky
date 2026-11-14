@@ -64,14 +64,14 @@ Prompt selection rules:
 
 ## 5. Provider Router
 
-`common/python/ai/client.py` selects the provider from `BLINKY_AI_PROVIDER`.
+`common/python/ai/client.py` selects the provider from `SUTRA_AI_PROVIDER`.
 
 | Function | Ollama | Groq |
 | :--- | :--- | :--- |
 | `ask_model(prompt, screenshot_path)` | `ask_ollama(prompt)` | `ask_groq_vision(prompt, screenshot_path)` |
 | `ask_text_model(prompt, max_tokens=300)` | `ask_ollama_text(prompt, max_tokens)` | `ask_groq_text(prompt, max_tokens)` |
 
-Unsupported values raise `RuntimeError("Unsupported BLINKY_AI_PROVIDER...")`.
+Unsupported values raise `RuntimeError("Unsupported SUTRA_AI_PROVIDER...")`.
 
 ## 6. Ollama Client
 
@@ -79,11 +79,11 @@ Source: `common/python/ai/ollama_client.py`
 
 | Setting | Value |
 | :--- | :--- |
-| URL env | `BLINKY_OLLAMA_URL` |
+| URL env | `SUTRA_OLLAMA_URL` |
 | Default URL | `http://localhost:11434/api/generate` |
-| Model env | `BLINKY_OLLAMA_MODEL` |
+| Model env | `SUTRA_OLLAMA_MODEL` |
 | Default model | `gemma4:e4b` |
-| Timeout env | `BLINKY_OLLAMA_TIMEOUT` |
+| Timeout env | `SUTRA_OLLAMA_TIMEOUT` |
 | Default timeout | `35` seconds |
 | Main output cap | `num_predict: 350` |
 | Text output cap | caller default `300` |
@@ -98,11 +98,11 @@ Source: `common/python/ai/groq_client.py`
 
 | Setting | Value |
 | :--- | :--- |
-| URL env | `BLINKY_GROQ_URL` |
+| URL env | `SUTRA_GROQ_URL` |
 | Default URL | `https://api.groq.com/openai/v1/chat/completions` |
-| Model env | `BLINKY_GROQ_MODEL` |
+| Model env | `SUTRA_GROQ_MODEL` |
 | Default model | `llama-3.3-70b-versatile` |
-| Timeout env | `BLINKY_GROQ_TIMEOUT` |
+| Timeout env | `SUTRA_GROQ_TIMEOUT` |
 | Default timeout | `90` seconds |
 | Main output cap | `max_tokens: 350` |
 | Text output cap | caller default `300` |

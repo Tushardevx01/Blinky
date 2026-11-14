@@ -42,13 +42,13 @@ Restart the sutra backend after installation or configuration changes.
 
 ## Existing signed-in browser
 
-The default `BLINKY_BROWSER_ENGINE=agent-browser` always uses `--auto-connect`
-or an explicit `BLINKY_BROWSER_CDP_URL`. It never launches a fresh profile.
+The default `SUTRA_BROWSER_ENGINE=agent-browser` always uses `--auto-connect`
+or an explicit `SUTRA_BROWSER_CDP_URL`. It never launches a fresh profile.
 For current Chrome versions, open `chrome://inspect/#remote-debugging`, enable
 remote debugging, and approve the browser's connection prompt. This lets sutra
 use that running profile's tabs and signed-in sessions. Browser support depends
 on the installed version; other Chromium browsers need a working CDP endpoint.
-For Edge, set e.g. `BLINKY_BROWSER_CDP_URL=http://127.0.0.1:9222` only when that
+For Edge, set e.g. `SUTRA_BROWSER_CDP_URL=http://127.0.0.1:9222` only when that
 browser actually exposes that port. sutra does not restart browsers, copy
 profiles, or export cookies to establish access.
 
@@ -59,7 +59,7 @@ its selected tab; do not assume it always creates a separate tab.
 
 ## Desktop
 
-The default `BLINKY_DESKTOP_ENGINE=agent-desktop` routes clicks, selection,
+The default `SUTRA_DESKTOP_ENGINE=agent-desktop` routes clicks, selection,
 typing, key presses and scrolling through accessibility. Use
 `agent-desktop status` for a read-only health check. PC and mobile share this
 route. Existing specialized tools (Excel, WhatsApp, media, hardware) retain
@@ -126,7 +126,7 @@ limits and Windows refused some foreground/physical-input attempts. Semantic
 ref actions completed the UI steps. Existing-profile browser attachment was
 attempted but timed out, so signed-in browser execution remains unverified.
 
-For explicit compatibility testing, `BLINKY_BROWSER_ENGINE=browser_use` selects
+For explicit compatibility testing, `SUTRA_BROWSER_ENGINE=browser_use` selects
 the old Python browser-use library. Its launch behavior differs from the new
 attach-only backend.
 

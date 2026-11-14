@@ -78,7 +78,7 @@ sutra introduces a two-tier cognitive routing architecture distinguishing sub-mi
 To achieve maximum performance and minimize resource consumption, sutra includes native Rust crates alongside its Python subsystem:
 
 ### A. Pure Rust Autonomous Agent (`crates/sutra-agent`)
-Activated optionally via `BLINKY_USE_NATIVE_AGENT=1`, this is an ultra-fast, standalone Rust autonomous agent loop:
+Activated optionally via `SUTRA_USE_NATIVE_AGENT=1`, this is an ultra-fast, standalone Rust autonomous agent loop:
 * **Multi-Provider AI Engine:** Direct HTTP/2 streaming client supporting OpenAI, Anthropic, Gemini, Groq, and Ollama (`src/providers/`).
 * **Native Tool Registry:** Fully implemented Rust tools in `src/tools/`:
   * `desktop.rs` — Screen grounding, UI element discovery, and input actuation.
@@ -159,7 +159,7 @@ sutra connects directly with AI coding assistants (such as Google Antigravity ID
 * **Speech-to-Text (STT):** Real-time multilingual voice command dictation via Sarvam `saaras:v3`.
 * **Text-to-Speech (TTS):** Natural Indian-accented voice guidance and audio read-aloud via Sarvam `bulbul:v3`.
 * **Synchronized Dynamic Word Highlighting:** Fades out unspoken text while dynamically highlighting the active word in real time matching the Sarvam TTS audio timeline.
-* **Local Offline Wake Word:** Zero-latency wake phrase detection powered by bundled `hey_blinky.onnx` executed via ONNX Runtime.
+* **Local Offline Wake Word:** Zero-latency wake phrase detection powered by bundled `hey_sutra.onnx` executed via ONNX Runtime.
 
 ---
 
@@ -167,7 +167,7 @@ sutra connects directly with AI coding assistants (such as Google Antigravity ID
 
 * **Dual-Mode Transport & Security:**
   * **Development:** Direct WebSocket connection (`ws://<ip>:9001`) with automatic `/24` subnet scanning.
-  * **Release:** Native `BlinkySecureSocket` module with OkHttp TLS SHA-256 certificate public-key pinning and Android KeyStore AES-256 GCM credential encryption.
+  * **Release:** Native `SutraSecureSocket` module with OkHttp TLS SHA-256 certificate public-key pinning and Android KeyStore AES-256 GCM credential encryption.
 * **Sentinel Telemetry Dashboard:** Live monitoring of host CPU/RAM usage, battery status, uptime, active OS/compositor, and network MAC addresses.
 * **Power Controls & Wake-on-LAN:** Remote triggers for hibernate, sleep, reboot, shutdown, and lock/unlock (with PIN/password support), plus 3-packet UDP magic packet bursts for sleeping hosts.
 * **High-Speed File Streaming:** 16MB chunked bidirectional transfers on port `9002` with native streaming SHA-256 hashing.
@@ -180,5 +180,5 @@ sutra connects directly with AI coding assistants (such as Google Antigravity ID
 
 ## 10. Hardware & External Integrations
 
-* **ESP32 Ambient Light Daemon (`BlinkyUniversalDaemon`):** Arduino C++ firmware for ESP32 microcontrollers controlling NeoPixel LEDs for system state signaling.
+* **ESP32 Ambient Light Daemon (`SutraUniversalDaemon`):** Arduino C++ firmware for ESP32 microcontrollers controlling NeoPixel LEDs for system state signaling.
 * **WhatsApp Bridge:** Headless WhatsApp Web bot for conversational commands from outside the local network.

@@ -43,7 +43,7 @@ echo [INFO] Enabling password sign-in support in registry...
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PasswordLess\Device" /v DevicePasswordLessBuildVersion /t REG_DWORD /d 0 /f >nul
 
 :: Clean up any obsolete scheduled task from prior revisions
-schtasks /delete /tn "BlinkyUnlock" /f >nul 2>&1
+schtasks /delete /tn "SutraUnlock" /f >nul 2>&1
 if exist "%ProgramData%\sutra\unlock_helper.ps1" del /f "%ProgramData%\sutra\unlock_helper.ps1" >nul 2>&1
 
 echo.

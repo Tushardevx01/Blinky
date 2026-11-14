@@ -361,9 +361,9 @@ const TAILSCALE_DEFAULT_IP = '100.122.62.2';
 const probeCandidateIps = async (certificatePin?: string): Promise<string | null> => {
   const candidates: string[] = [];
 
-  // Deterministic LAN address published by `bun run dev` into
-  // common/mobile/.env (EXPO_PUBLIC_PC_IP). Highest priority: it survives
-  // manually-started Metro (`bunx expo start`) where the Expo host IP may
+  // Deterministic LAN address published by `npm run dev` into
+  // root .env (EXPO_PUBLIC_PC_IP). Highest priority: it survives
+  // manually-started Metro (`npx expo start`) where the Expo host IP may
   // point at a tunnel/virtual adapter instead of the real LAN PC.
   const envPcIp = process.env.EXPO_PUBLIC_PC_IP?.trim();
   if (envPcIp && !candidates.includes(envPcIp)) candidates.push(envPcIp);

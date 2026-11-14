@@ -47,10 +47,10 @@ c:\projects\Jarvis
 
 ```powershell
 bun install
-bun run setup:python
-bun run check:ollama
-bun run dev
-bun run build
+npm run setup:python
+npm run check:ollama
+npm run dev
+npm run build
 ```
 
 Local web search:
@@ -87,7 +87,7 @@ npm run start
 ## Agent Notes
 
 - Treat `CommandBar.tsx` as the primary command UI. `App.tsx` remains as the default route fallback and is less feature-complete.
-- Keep the Python screen worker stdout JSON-clean. The only non-JSON stdout marker is `__BLINKY_CAPTURED__`.
+- Keep the Python screen worker stdout JSON-clean. The only non-JSON stdout marker is `__SUTRA_CAPTURED__`.
 - Keep screen-tutor guidance single-step. The frontend advances by re-running the worker after each completed step or after each safe autopilot click.
 - Autopilot clicks only matched safe actions. Do not add automatic typing, purchase, login, install, enable, delete, or submit behavior without a separate safety design.
 - Desktop computer-use actions are in `python/computer_use/`. Keep these tools narrow, explicit, and safe-failing so unsupported actions fall back to screen guidance.

@@ -30,7 +30,7 @@ User
 1. `common/frontend/src/main.tsx` routes `/command` to `CommandBar.tsx` and `/overlay` to `Overlay.tsx`.
 2. `CommandBar.tsx` sends `run_tutor` through `common/frontend/src/lib/tauri.ts`.
 3. `common/src-tauri/src/lib.rs` excludes the command and overlay windows from Windows capture, waits briefly, and spawns `common/python/main.py`.
-4. `common/python/main.py` may classify the request as text-only, otherwise captures the screen and prints `__BLINKY_CAPTURED__`.
+4. `common/python/main.py` may classify the request as text-only, otherwise captures the screen and prints `__SUTRA_CAPTURED__`.
 5. Rust sees the marker and immediately restores capture visibility for the sutra windows.
 6. Python resolves active app state, OCR items, UIA controls, prompt output, match attachments, and returns JSON.
 7. Rust parses the JSON and emits `sutra://guidance` to the overlay.
@@ -146,18 +146,18 @@ Settings are persisted to `.env` through `get_settings` / `save_settings` in Rus
 
 | Variable | Used by | Notes |
 | :--- | :--- | :--- |
-| `BLINKY_AI_PROVIDER` | Python/Rust | `ollama` or `groq`. Rust settings default is `groq`; Python defaults to `ollama` if absent. |
-| `BLINKY_OLLAMA_URL` | Python | Defaults to `http://localhost:11434/api/generate`. |
-| `BLINKY_OLLAMA_MODEL` | Python | Defaults to `gemma4:e4b`. |
-| `BLINKY_OLLAMA_TIMEOUT` | Python | Defaults to `35` seconds. |
-| `BLINKY_GROQ_URL` | Python | Defaults to OpenAI-compatible Groq chat completions URL. |
-| `BLINKY_GROQ_MODEL` | Python | Defaults to `llama-3.3-70b-versatile`. |
-| `BLINKY_GROQ_TIMEOUT` | Python | Defaults to `90` seconds. |
+| `SUTRA_AI_PROVIDER` | Python/Rust | `ollama` or `groq`. Rust settings default is `groq`; Python defaults to `ollama` if absent. |
+| `SUTRA_OLLAMA_URL` | Python | Defaults to `http://localhost:11434/api/generate`. |
+| `SUTRA_OLLAMA_MODEL` | Python | Defaults to `gemma4:e4b`. |
+| `SUTRA_OLLAMA_TIMEOUT` | Python | Defaults to `35` seconds. |
+| `SUTRA_GROQ_URL` | Python | Defaults to OpenAI-compatible Groq chat completions URL. |
+| `SUTRA_GROQ_MODEL` | Python | Defaults to `llama-3.3-70b-versatile`. |
+| `SUTRA_GROQ_TIMEOUT` | Python | Defaults to `90` seconds. |
 | `GROQ_API_KEY` | Python/Rust settings | Required for Groq. |
 | `SARVAM_API_KEY` | Frontend/Rust settings | Required for voice features. |
-| `BLINKY_SHORTCUT` | Rust/frontend | `Enter` or `Space`, meaning Ctrl+Shift+Enter or Ctrl+Shift+Space. |
-| `BLINKY_BROWSER_CHANNEL` | Python browser controller | Defaults to `msedge`. |
-| `BLINKY_BROWSER_HEADLESS` | Python browser controller | Defaults to visible browser mode (`false`). |
+| `SUTRA_SHORTCUT` | Rust/frontend | `Enter` or `Space`, meaning Ctrl+Shift+Enter or Ctrl+Shift+Space. |
+| `SUTRA_BROWSER_CHANNEL` | Python browser controller | Defaults to `msedge`. |
+| `SUTRA_BROWSER_HEADLESS` | Python browser controller | Defaults to visible browser mode (`false`). |
 | SearXNG local service | Docker Compose | `docker compose up -d searxng`, exposed on port `8888`. |
 
 ## 7. Platform Notes

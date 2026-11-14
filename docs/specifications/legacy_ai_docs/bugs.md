@@ -11,7 +11,7 @@ KhannaSparsh0001:
 
 |||
 
-$ docker compose -f common/docker-compose.yml up -d && bun run tauri:dev
+$ docker compose -f common/docker-compose.yml up -d && npm run tauri:dev
 [+] up 1/1
  ✔ Container sutra-searxng Running                                                                                 0.0s
 $ bun tauri dev

@@ -12,7 +12,7 @@ In Agent Mode, sutra can carry out bounded desktop tasks: open apps, press short
 
 - **Screen-aware tutoring:** sutra captures the active app, reads visible text and controls, then gives step-by-step guidance with highlights placed over the relevant interface.
 - **Voice control:** Realtime speech recognition and a voice agent support natural conversation, tool calls, turn-taking, spoken replies, and synchronized readback.
-- **Custom wake word:** The bundled `hey_blinky.onnx` model runs locally through ONNX Runtime to detect “Hey sutra” and start hands-free interaction.
+- **Custom wake word:** The bundled `hey_sutra.onnx` model runs locally through ONNX Runtime to detect “Hey sutra” and start hands-free interaction.
 - **Agent Mode:** A bounded observe-and-act loop can open applications, use shortcuts, type, click, and scroll to complete desktop tasks.
 - **Linux desktop support:** The native Hyprland-first Wayland path provides screen and window capture, OCR, app launching, input, scrolling, and system controls; support varies across desktop environments.
 - **WhatsApp and summaries:** Link WhatsApp Web by QR code, check connection status, browse chats, and ask sutra for concise or detailed recaps of a group or direct conversation.
@@ -53,7 +53,7 @@ In Agent Mode, sutra can carry out bounded desktop tasks: open apps, press short
 - Extending tutoring into bounded Agent Mode, voice control, and hands-free wake-word activation.
 - Building a Linux-native desktop path and a remote mobile companion for working away from the PC.
 - Adding practical workflows for video editing, web research, WhatsApp chat recaps, file transfer, IDE assistance, PC power, and ESP32 lighting.
-- Packaging a dedicated `hey_blinky.onnx` model for local wake-word detection and hands-free activation.
+- Packaging a dedicated `hey_sutra.onnx` model for local wake-word detection and hands-free activation.
 
 ## What we learned
 

@@ -10,9 +10,9 @@ import subprocess
 import re
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 ENV_PATH = ROOT_DIR / ".env"
-CONFIG_H_PATH = ROOT_DIR / "esp32_firmware" / "BlinkyUniversalDaemon" / "config.h"
+CONFIG_H_PATH = ROOT_DIR / "firmware" / "esp32" / "config.h"
 
 
 def load_env_vars() -> dict:
@@ -62,13 +62,13 @@ def generate_config_header():
 
     CONFIG_H_PATH.parent.mkdir(parents=True, exist_ok=True)
     content = f"""// AUTO-GENERATED FROM .env - DO NOT EDIT MANUALLY OR COMMIT TO GIT
-#ifndef BLINKY_CONFIG_H
-#define BLINKY_CONFIG_H
+#ifndef SUTRA_CONFIG_H
+#define SUTRA_CONFIG_H
 
 #define WIFI_SSID "{ssid}"
 #define WIFI_PASSWORD "{password}"
 
-#endif // BLINKY_CONFIG_H
+#endif // SUTRA_CONFIG_H
 """
 
     with open(CONFIG_H_PATH, "w", encoding="utf-8") as f:

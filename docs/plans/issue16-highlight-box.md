@@ -51,7 +51,7 @@ To address your notes in the prompt:
 
 ## Verification Plan
 ### Manual Verification
-1. Run `bun run dev` to launch sutra.
+1. Run `npm run dev` to launch sutra.
 2. Trigger the agent with a complex query (e.g., "Search for X on Google").
 3. Verify that as the cursor moves to click elements, a sleek text box appears next to it saying something like *"Clicking on the Search bar..."*
 4. Ensure the box disappears or updates correctly as the AI transitions to the next step.

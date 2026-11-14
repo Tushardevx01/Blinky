@@ -23,9 +23,9 @@ reg delete "HKLM\SOFTWARE\Classes\CLSID\%GUID%" /f >nul 2>&1
 echo [INFO] Removing DLL from System32...
 del /f "%DLL_DEST%" >nul 2>&1
 
-echo [INFO] Removing BlinkyUnlock scheduled task...
-Unregister-ScheduledTask -TaskName "BlinkyUnlock" -Confirm:$false 2>nul
-schtasks /delete /tn "BlinkyUnlock" /f >nul 2>&1
+echo [INFO] Removing SutraUnlock scheduled task...
+Unregister-ScheduledTask -TaskName "SutraUnlock" -Confirm:$false 2>nul
+schtasks /delete /tn "SutraUnlock" /f >nul 2>&1
 del /f "%ProgramData%\sutra\unlock_helper.ps1" >nul 2>&1
 
 echo.

@@ -8,12 +8,12 @@
 2. builds the tray and command/overlay windows,
 3. registers global events and shortcuts,
 4. starts the WebSocket server and persistent agent daemon; development serves `ws://` and a release build serves pinned-identity `wss://` on port 9001,
-5. starts `ui_observer.py` unless `BLINKY_DISABLE_UI_OBSERVER` is truthy,
-6. starts the WhatsApp backend unless `BLINKY_DISABLE_WHATSAPP` is truthy,
+5. starts `ui_observer.py` unless `SUTRA_DISABLE_UI_OBSERVER` is truthy,
+6. starts the WhatsApp backend unless `SUTRA_DISABLE_WHATSAPP` is truthy,
 7. starts the wake-word detector when its runtime/model are available, and
 8. on Linux, attempts to make `ydotoold` available for input fallback.
 
-The configured frontend routes are `/command` and `/overlay`. `main.tsx` also renders `App.tsx` for `/`, but `tauri.conf.json` does not currently define a main window. Both Ctrl+Shift+Enter and Ctrl+Shift+Space are registered as toggles, regardless of the saved `BLINKY_SHORTCUT`; Ctrl+Space and Super/Win+Space participate in push-to-talk behavior.
+The configured frontend routes are `/command` and `/overlay`. `main.tsx` also renders `App.tsx` for `/`, but `tauri.conf.json` does not currently define a main window. Both Ctrl+Shift+Enter and Ctrl+Shift+Space are registered as toggles, regardless of the saved `SUTRA_SHORTCUT`; Ctrl+Space and Super/Win+Space participate in push-to-talk behavior.
 
 ## Standard tutor request
 
@@ -30,7 +30,7 @@ CommandBar submit
   -> React renders guidance and overlay
 ```
 
-Rust restores the hidden/capture-excluded windows when Python emits `__BLINKY_CAPTURED__`; otherwise it restores them when the worker finishes. Do not turn that marker into ordinary logging.
+Rust restores the hidden/capture-excluded windows when Python emits `__SUTRA_CAPTURED__`; otherwise it restores them when the worker finishes. Do not turn that marker into ordinary logging.
 
 `main.py` first checks deterministic and low-cost paths. The effective order is:
 
@@ -48,7 +48,7 @@ The comment near `main.py::run` says agent mode does not capture, but current ag
 1. Active app/window is resolved, optionally locked to a target PID.
 2. Capture uses PIL ImageGrab then DXCam on Windows; Linux selects an X11, grim, portal, GNOME Screenshot, or Spectacle strategy.
 3. The image is normalized to a maximum 1920x1080 JPEG at quality 75 for the normal capture path.
-4. OCR mode is selected. Default Windows order is WinRT OCR then fallback; Linux uses Tesseract. `BLINKY_SCREENSHOT_MODE=omniparser` selects remote/local OmniParser.
+4. OCR mode is selected. Default Windows order is WinRT OCR then fallback; Linux uses Tesseract. `SUTRA_SCREENSHOT_MODE=omniparser` selects remote/local OmniParser.
 5. Accessibility elements come from Windows UIA or Linux AT-SPI where available.
 6. sutra windows and known overlay/system regions are filtered.
 7. Accessibility rectangles are calibrated to screenshot dimensions, merged with OCR, deduplicated, and assigned stable refs.
@@ -115,13 +115,13 @@ The generalization path can ask the model to produce Python tool code, write it 
 
 `common/mobile/usePCWebSocket.ts` connects directly to the desktop at port 9001. Development uses the existing React Native `ws://` client. Release uses the local Expo module at `common/mobile/modules/sutra-secure-socket/`, which performs native WSS certificate pinning and sends JSON auth. `App.tsx` stores the desktop IP in AsyncStorage; release token and certificate pin are stored through Android Keystore/iOS Keychain, while development keeps the legacy AsyncStorage fallback.
 
-Release requires both `BLINKY_REMOTE_TOKEN` and the desktop certificate pin. The hook waits for `auth_result` with strict boolean `ok: true` before reporting connected or sending commands. Its connection deadline includes authentication; rejection, timeout, and premature-close errors survive cleanup. Stale native completions cannot overwrite a newer connection. Release discovery probes with native WSS; development discovery probes plain WS. Queries receive streamed desktop status/results. The UI supports device control, text queries, and Sarvam voice. Power actions receive mobile-side confirmation; the desktop protocol itself has no matching confirmation handshake. Mobile stop only stops local recording/visual state.
+Release requires both `SUTRA_REMOTE_TOKEN` and the desktop certificate pin. The hook waits for `auth_result` with strict boolean `ok: true` before reporting connected or sending commands. Its connection deadline includes authentication; rejection, timeout, and premature-close errors survive cleanup. Stale native completions cannot overwrite a newer connection. Release discovery probes with native WSS; development discovery probes plain WS. Queries receive streamed desktop status/results. The UI supports device control, text queries, and Sarvam voice. Power actions receive mobile-side confirmation; the desktop protocol itself has no matching confirmation handshake. Mobile stop only stops local recording/visual state.
 
 Mobile requests the Sarvam API key from the desktop and then calls Sarvam directly. Current desktop CommandBar also calls Sarvam directly through HTTPS for STT/TTS; its normal speech path does not use the Rust `/sarvam-stt` and `/sarvam-tts` proxies.
 
 ### Mobile file transfer
 
-In the Chat composer, the attachment menu's **Send files to PC** action opens `FileTransferPanel`. Its separate **File** action attaches a file to the chat query. The panel accepts a mixed batch (such as PDF, PNG, video, and audio) and an optional absolute PC folder path; blank means `Downloads/sutra`. The native Expo module reads selected documents in bounded buffers to calculate SHA-256 and stream file chunks; JavaScript never loads a whole transfer file into memory. Each `file_offer` carries the destination path and file metadata. `file_offer`, `file_resume`, `file_cancel`, and `file_edit` are JSON control messages on the WebSocket. The separate Rust port-9002 HTTP(S) listener accepts 16 MiB maximum upload chunks with explicit offsets and serves output ranges. A final upload moves from `Downloads/sutra/.staging` to the validated destination only after the offered size and hash match. Available disk space and the configurable `BLINKY_FILE_TRANSFER_MAX_BYTES` cap are checked before staging.
+In the Chat composer, the attachment menu's **Send files to PC** action opens `FileTransferPanel`. Its separate **File** action attaches a file to the chat query. The panel accepts a mixed batch (such as PDF, PNG, video, and audio) and an optional absolute PC folder path; blank means `Downloads/sutra`. The native Expo module reads selected documents in bounded buffers to calculate SHA-256 and stream file chunks; JavaScript never loads a whole transfer file into memory. Each `file_offer` carries the destination path and file metadata. `file_offer`, `file_resume`, `file_cancel`, and `file_edit` are JSON control messages on the WebSocket. The separate Rust port-9002 HTTP(S) listener accepts 16 MiB maximum upload chunks with explicit offsets and serves output ranges. A final upload moves from `Downloads/sutra/.staging` to the validated destination only after the offered size and hash match. Available disk space and the configurable `SUTRA_FILE_TRANSFER_MAX_BYTES` cap are checked before staging.
 
 The mobile Files screen can also download a PC file through `fs_read_file` over the authenticated WebSocket. Its per-file ceiling uses the same configurable limit (20 GiB by default). This older path reads the complete file and base64-encodes it in memory before sending; the 20 GiB value is a rejection ceiling, not a guarantee that a device can practically buffer a file that large.
 
@@ -132,7 +132,7 @@ The server keeps the offset, digest state, destination, and temporary bearer cap
 - `sarvamStream.ts` provides optional desktop STT/TTS classes through local WebSocket proxies. In release they use the native pinned-WSS bridge; development uses browser WebSocket. CommandBar holds typed refs but does not instantiate these classes. Native setup cancellation and queued STT audio are covered by mocked bridge tests, not live provider tests.
 - `adaptiveTransport.ts` probes an HTTP/3/WebTransport gateway and falls back to a direct Sarvam WebSocket. `CommandBar` initializes it when a key exists, but the normal STT/TTS stream classes remain separate.
 - `tts.ts` contains older/non-streaming TTS utilities used by tests and some fallback behavior.
-- The wake-word Python process loads `python/hey_blinky.onnx`, listens to the microphone, and signals Rust. React pauses/resumes wake listening around active capture/speech.
+- The wake-word Python process loads `python/hey_sutra.onnx`, listens to the microphone, and signals Rust. React pauses/resumes wake listening around active capture/speech.
 
 ## WhatsApp
 

@@ -33,7 +33,7 @@ It does not call `run_tutor` directly, does not render desktop overlay highlight
 5. Updates status as `connecting`, `connected`, `disconnected`, or `error`.
 6. Parses incoming JSON and exposes the latest response to `App.tsx`.
 
-The host string is saved in AsyncStorage under `@blinky_pc_ip`.
+The host string is saved in AsyncStorage under `@sutra_pc_ip`.
 
 ## 4. Query Flow
 

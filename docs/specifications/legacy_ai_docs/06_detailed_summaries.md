@@ -11,7 +11,7 @@ Rust Tauri app core.
 - Exposes frontend commands: `run_tutor`, `click_screen_point`, `show_overlay`, `hide_overlay`, `show_command_bar`, `resize_command_window`, `resize_and_move_command_window`, `get_settings`, `save_settings`.
 - Spawns `common/python/main.py` for screen-tutor requests.
 - Sends `question`, `previous_question`, `progress`, and `conversation_history` over stdin.
-- Watches stdout for `__BLINKY_CAPTURED__` and restores capture visibility immediately.
+- Watches stdout for `__SUTRA_CAPTURED__` and restores capture visibility immediately.
 - Emits `sutra://guidance`, `sutra://open-command`, `sutra://global-click`, and `sutra://global-enter`.
 - Uses Windows `SendInput` for `click_screen_point`, receiving physical screen coordinates from the frontend autopilot loop.
 - Registers Ctrl+Shift+Enter and Ctrl+Shift+Space, with the active shortcut selected by `.env`.
@@ -118,7 +118,7 @@ Stdin/stdout screen-tutor orchestrator.
 - Handles continuation and conversation history.
 - Runs the Web Intelligence Layer when `web_search_enabled` is true.
 - In `agent_mode`, attempts direct computer-use actions first (`OPEN_APP`, `MEDIA_PLAYBACK`, `SYSTEM_SHORTCUT`) and falls back to screen mode on failed tool execution.
-- Captures screen and prints `__BLINKY_CAPTURED__`.
+- Captures screen and prints `__SUTRA_CAPTURED__`.
 - Resolves locator fast-path requests.
 - Reads active app metadata, OCR items, and UIA items.
 - Scales UIA coordinates into screenshot space.

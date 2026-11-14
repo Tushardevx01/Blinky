@@ -43,14 +43,14 @@ machine: `cua-driver` was already installed and its daemon is running.
 
 Selection is `auto` by default: `cua` when the driver is reachable, otherwise
 `native`, which restores the legacy Rust `SendInput` path exactly. Force it with
-`BLINKY_COMPUTER_USE_BACKEND=cua|native|hyprland|gnome|kde`.
+`SUTRA_COMPUTER_USE_BACKEND=cua|native|hyprland|gnome|kde`.
 
 | Env var | Default | Meaning |
 | --- | --- | --- |
-| `BLINKY_COMPUTER_USE_BACKEND` | `auto` | Backend key. `native` disables the Python actuator entirely. |
+| `SUTRA_COMPUTER_USE_BACKEND` | `auto` | Backend key. `native` disables the Python actuator entirely. |
 | `CUA_DRIVER_CMD` | unset | Override the driver binary path. `HERMES_CUA_DRIVER_CMD` also honoured. |
-| `BLINKY_CUA_ALLOW_FOREGROUND` | `1` | Allow escalation to `foreground` **only** after cua-driver reports `background_unavailable`. |
-| `BLINKY_CUA_SESSION` | unset | Optional named cua-driver lifecycle session. Leave unset — named sessions expire and can disable the backend. |
+| `SUTRA_CUA_ALLOW_FOREGROUND` | `1` | Allow escalation to `foreground` **only** after cua-driver reports `background_unavailable`. |
+| `SUTRA_CUA_SESSION` | unset | Optional named cua-driver lifecycle session. Leave unset — named sessions expire and can disable the backend. |
 
 **Escalation policy.** We never pass `foreground` preemptively — fronting a
 window needlessly steals the user's focus and is a bug, not a shortcut. The
@@ -63,7 +63,7 @@ when allowed, do we retry.
    the session ends, every subsequent call is rejected
    (`session 'x' has ended; tool call was rejected`) — which made
    `is_available()` fail and the whole backend silently drop to the native path.
-   Fixed two ways: sessions are now **opt-in** (`BLINKY_CUA_SESSION`, unset by
+   Fixed two ways: sessions are now **opt-in** (`SUTRA_CUA_SESSION`, unset by
    default so each call uses the transport's implicit session), and when a
    session *is* configured, a dead-session error triggers `start_session` plus
    one automatic retry.
@@ -568,7 +568,7 @@ Where sutra stands today, based on the actual tree.
 | **Provider routing / fallback / credential pools**           | `ai/client.py` router (Ollama, Groq, DeepSeek, MiMo, custom)             | Low                                        | Low                    |
 | **Vision / OCR / screen understanding**                      | **Stronger than Hermes** (WinRT OCR + UIA + `@ref` map + `ui_map_cache`) | —                                          | Keep                   |
 | **Visual overlay / guidance**                                | **Unique to sutra** (`Overlay.tsx`, `screen_annotator.py`)              | —                                          | Keep                   |
-| **Voice in/out**                                             | Sarvam `saaras:v3` / `bulbul:v3` + wake word (`hey_blinky.onnx`)         | On par                                     | Keep                   |
+| **Voice in/out**                                             | Sarvam `saaras:v3` / `bulbul:v3` + wake word (`hey_sutra.onnx`)         | On par                                     | Keep                   |
 | **Browser automation**                                       | Playwright + Edge (`browser_controller.py`)                              | On par                                     | Keep                   |
 | **Local web search**                                         | SearXNG + WIL pipeline                                                   | On par                                     | Keep                   |
 | **Sandboxed execution** (Docker/SSH/Modal/Singularity)       | None                                                                     | Large                                      | Skip unless needed     |
@@ -590,7 +590,7 @@ sutra's Python sidecar imports `AIAgent` from a vendored Hermes checkout.
 from run_agent import AIAgent
 
 agent = AIAgent(
-    model=os.environ.get("BLINKY_MODEL", "anthropic/claude-sonnet-4.6"),
+    model=os.environ.get("SUTRA_MODEL", "anthropic/claude-sonnet-4.6"),
     quiet_mode=True,              # MANDATORY — see gotcha #1
     enabled_toolsets=["web", "computer_use"],
     skip_context_files=True,      # sutra owns its own context

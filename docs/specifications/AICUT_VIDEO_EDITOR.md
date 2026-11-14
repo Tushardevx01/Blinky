@@ -11,7 +11,7 @@ flowchart TD
     User["👤 User (Voice, Text, Drag & Drop)"] --> UI["sutra CommandBar (React / Tauri)"]
     UI -->|Query + Attached File Paths| PyBackend["sutra Backend (main.py)"]
     
-    subgraph Blinky_Integration ["sutra AiCut Pipeline"]
+    subgraph Sutra_Integration ["sutra AiCut Pipeline"]
         PyBackend --> FastPath["Fast-Path Intent Classifier (VIDEO_EDIT)"]
         FastPath --> Explorer["Windows COM Explorer Inspector (explorer.py)"]
         FastPath --> Tool["AiCut Tool (aicut_tool.py)"]

@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from './test-framework';
 import { getClickablePoint, getPhysicalClickablePoint, isSafeAutopilotStep, runAutopilotLoop, extractTextToType, shouldPressEnterAfterTyping, isScrollAction, getScrollDirection, isSingleActionQuery } from '../src/lib/autopilot';
 
 import type { TutorResult, TutorStep } from '../src/lib/types';

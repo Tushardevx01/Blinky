@@ -10,10 +10,10 @@ This guide provides end-to-end instructions for:
 
 ## 1. How to Compile the Desktop Windows Executable (`.exe`)
 
-sutra Desktop is built using [Tauri v2](https://v2.tauri.app/) (Rust backend) with a React/TypeScript frontend (bundled via Vite and Bun).
+sutra Desktop is built using [Tauri v2](https://v2.tauri.app/) (Rust backend) with a React/TypeScript frontend (bundled via Vite and Node.js).
 
 ### Prerequisites
-- **Bun runtime**: Installed and on system PATH (`bun --version`).
+- **Node.js runtime**: Installed and on system PATH (`bun --version`).
 - **Rust toolchain**: Installed via `rustup` (`rustc --version`, `cargo --version`).
 - **Visual Studio C++ Build Tools**: C++ build environment with Windows 10/11 SDK.
 - **Node/Python runtimes**: Bundled automatically by the build script.
@@ -24,19 +24,19 @@ sutra Desktop is built using [Tauri v2](https://v2.tauri.app/) (Rust backend) wi
 From the root repository directory (`c:\Users\khann\Projects\sutra`):
 
 ```bash
-bun run build:release
+npm run build:release
 ```
 
 #### Option B: Direct Tauri Build Command
 ```bash
 # 1. Typecheck the frontend
-bun run typecheck
+npm run typecheck
 
 # 2. Compile frontend assets into dist/
-bun run build
+npm run build
 
 # 3. Compile the native Rust binary and Windows installer
-bun run tauri:build
+npm run tauri:build
 ```
 
 ### Where to Find the Output Files
@@ -44,9 +44,9 @@ Once the build completes successfully:
 - **Standalone Portable `.exe`**:
   `common\src-tauri\target\release\sutra.exe`
 - **Windows MSI Installer (`.msi`)**:
-  `common\src-tauri\target\release\bundle\msi\Blinky_0.1.0_x64_en-US.msi`
+  `common\src-tauri\target\release\bundle\msi\Sutra_0.1.0_x64_en-US.msi`
 - **Windows NSIS Setup (`.exe` installer)**:
-  `common\src-tauri\target\release\bundle\nsis\Blinky_0.1.0_x64-setup.exe`
+  `common\src-tauri\target\release\bundle\nsis\Sutra_0.1.0_x64-setup.exe`
 
 ---
 
@@ -65,7 +65,7 @@ If you have Android Studio and the Android SDK installed:
 
 2. **Generate Native Android Project**:
    ```bash
-   bunx expo prebuild -p android
+   npx expo prebuild -p android
    ```
 
 3. **Compile the APK with Gradle**:
@@ -87,7 +87,7 @@ If you do not have Android SDK configured locally:
 
 1. **Install EAS CLI**:
    ```bash
-   bun add -g eas-cli
+   npm install -g eas-cli
    ```
 
 2. **Log into Expo** (free account):
@@ -156,7 +156,7 @@ def greet(name: str) -> str:
 
 ```powershell
 # PowerShell script block
-bun run dev
+npm run dev
 ```
 
 ### Tables

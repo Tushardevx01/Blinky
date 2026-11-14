@@ -140,7 +140,7 @@ For unmatched/insufficient requests:
 
 `stream_synthesis_llm()` turns raw tool output into a user-facing answer. It streams either:
 
-- Groq chat completion chunks when `BLINKY_AI_PROVIDER=groq`.
+- Groq chat completion chunks when `SUTRA_AI_PROVIDER=groq`.
 - Ollama `/api/generate` response chunks otherwise.
 
 Each chunk is forwarded to the WebSocket client using the `is_chunk` processing envelope.

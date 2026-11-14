@@ -51,7 +51,7 @@ The names of models are symbolic implementation details; the user's primary ment
     - **Knowledge & RAG Grounding:** Seamlessly attach a document (`📎 Attach PDF/Doc`) or link a Notebook directly into the active chat session.
   - The bottom navigation simplifies to: `Chat` (Unified General + Knowledge), `Actions`, `Files`, `PC`.
 * **Chat Session History Storage (AsyncStorage):**
-  - Just like ChatGPT/Gemini, every command and conversation with sutra is saved to device storage (`@blinky_chat_sessions_v1`).
+  - Just like ChatGPT/Gemini, every command and conversation with sutra is saved to device storage (`@sutra_chat_sessions_v1`).
   - Features:
     - Multi-session drawer/history list with titles auto-generated from initial requests.
     - Quick "New Chat" button to start a fresh interaction.
@@ -71,7 +71,7 @@ The names of models are symbolic implementation details; the user's primary ment
 We are introducing a shared session schema so both PC and Mobile have full, persistent chat history:
 
 ```typescript
-export interface BlinkyChatSession {
+export interface SutraChatSession {
   id: string;               // e.g. "session_1738392019_abc"
   title: string;            // Auto-generated from 1st prompt: e.g. "Redact Tax PDF"
   createdAt: number;        // Epoch ms

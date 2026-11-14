@@ -8,7 +8,7 @@ This document outlines the detailed technical specifications and execution plans
 * **Status:** **Resolved / Active**
 * **Architecture:**
   * RevenueCat SDK (`react-native-purchases`) runs exclusively on the mobile companion app (`common/mobile/lib/purchases.ts`).
-  * Mobile handles subscription entitlements and promo code redemptions (`@blinky_pc_promo_unlocked`).
+  * Mobile handles subscription entitlements and promo code redemptions (`@sutra_pc_promo_unlocked`).
   * Mobile broadcasts pro status over local WebSocket (port 9001) to Desktop sutra (`{ "type": "auth_status", "pro_unlocked": true }`).
   * **Desktop Requires 0 Keys/URLs from Users.**
 

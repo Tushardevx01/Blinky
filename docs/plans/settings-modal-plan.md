@@ -57,5 +57,5 @@ Instead of a cramped floating dropdown, clicking the **Settings Gear (⚙️)** 
 ---
 
 ## 5. Verification Plan
-- **Build Verification**: Run `bun run typecheck` and `bun run build`.
+- **Build Verification**: Run `npm run typecheck` and `npm run build`.
 - **UI Functional Check**: Verify all 5 sidebar tabs, model search filter, API key persistence, Test Ping latency triggers, and QR code rendering.

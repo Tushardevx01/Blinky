@@ -13,7 +13,7 @@
 **Priority 1 · [ws-auth]** `common/src-tauri/src/websocket.rs`
 - Bind stays on a configurable host (LAN remote is the feature), but **every command must be authenticated**.
 - Add a secret token flow:
-  - Generate/persist a per-install `BLINKY_REMOTE_TOKEN` in `.env`.
+  - Generate/persist a per-install `SUTRA_REMOTE_TOKEN` in `.env`.
   - Require it on the WebSocket handshake (`?token=` query param captured by the existing `accept_hdr_async` path-capture callback) OR as the first authenticated frame.
   - Reject the connection if the token is absent/invalid.
 - Optionally restrict `power_off/restart/sleep/lock` to *also* require a desktop-side confirmation before executing (defense in depth), at minimum require auth.

@@ -53,7 +53,7 @@ The monetization implementation spans three main layers in `common/mobile/`:
 | **Real-time Listener** | ✅ Verified | Subscribed to `Purchases.addCustomerInfoUpdateListener` to update React state across components on renewal or external purchases. |
 | **Paywall & Restore** | ✅ Verified | `presentPcPaywall()` triggers `RevenueCatUI.presentPaywallIfNeeded`; `restorePurchases()` calls `Purchases.restorePurchases()`. |
 | **Promo Code Engine** | ✅ Verified | Local fallback engine with `AsyncStorage` persistence, case-insensitive whitespace stripping, and instant UI listener dispatch. |
-| **Automated Tests** | ✅ Verified | 8 tests in `common/mobile/tests/purchases.test.ts` passing with 26 assertions validated under Bun. |
+| **Automated Tests** | ✅ Verified | 8 tests in `common/mobile/tests/purchases.test.ts` passing with 26 assertions validated under Node.js. |
 
 ### What Is Missing / Needs Configuration:
 1. **Placeholder API Key in Environment:**
@@ -77,10 +77,10 @@ To distribute to users **without publishing to the Google Play Store**, use one 
 The app includes a fully offline voucher engine designed for testers, judges, and direct sideload users:
 1. Configure promo codes in [`common/mobile/.env`](file:///c:/Users/khann/Projects/sutra/common/mobile/.env):
    ```env
-   EXPO_PUBLIC_PROMO_CODES=SHIPATHON,BLINKYVIP,EARLYBIRD,TESTER2026
+   EXPO_PUBLIC_PROMO_CODES=SHIPATHON,SUTRAVIP,EARLYBIRD,TESTER2026
    ```
 2. When any user opens the app (either in Expo or standalone APK) and navigates to the locked **PC** tab, they tap **Redeem Promo Code**.
-3. Entering any listed code writes `@blinky_pc_promo_unlocked = 'true'` into device storage and permanently unlocks telemetry and power actions without requiring Google Play services.
+3. Entering any listed code writes `@sutra_pc_promo_unlocked = 'true'` into device storage and permanently unlocks telemetry and power actions without requiring Google Play services.
 
 ### Approach B: RevenueCat Web Billing (Stripe Checkout)
 To collect real payments without publishing on Google Play:
@@ -151,7 +151,7 @@ Your [`eas.json`](file:///c:/Users/khann/Projects/sutra/common/mobile/eas.json) 
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_BLINKY_TRANSPORT_MODE": "release"
+        "EXPO_PUBLIC_SUTRA_TRANSPORT_MODE": "release"
       }
     }
   }
@@ -170,7 +170,7 @@ Your [`eas.json`](file:///c:/Users/khann/Projects/sutra/common/mobile/eas.json) 
 3. Trigger the standalone Android APK build:
    ```bash
    cd common/mobile
-   bun run build:release
+   npm run build:release
    # or: eas build -p android --profile release
    ```
 4. EAS builds the native package in the cloud and provides a direct `.apk` download URL and QR code for installation on any Android device.
@@ -181,7 +181,7 @@ Your [`eas.json`](file:///c:/Users/khann/Projects/sutra/common/mobile/eas.json) 
 
 | Goal | Recommended Approach | Immediate Action |
 | :--- | :--- | :--- |
-| **Instant Testing** | Promo code bypass | Use `SHIPATHON` or `BLINKYVIP` in `PromoCodeModal`. |
+| **Instant Testing** | Promo code bypass | Use `SHIPATHON` or `SUTRAVIP` in `PromoCodeModal`. |
 | **Real Store Billing** | Google Play track + RevenueCat | Insert actual `goog_...` key in `.env`, upload AAB to Google Play Internal Testing. |
 | **Real Web Billing (No Store)** | Stripe + RevenueCat Web Billing | Link Stripe to RevenueCat; open checkout link via `WebBrowser`. |
 | **Standalone Package** | Local Gradle or EAS Build | Run `npx expo prebuild` + `./gradlew assembleRelease` or `eas build -p android --profile release`. |

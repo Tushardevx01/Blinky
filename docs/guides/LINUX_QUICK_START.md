@@ -45,7 +45,7 @@ git clone git@github.com:KingSahil/sutra.git && cd sutra
 # Install Node dependencies
 bun install
 # Install Python requirements (creates a .venv folder in root)
-bun run linux:setup:python   # runs ./linux/scripts/setup-python.sh
+npm run linux:setup:python   # runs ./linux/scripts/setup-python.sh
 ```
 
 ### Additional Linux Requirements
@@ -82,16 +82,16 @@ Although `tesseract` is a system requirement, some Linux distributions (like Arc
 
 ```bash
 # Ollama check (will exit if the model is missing)
-bun run linux:check:ollama
+npm run linux:check:ollama
 # Groq check (requires GROQ_API_KEY)
-bun run linux:check:groq
+npm run linux:check:groq
 ```
 
 ## Run the Application
 
 ```bash
 # Start sutra
-bun run dev   # Starts Vite + Tauri (http://localhost:5173 / WebSocket server on 9001)
+npm run dev   # Starts Vite + Tauri (http://localhost:5173 / WebSocket server on 9001)
 ```
 
 ```bash

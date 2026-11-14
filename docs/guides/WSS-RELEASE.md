@@ -14,18 +14,18 @@ Current desktop queries use Tauri IPC, and CommandBar STT/TTS uses direct Sarvam
 
 ## Build and pair
 
-From the repository root, build the desktop with `bun run build:release`. For an internal Linux executable without the checkout's missing Windows bundle resources:
+From the repository root, build the desktop with `npm run build:release`. For an internal Linux executable without the checkout's missing Windows bundle resources:
 
 ```bash
-TAURI_CONFIG='{"bundle":{"resources":[]}}' bun run build:release --no-bundle
+TAURI_CONFIG='{"bundle":{"resources":[]}}' npm run build:release --no-bundle
 ```
 
-Output: `common/src-tauri/target/release/sutra`. This is not a packaged Linux installer. Runtime Python/services still need the source-checkout dependencies. Configure a strong `BLINKY_REMOTE_TOKEN` in the ignored environment configuration or launch environment.
+Output: `common/src-tauri/target/release/sutra`. This is not a packaged Linux installer. Runtime Python/services still need the source-checkout dependencies. Configure a strong `SUTRA_REMOTE_TOKEN` in the ignored environment configuration or launch environment.
 
-From `common/mobile`, `bun run build:release` uses the EAS internal APK profile. For a local Android build, generate Android with Expo prebuild if necessary, then run from `common/mobile/android` using JDK 21, Android SDK 36, NDK 27.1.12297006, and CMake 3.22.1:
+From `common/mobile`, `npm run build:release` uses the EAS internal APK profile. For a local Android build, generate Android with Expo prebuild if necessary, then run from `common/mobile/android` using JDK 21, Android SDK 36, NDK 27.1.12297006, and CMake 3.22.1:
 
 ```bash
-EXPO_PUBLIC_BLINKY_TRANSPORT_MODE=release NODE_ENV=production ./gradlew :sutra-secure-socket:testReleaseUnitTest :sutra-secure-socket:lintRelease :app:assembleRelease --no-daemon --console=plain
+EXPO_PUBLIC_SUTRA_TRANSPORT_MODE=release NODE_ENV=production ./gradlew :sutra-secure-socket:testReleaseUnitTest :sutra-secure-socket:lintRelease :app:assembleRelease --no-daemon --console=plain
 ```
 
 Set `JAVA_HOME` and `ANDROID_HOME` to installed toolchains. Output: `common/mobile/android/app/build/outputs/apk/release/app-release.apk`.
@@ -61,7 +61,7 @@ Earlier September 4 testing established a physical Wi-Fi connection with the cor
 
 Pre-PR review found and fixed an empty-token bypass: comparing two empty tokens previously authenticated a remote peer when no server token was configured. A regression test failed before the shared comparator was changed to reject an empty configured secret. Rebuild the PC executable from this PR; the September 8 executable predates this fix. The mobile APK is unchanged.
 
-After the fix on September 10, all 26 Rust tests passed with `BLINKY_TRANSPORT_MODE=release TAURI_CONFIG='{"bundle":{"resources":[]}}' cargo test --locked --manifest-path common/src-tauri/Cargo.toml`, including the real pinned loopback WSS round trip.
+After the fix on September 10, all 26 Rust tests passed with `SUTRA_TRANSPORT_MODE=release TAURI_CONFIG='{"bundle":{"resources":[]}}' cargo test --locked --manifest-path common/src-tauri/Cargo.toml`, including the real pinned loopback WSS round trip.
 
 Known iOS validation gap from the September 10 review: socket/pin dictionaries were accessed from Expo's async queue, URLSession delegates, and main-queue receive callbacks without serialization. The file-transfer implementation now protects socket/pin state and transfer pins with locks. This addresses that source-level race, but the iOS module still needs an Xcode build and device validation before the iOS path is fully verified.
 
