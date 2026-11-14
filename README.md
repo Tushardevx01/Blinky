@@ -225,4 +225,4 @@ cargo tauri build
 
 ## License
 
-MIT License — Blinky Autonomous Desktop & Mobile Assistant.
+Distributed under the [MIT License](./LICENSE). See [LICENSE](./LICENSE) for more information.
