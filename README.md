@@ -45,7 +45,7 @@ Learning complex desktop software often means switching between tutorials, docum
 
 | Capability | What it does |
 |---|---|
-| **Blinky Predict** | Embedded predictive intelligence engine (`crates/blinky-predict`) that identifies recurring workflow patterns, calculates transition probabilities via hierarchical 2nd-order Markov modeling, and predicts next desktop actions with verified tool recommendations. |
+| **Sutra Predict** | Embedded predictive intelligence engine (`crates/sutra-predict`) that identifies recurring workflow patterns, calculates transition probabilities via hierarchical 2nd-order Markov modeling, and predicts next desktop actions with verified tool recommendations. |
 | **System 1 Decision Engine** | Sub-millisecond (<1ms) non-autoregressive ONNX Transformer classifier (`packages/decision-engine/`) that routes queries before LLM invocation. |
 | **sutra Notebook Hub & OKF** | Offline Knowledge Format (OKF) personal workspace (`docs/specifications/OKF.md`) with full-context document reasoning and verified citations. |
 | **Pure Rust Agent (`sutra-agent`)** | High-performance native Rust autonomous agent loop (`crates/sutra-agent`) with multi-provider LLM calling (OpenAI, Gemini, Groq, Ollama), tool registry, and embedded vector store. |
@@ -65,7 +65,7 @@ Learning complex desktop software often means switching between tutorials, docum
 
 - **Desktop Frontend**: React 19, TypeScript, Vite, Tailwind CSS / Vanilla styling.
 - **Desktop Host**: Tauri 2 (Rust), TLS WebSocket gateway (:9001), File transfer stream (:9002), Antigravity bridge (:9003).
-- **Core Rust Crates**: `crates/sutra-agent`, `crates/sutra-daemon`, `crates/blinky-predict`.
+- **Core Rust Crates**: `crates/sutra-agent`, `crates/sutra-daemon`, `crates/sutra-predict`.
 - **Backend Services**: Python 3.11+ agent service (`services/agent/`), SearXNG (`services/search/`).
 - **Machine Learning**: ONNX Runtime, Gemini 2.5 Flash / Groq / Ollama models, faster-whisper.
 - **Mobile Companion**: React Native, Expo, Kotlin/Swift native socket module (`apps/mobile/modules/sutra-secure-socket`).

@@ -23,7 +23,7 @@ export const WorkflowInsights: React.FC<WorkflowInsightsProps> = ({ insights }) 
         <div className="predict-empty-content">
           <h4>No Workflow Patterns Identified Yet</h4>
           <p>
-            When repetitive task sequences occur across your desktop sessions, Blinky's pattern miner
+            When repetitive task sequences occur across your desktop sessions, Sutra's pattern miner
             will automatically catalog recurring workflows, transition probabilities, and failure
             hotspots here.
           </p>

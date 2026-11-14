@@ -203,7 +203,7 @@ export const PredictDashboard: React.FC<PredictDashboardProps> = ({
           </div>
           <div>
             <div className="predict-title-row">
-              <h2 className="predict-title">Blinky Predict</h2>
+              <h2 className="predict-title">Sutra Predict</h2>
               <span className="predict-engine-pill">
                 <Cpu size={12} style={{ marginRight: 4 }} />
                 Markov Intelligence Engine

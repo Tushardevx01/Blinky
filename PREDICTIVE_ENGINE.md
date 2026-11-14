@@ -1,12 +1,12 @@
-# Blinky Predict — Predictive Analytics & Workflow Intelligence Engine
+# Sutra Predict — Predictive Analytics & Workflow Intelligence Engine
 
-**Blinky Predict** is an embedded, privacy-preserving predictive analytics and workflow intelligence module for Blinky. It analyses historical user desktop workflow sequences, identifies recurring cross-application patterns, and predicts the user's next desktop action with calibrated confidence scores and verified automation recommendations.
+**Sutra Predict** is an embedded, privacy-preserving predictive analytics and workflow intelligence module for Sutra. It analyses historical user desktop workflow sequences, identifies recurring cross-application patterns, and predicts the user's next desktop action with calibrated confidence scores and verified automation recommendations.
 
 ---
 
 ## 1. Architectural Blueprint
 
-Blinky Predict follows a strictly decoupled, offline-first architecture divided into three cooperative tiers:
+Sutra Predict follows a strictly decoupled, offline-first architecture divided into three cooperative tiers:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -20,7 +20,7 @@ Blinky Predict follows a strictly decoupled, offline-first architecture divided 
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │ Native Rust Crate FFI
 ┌──────────────────────────────────▼─────────────────────────────────────┐
-│                 Blinky Predict Crate (crates/blinky-predict)           │
+│                 Sutra Predict Crate (crates/sutra-predict)             │
 │                                                                        │
 │  ┌───────────────────────┐             ┌─────────────────────────────┐ │
 │  │   Event Collector     │             │    Markov Predictor         │ │
@@ -36,13 +36,13 @@ Blinky Predict follows a strictly decoupled, offline-first architecture divided 
 │                                │                                       │
 │                    ┌───────────▼───────────┐                           │
 │                    │ SQLite Storage Layer  │                           │
-│                    │  (tmp/blinky_predict) │                           │
+│                    │  (tmp/sutra_predict)  │                           │
 │                    └───────────────────────┘                           │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Module Boundary Guarantees
-- **Standalone Modular Crate (`crates/blinky-predict`)**: Zero external network dependencies, memory-safe, ultra-low latency (<1ms).
+- **Standalone Modular Crate (`crates/sutra-predict`)**: Zero external network dependencies, memory-safe, ultra-low latency (<1ms).
 - **Desktop IPC Bridge (`apps/desktop/src-tauri/src/predict_ipc.rs`)**: Exposes thread-safe singleton operations to Tauri.
 - **Frontend Dashboard (`apps/desktop/src/predict/`)**: Dedicated dashboard, history viewer, workflow visualizer, and user feedback loop.
 
@@ -90,7 +90,7 @@ The event collector monitors permitted desktop activities, application switching
 
 ## 3. Local SQLite Database Schema
 
-Blinky Predict stores analytics locally in an embedded SQLite database (`tmp/blinky_predict.db`) using WAL mode and idempotent migrations (`PRAGMA user_version = 1`).
+Sutra Predict stores analytics locally in an embedded SQLite database (`tmp/sutra_predict.db`) using WAL mode and idempotent migrations (`PRAGMA user_version = 1`).
 
 ```sql
 CREATE TABLE IF NOT EXISTS predictive_events (
@@ -190,13 +190,13 @@ The `PatternMiner` identifies repeated variable-length action sequences ($k \in 
 - **Frequent Workflows**: Subsequences observed $\ge 2$ times, categorized into Development, Research, Media, or Productivity pipelines.
 - **Application Transition Matrix**: Directed graph showing transition counts and conditional probabilities between applications (e.g. `terminal -> browser`: 82%).
 - **Failure Hotspot Detection**: Sequences where failure rate exceeds 25%, isolating points of user friction.
-- **Automation Opportunities**: Recurring multi-step routines ($\ge 3$ actions) with high success rates ($\ge 70\%$) mapped to single-click Blinky automation routines.
+- **Automation Opportunities**: Recurring multi-step routines ($\ge 3$ actions) with high success rates ($\ge 70\%$) mapped to single-click Sutra automation routines.
 
 ---
 
 ## 6. Agent Tool Registry Integration
 
-Blinky Predict connects predictions directly to Blinky's native tool registry (`crates/sutra-agent/src/tools/mod.rs`).
+Sutra Predict connects predictions directly to Sutra's native tool registry (`crates/sutra-agent/src/tools/mod.rs`).
 
 ### Verified Tool Mappings
 | Predicted Action | Verified Tool | Pre-filled Parameters |
@@ -288,7 +288,7 @@ Prediction accuracy is measured against a repeatable hold-out ground-truth datas
 | **Test Workflows** | **3 distinct pipelines** | Known sequences | Pass |
 | **Evaluated Samples** | **14 transition steps** | Ground truth | Pass |
 
-All tests pass deterministically via `cargo test -p blinky-predict`.
+All tests pass deterministically via `cargo test -p sutra-predict`.
 
 ---
 

@@ -43,7 +43,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
         <div className="predict-empty-content">
           <h4>Awaiting Desktop Activity Patterns</h4>
           <p>
-            Blinky is observing your workflow sequences. As recurring desktop actions or automation
+            Sutra is observing your workflow sequences. As recurring desktop actions or automation
             routines take place, next-action predictions and confidence scores will appear here.
           </p>
         </div>
@@ -59,7 +59,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
         </div>
         <p className="predict-explanation">
           {predictionResult.explanation ||
-            'The recent desktop action sequence is novel. Blinky will record transitions to build predictive confidence.'}
+            'The recent desktop action sequence is novel. Sutra will record transitions to build predictive confidence.'}
         </p>
       </div>
     );
@@ -85,7 +85,7 @@ export const NextActionCard: React.FC<NextActionCardProps> = ({
   const handleExecute = async (rec: AutomationRecommendation) => {
     if (
       !window.confirm(
-        `Authorize Blinky to execute '${rec.tool_name}'?\n\nTool Arguments: ${JSON.stringify(
+        `Authorize Sutra to execute '${rec.tool_name}'?\n\nTool Arguments: ${JSON.stringify(
           rec.tool_args,
           null,
           2

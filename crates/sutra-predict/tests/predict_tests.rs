@@ -224,3 +224,81 @@ fn test_benchmark_evaluation_methodology() {
     assert!(report.top3_accuracy >= 0.95, "Expected >=95% Top-3 accuracy, got {}", report.top3_accuracy);
     assert!(report.average_latency_micros < 1000.0, "Expected <1ms latency, got {}us", report.average_latency_micros);
 }
+
+#[test]
+fn test_multi_branch_workflow_accuracy() {
+    let mut predictor = MarkovPredictor::new();
+
+    // Branch A (7 times): edit_code -> run_linter -> git_commit
+    let branch_a = vec![
+        "open_vscode".to_string(),
+        "edit_code".to_string(),
+        "run_linter".to_string(),
+        "git_commit".to_string(),
+    ];
+    for _ in 0..7 {
+        predictor.train_sequence(&branch_a);
+    }
+
+    // Branch B (3 times): edit_code -> run_dev_server -> open_browser
+    let branch_b = vec![
+        "open_vscode".to_string(),
+        "edit_code".to_string(),
+        "run_dev_server".to_string(),
+        "open_browser".to_string(),
+    ];
+    for _ in 0..3 {
+        predictor.train_sequence(&branch_b);
+    }
+
+    // When context is [open_vscode, edit_code]:
+    let context = vec!["open_vscode".to_string(), "edit_code".to_string()];
+    let res = predictor.predict(&context);
+    assert_eq!(res.status, "prediction_available");
+    assert_eq!(res.predictions[0].action, "run_linter");
+    assert_eq!(res.predictions[0].probability, 0.7);
+    assert_eq!(res.predictions[1].action, "run_dev_server");
+    assert_eq!(res.predictions[1].probability, 0.3);
+}
+
+#[test]
+fn test_security_rsa_key_and_bearer_token_rejection() {
+    let service = PredictService::new_in_memory().unwrap();
+
+    let rsa_event = ActivityEvent::new(
+        "application_opened",
+        "terminal",
+        "cat -----BEGIN RSA PRIVATE KEY-----",
+        None,
+        true,
+    );
+    assert!(service.record_event(rsa_event).is_err());
+
+    let bearer_event = ActivityEvent::new(
+        "application_opened",
+        "browser",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        None,
+        true,
+    );
+    assert!(service.record_event(bearer_event).is_err());
+}
+
+#[test]
+fn test_purge_all_predict_data_privacy() {
+    let service = PredictService::new_in_memory().unwrap();
+    let seeded = service.seed_sample_data().unwrap();
+    assert!(seeded > 0);
+
+    let overview_before = service.get_analytics_overview().unwrap();
+    assert!(overview_before.total_recorded_events > 0);
+
+    // User requests complete data purge
+    service.purge_all_data().unwrap();
+
+    let overview_after = service.get_analytics_overview().unwrap();
+    assert_eq!(overview_after.total_recorded_events, 0);
+    assert_eq!(overview_after.total_detected_workflows, 0);
+    assert_eq!(overview_after.total_predictions_generated, 0);
+}
+

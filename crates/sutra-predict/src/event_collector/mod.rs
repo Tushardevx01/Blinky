@@ -89,15 +89,29 @@ impl EventCollector {
             event.timestamp = Utc::now().to_rfc3339();
         }
 
-        // Sanitize metadata: remove private or excessively deep json
+        // Sanitize metadata: remove private keys, tokens, passwords, secrets
         if let Some(meta) = &mut event.metadata {
             if let Some(obj) = meta.as_object_mut() {
-                obj.retain(|k, _v| {
+                obj.retain(|k, v| {
                     let k_lower = k.to_lowercase();
-                    !k_lower.contains("token")
-                        && !k_lower.contains("password")
-                        && !k_lower.contains("secret")
-                        && !k_lower.contains("key")
+                    if k_lower.contains("token")
+                        || k_lower.contains("password")
+                        || k_lower.contains("secret")
+                        || k_lower.contains("key")
+                    {
+                        return false;
+                    }
+                    if let Some(v_str) = v.as_str() {
+                        let v_lower = v_str.to_lowercase();
+                        if v_lower.contains("bearer ")
+                            || v_lower.contains("password")
+                            || v_lower.contains("secret")
+                            || v_lower.contains("token")
+                        {
+                            return false;
+                        }
+                    }
+                    true
                 });
             }
         }

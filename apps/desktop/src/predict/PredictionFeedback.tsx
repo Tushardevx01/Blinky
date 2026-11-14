@@ -83,7 +83,7 @@ export const PredictionFeedback: React.FC<PredictionFeedbackProps> = ({
 
         <div className="predict-modal-body">
           <div className="predict-modal-context">
-            <span className="predict-label-subtle">Predicted by Blinky:</span>
+            <span className="predict-label-subtle">Predicted by Sutra:</span>
             <div className="predict-target-chip">{predictedAction}</div>
           </div>
 
@@ -130,7 +130,7 @@ export const PredictionFeedback: React.FC<PredictionFeedbackProps> = ({
 
           <p className="predict-modal-note">
             <Sparkles size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: -2 }} />
-            Submitting this correction updates Blinky's Markov transition weights so future workflow
+            Submitting this correction updates Sutra's Markov transition weights so future workflow
             recommendations align with your actual habits.
           </p>
         </div>

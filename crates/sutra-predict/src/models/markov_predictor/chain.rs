@@ -194,6 +194,7 @@ impl MarkovPredictor {
                         b.probability
                             .partial_cmp(&a.probability)
                             .unwrap_or(std::cmp::Ordering::Equal)
+                            .then_with(|| b.count.cmp(&a.count))
                     });
                     candidates.truncate(3);
 
@@ -245,6 +246,7 @@ impl MarkovPredictor {
                     b.probability
                         .partial_cmp(&a.probability)
                         .unwrap_or(std::cmp::Ordering::Equal)
+                        .then_with(|| b.count.cmp(&a.count))
                 });
                 candidates.truncate(3);
 
